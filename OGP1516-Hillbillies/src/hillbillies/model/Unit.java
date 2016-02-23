@@ -23,7 +23,7 @@ public class Unit {
 	 * @throws ModelException
 	 */
 	public Unit createUnit(String name, double[] initialPosition, int weight, int agility, int strength, int toughness,
-			boolean enableDefaultBehavior) throws ModelException;{
+			boolean enableDefaultBehavior) throws ModelException{
 				setName(name);
 				
 			}
@@ -53,8 +53,6 @@ public class Unit {
 			throw new ModelException();
 		this.name = name;
 	}
-		
-	}
 	
 	/**
 	 * 
@@ -64,7 +62,7 @@ public class Unit {
 	 * 			| 		return true 
 	 */
 	public boolean isValidName(String name) {
-		return (!(name == null) && (isUpperCase(name.charAt(0)) && (name.length() >= 2));
+		return (!(name == null) && (isUpperCase(name.charAt(0)) && (name.length() >= 2)));
 	}
 	
 
@@ -84,10 +82,12 @@ public class Unit {
 	 *             the unit is not a valid unit
 	 *             |unit == null
 	 */
-        public double[] getPosition(Unit unit) throws ModelException{     
-	     if (unit == null)                                                 
-	         throw new ModelException();                             
- 	     return unit.Position;              
+	public double[] getPosition(Unit unit) throws ModelException{
+		if (unit == null){
+			throw new ModelException();
+		}
+		return unit.Position;
+	}
 
  	     
 	/**
@@ -108,8 +108,9 @@ public class Unit {
 	 *       |if !(isValidPosition(Position)
 	 */
 	public void setPosition(double[] Position)throws ModelException{
-	    if (!isValidPosition(Position)
-		throw new ModelException();
+	    if (!isValidPosition(Position)){
+	    	throw new ModelException();
+	    }
 	    this.Position = Position;      
 	}
 
@@ -128,10 +129,12 @@ public class Unit {
 	public boolean isValidPosition(double[] Position){     
 	    boolean result = (Position.length == 3);             
 	    for (double coordinate : Position){              
-		if (!((coordinate >= 0) and (coordinate <= 50){ 
-		    result = false;                         
-	    return result;                             
+	    	if (!((coordinate >= 0) && (coordinate <= 50))){ 
+	    		result = false;
+	    	}
 	    }
+	    return result;                             
+	}
 
 
 
@@ -163,7 +166,7 @@ public class Unit {
 	/** 
 	 * Get the agility of the given unit
 	 */
-	@basic 
+	@Basic 
 	public int getAgility(){
 		return this.agility;
 	}
