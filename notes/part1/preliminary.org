@@ -1,0 +1,53 @@
+Made with Emacs Org Mode. Minor changes might disrupt Org's work flow
+
+* Unit
+
+** Position :Defensive:
+
+- Stored as doubles
+- Getters and setters must be made
+- Always within bounds (50x50x50 game world)
+
+
+** Name :Defensive:
+
+- Can change (mutable)
+- Prerequisites
+  - >= 2 letters long
+  - Only letters, quotes, and spaces
+
+
+** Attributes :Total:
+
+- Attributes
+  - Weight
+    - Always >= (strength + agility) / 2
+  - Strength
+  - Agility
+  - Toughness
+- Integers ∈ [1;200]
+- Initially ∈ [25;100]
+
+
+** HP & Stamina :Nominal:
+
+- Maximum = round-up of 200 * weight/100 * toughness/100
+- Integers (presumably)
+- Always ∈ [0;maximum]
+
+
+** Orientation :Total:
+
+- Floating point numbers (floats)
+- In *radians*
+- Getter must be made
+
+
+** Time advancing :Defensive:
+
+No formal documentation needed! Thank God.
+
+- Implement method advanceTime which updates position and activity status,
+  based on current position and current activity status.
+  - Takes a float holding seconds that have past since last advanceTime
+  call. Will always be >= 0, and must be < 0.2 (throw error if not the case).
