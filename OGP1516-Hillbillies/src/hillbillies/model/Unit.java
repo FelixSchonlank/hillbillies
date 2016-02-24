@@ -8,7 +8,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 import ogp.framework.util.ModelException;
 /**
  * 
- * @author Willem Seynaeve and ...
+ * @author Willem Seynaeve and Felix Schönlank
  * 
  *
  */
@@ -110,37 +110,17 @@ public class Unit {
 	/**
 	 * 
 	 * @param name
-	 * @return True if and only if the name is longer then 2 and the first character is uppercase
+	 * @return True if and only if the name is longer then 2 and the first character is upper case
 	 * 			| if (!(name == null) && isUpperCase(name.charAt(0) && name.lenth() >= 2)
 	 * 			| 		return true 
 	 */
 	public boolean isValidName(String name) {
-		return (!(name == null) && (isUpperCase(name.charAt(0)) && (name.length() >= 2)));
+		return (!(name == null) && (Character.isUpperCase(name.charAt(0)) && (name.length() >= 2)));
 	}
 	
 
 	
 	/* Position */
-
-
-
-	/**
-	 * Get the precise coordinate of the given unit
-	 * 
-	 * @param unit
-	 *            The unit for which to return the position.
-	 * @return The coordinate of the center of the unit, as an array with 3 doubles {x, y, z}.
-	 *         |unit.Position
-	 * @throws ModelException
-	 *             the unit is not a valid unit
-	 *             |unit == null
-	 */
-	public double[] getPosition(Unit unit) throws ModelException{
-		if (unit == null){
-			throw new ModelException();
-		}
-		return unit.Position;
-	}
 
  	     
 	/**
@@ -182,27 +162,27 @@ public class Unit {
 	public boolean isValidPosition(double[] Position){     
 	    boolean result = (Position.length == 3);             
 	    for (double coordinate : Position){              
-	    	if (!((coordinate >= 0) && (coordinate <= 50))){ 
+	    	if (!(coordinate >= getMinCoordinate() && (coordinate <= getMaxCoordinate()))){ 
 	    		result = false;
 	    	}
 	    }
 	    return result;                             
 	}
-
-
-
-
+	
 	/**
-	 * Get the coordinate of the cube occupied by the given unit.
-	 * 
-	 * @param unit
-	 *            The unit for which to return the cube coordinate.
-	 * @return The coordinate of the cube in which the center of the unit lies,
-	 *         as an array with 3 integers {x, y, z}.
-	 * @throws ModelException
-	 *             A precondition was violated or an exception was thrown.
+	 * Return the maximum coordinate in every direction of the Game World
 	 */
-	public int[] getCubeCoordinate(Unit unit) throws ModelException;
+	public int getMaxCoordinate(){
+		return 50;
+	}
+	
+	/**
+	 * Return the minimum coordinate in every direction of the board
+	 */
+	public int getMinCoordinate(){
+		return 0;
+	}
+	
 	
 	/* Weight */
 	
