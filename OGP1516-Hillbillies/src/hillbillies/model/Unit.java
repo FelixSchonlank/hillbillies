@@ -377,5 +377,5 @@ public class Unit {
 	private int toughness;
 	private boolean enableDefaultBehavior;
 
-
+	
 }

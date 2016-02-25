@@ -40,7 +40,7 @@ Made with Emacs Org Mode. Minor changes might disrupt Org's work flow
 
 - Floating point numbers (floats)
 - In *radians*
-- Getter must be made
+- Getter and setter must be made
 
 
 ** Time advancing 						  :Defensive:
