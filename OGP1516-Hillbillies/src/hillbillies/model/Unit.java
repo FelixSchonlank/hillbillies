@@ -37,10 +37,10 @@ public class Unit {
 				throw new ModelException();
 			setName( name );
 			setPosition( initialPosition );
-			setWeight( weight );
 			setAgility( agility );
 			setStrength( strength );
 			setToughness( toughness );
+			setWeight( weight ); /* Weight must be set after strength and agility */ 
 				
 			}
 	/**
@@ -110,7 +110,7 @@ public class Unit {
 	/**
 	 * 
 	 * @param name
-	 * @return True if and only if the name is longer then 2 and the first character is upper case
+	 * @return True if and only if the name is longer then 2 and the first character is uppercase
 	 * 			| if (!(name == null) && isUpperCase(name.charAt(0) && name.lenth() >= 2)
 	 * 			| 		return true 
 	 */
