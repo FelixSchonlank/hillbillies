@@ -1,5 +1,6 @@
 package hillbillies.model;
 import java.util.*;
+import java.lang.Math;
 
 import ogp.framework.util.*;
 
@@ -37,10 +38,10 @@ public class Unit {
 				throw new ModelException();
 			setName( name );
 			setPosition( initialPosition );
-			setWeight( weight );
 			setAgility( agility );
 			setStrength( strength );
 			setToughness( toughness );
+			setWeight( weight ); /* Weight must be set after strength and agility */ 
 				
 			}
 	/**
@@ -110,7 +111,7 @@ public class Unit {
 	/**
 	 * 
 	 * @param name
-	 * @return True if and only if the name is longer then 2 and the first character is upper case
+	 * @return True if and only if the name is longer then 2 and the first character is uppercase
 	 * 			| if (!(name == null) && isUpperCase(name.charAt(0) && name.lenth() >= 2)
 	 * 			| 		return true 
 	 */
@@ -172,6 +173,7 @@ public class Unit {
 	/**
 	 * Return the maximum coordinate in every direction of the Game World
 	 */
+	@Basic
 	public int getMaxCoordinate(){
 		return 50;
 	}
@@ -179,6 +181,7 @@ public class Unit {
 	/**
 	 * Return the minimum coordinate in every direction of the board
 	 */
+	@Basic
 	public int getMinCoordinate(){
 		return 0;
 	}
@@ -222,6 +225,7 @@ public class Unit {
 	/**
 	 * @return the maximum weight this unit can have
 	 */
+	@Basic
 	private int getMaxWeight() {
 		return 200;
 	}
@@ -230,6 +234,7 @@ public class Unit {
 	 * 
 	 * @return the minimum weight of this unit 
 	 */
+	@Basic
 	private int getMinWeight(){
 		return ((this.getStrength() + this.getAgility()) / 2);
 	}
@@ -270,6 +275,7 @@ public class Unit {
 	/**
 	 * @return The minimum agility for a unit 
 	 */
+	@Basic
 	public int getMinAgility(){
 		return 0;
 	}
@@ -277,6 +283,7 @@ public class Unit {
 	/**
 	 * @return the maximum agility a unit can have 
 	 */
+	@Basic
 	public int getMaxAgility(){
 		return 200;
 	}
@@ -286,6 +293,7 @@ public class Unit {
 	/**
 	 * Return the toughness of this unit 
 	 */
+	@Basic
 	public int getToughness(){
 		return this.toughness;
 	}
@@ -316,6 +324,7 @@ public class Unit {
 	/**
 	 * @return the minimum toughness a unit can have
 	 */
+	@Basic
 	public int getMinToughness(){
 		return 0;
 	}
@@ -323,6 +332,7 @@ public class Unit {
 	/**
 	 * @return The maximum toughness a unit can have
 	 */
+	@Basic
 	public int getMaxToughness(){
 		return 200;
 	}
@@ -361,14 +371,75 @@ public class Unit {
 	/**
 	 * @return The minimum strength of a unit 
 	 */
+	@Basic
 	public int getMinStrength(){
 		return 0;
 	}
-	
+	/**
+	 * 
+	 * @return The maximum strength a unit an have 
+	 */
+	@Basic
 	public int getMaxStrength(){
 		return 200;
 	}
+	
+	/*Orientation*/
+	
+	/**
+	 * @return The Orientation of a Unit in radian 
+	 */
+	@Basic
+	public double getOrientation(){
+		return this.orientation;
+	}
+	
+	@Basic
+	public double getDefaultOrientation(){
+		return Math.PI/2;
+	}
+	
+	/**
+	 * Set the orientation of the unit to a given orientation
+	 * 
+	 * @param Orientation
+	 * @Post if the orientation is larger then getMaxOrientation() the given orientation is decremented by getMaxOrientation() until it is smaller then getMaxOrientation()
+	 * 		|if (this.getOrientation() >= getMaxOrientation())
+	 * 		|	new.getOrientation() == orientation % getMaxOrientation()
+	 * @Post If the orientation smaller then getMinOrientation()
+	 * 		|if (this.getOrientation() >= getMinOrientation())
+	 * 		|	new.getOrientation() == getMaxOrientation() - (Orientation % getMaxOrientation())
+	 * @Post If the orientation is non of the previous the orientation is set to the given orientation   
+	 * 		|else 
+	 * 		|	new.getOrientation() == orientation 
+	 */
+	public void setOrientation(double Orientation){
+		Orientation %=  Orientation;
+		if (Orientation < 0 ){
+			this.setOrientation(this.getMaxOrientation() - Orientation);
+		}
+		else{
+			this.setOrientation(Orientation);
+		}
+	}
+	
+	
+	/**
+	 * @return The maximum possible orientation 
+	 */
+	@Basic
+	public double getMaxOrientation(){
+		return 2 * Math.PI;
+	}
 	 
+	/**
+	 * @return the minimum possible orientation 
+	 */
+	@Basic
+	public double getMinOrientation(){
+		return 0.0;
+	}
+	
 	private String name;
 	private double[] Position;
 	private int weight;
@@ -376,6 +447,7 @@ public class Unit {
 	private int strength;
 	private int toughness;
 	private boolean enableDefaultBehavior;
+	private double orientation;
 
 	
 }

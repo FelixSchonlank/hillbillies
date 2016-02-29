@@ -42,7 +42,6 @@ Made with Emacs Org Mode. Minor changes might disrupt Org's work flow
 - In *radians*
 - Getter and setter must be made
 
-
 ** Time advancing 						  :Defensive:
 
 No formal documentation needed! Thank God.
