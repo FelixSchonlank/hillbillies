@@ -10,13 +10,17 @@ don't get me wrong).
 
 : public void advanceTime(double deltaTime)
 
-Unit is a finite state machine. There are multiple flags. In descending order of
+Unit is a finite state machine.
+
+There are transition flags. In descending order of
 importance, they are:
 - shouldRest
 - shouldWork
 - shouldAttack
 Whether the Unit should move is determined by the non-emptiness of at least one
 of: immediateTarget and path.
+
+There is also the sprinting flag: sprinting.
 
 There are 7 states:
 - NOTHING
@@ -52,8 +56,43 @@ ElseIf defaultBehaviour is high, choose a random option from
 
 ** When in MOVING
 
-If reachedImmediateTarget && 
+If reachedImmediateTarget() && !path.isEmpty(), set Unit position to center of
+immediateTarget. Place next element of path in the immediateTarget.
 
+ElseIf reachedImmediateTarget() && path.isEmpty(), set Unit position to center of
+immediateTarget. Do transitionToNothing.
+
+ElseIf !reachedImmediateTarget(), update position as explained in pdf. The x'
+from the pdf is the x value of immediateTarget; the x is the x value of
+position; the v can be calculated from the attributes, the sprinting flag, and
+the difference between the current position and the immediateTarget; the new
+position can be calculated from v and the given deltaTime. Don't forget to lower
+the stamina by 1 if sprintingStaminaDecreaseCountdown reaches 0. In that case,
+reset the countdown to its top value (0.1 s) minus the negative overshoot. Also,
+if the stamina itself reaches zero, set the sprinting flag to low.
+
+
+** When in RESTING_INIT
+
+If restingInitialCountdown > 0, decrease it with deltaTime.
+
+Else, do transitionToRestingHP.
+
+
+** When in RESTING_HP
+
+If shouldWork is high, do transitionToWorking.
+
+ElseIf shouldAttack is high, do transitionToAttacking.
+
+ElseIf HP is full, do transitionToRestingStamina.
+
+Else(If HP is not full), decrease restingHPCountdown by deltaTime. If it reaches
+0 this way, add 1 HP to the total and reset the countdown to its top value,
+minus the negative overshoot.
+
+
+** When in RESTING_STAMINA
 
 * Movement
 
@@ -116,32 +155,77 @@ The shouldWork flag is set to high.
 
 ** Helper classes
 
-*** Position
-
-: public class Position
-
-Holds three doubles: one for x, one for y, and for z. Getters and setters must
-be implemented because it will be a mutable object to hold the actual and
-previous position of Units.
 
 ** Helper variables
 
 *** previousPosition
 
-: private Position previousPosition
+: private double[] previousPosition
 
 Holds the previous position of the Unit. Very important to determine whether it
 has reached its destination.
 
 
+*** immediateTarget
+
+: private double[] immediateTarget
+
+The place that the Unit is currently going. 
+
+
+*** path
+
+: private List<double[]> path
+
+A list of positions that the Unit should walk towards, in correct order.
+
+
+*** sprintingStaminaDecreaseCountdown
+
+: prviate float sprintingStaminaDecreaseCountdown
+
+The time it will take before the next whole point of stamina is subtracted from
+the Unit's stamina gauge.
+
+
+*** restingInitialCountdown
+
+: private float restingInitialCountdown
+
+The time it will take before the initial resting period is over, and the Unit
+transitions to a real RESTING_... state.
+
 ** Helper methods
+
+*** transitionToNothing
+
+: private void transitionToNothing()
+
+Set state to NOTHING. Set all flags to low.
+
 
 *** transitionToRestingInit
 
 : private void transitionToRestingInit()
 
 Set state to RESTING_INIT. Set restingInitialCountdown to the time it would take
- to restore 1 HP (see pdf or preliminary). Set all flags to low.
+to restore 1 HP (see pdf or preliminary). Set all flags to low.
+
+
+*** transitionToRestingHP
+
+: private void transitionToRestingHP()
+
+Set state to RESTING_HP. Set restingHPCountdown to the time it will take to
+restore 1 HP (see pdf or preliminary). Set all flags to low.
+
+
+*** transitionToRestingStamina
+
+: private void transitionToRestingStamina()
+
+Set state to RESTING_STAMINA. Set restingStaminaCountdown to the time it will
+take to restore 1 stamina (see pdf or preliminary). Set all flags to low.
 
 
 *** transitionToWorking
@@ -164,7 +248,11 @@ can attack (see pdf or preliminary.org). Set all flags to low.
 
 : private boolean reachedImmediateTarget()
 
-Checks whether the Unit has reached the immediateTarget, or even overshot it by
+Checks whether the Unit has reached the immediateTarget, by overshooting it by
 some distance.
 
-If 
+: if (between(x_immediateTarget, x_prev, x_cur) ||
+:     between(y_immediateTarget, y_prev, y_cur) ||
+:     between(z_immediateTarget, z_prev, z_cur)
+:     )
+:     return true;
