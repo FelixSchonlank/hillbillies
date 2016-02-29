@@ -8,42 +8,163 @@ don't get me wrong).
 
 * advanceTime  							     :method:
 
-sdf
+: public void advanceTime(double deltaTime)
+
+Unit is a finite state machine. There are multiple flags. In descending order of
+importance, they are:
+- shouldRest
+- shouldWork
+- shouldAttack
+Whether the Unit should move is determined by the non-emptiness of at least one
+of: immediateTarget and path.
+
+There are 7 states:
+- NOTHING
+- MOVING
+- RESTING_INIT
+- RESTING_HP
+- RESTING_STAMINA
+- WORKING
+- ATTACKING
+
+*Don't forget to check if deltaTime was maximally 0.2 seconds!*
+
+** When in NOTHING
+
+If there is an immediateTarget, go to MOVING. Set all flags to low.
+
+ElseIf there is a path, put the first element in immediateTarget, remove that
+element from the path, and go to MOVING. Set all flags to low.
+
+ElseIf shouldRest is high, do transitionToRestingInit.
+
+ElseIf shouldWork is high, do transitionToWorking.
+
+ElseIf shouldAttack is high, do transitionToAttacking.
+
+ElseIf defaultBehaviour is high, choose a random option from
+- Ordering yourself to move to a random position in the game
+- Ordering yourself to work by setting the shouldWork flag high
+- Ordering yourself to rest by setting the shouldRest flag high
+
+(If defaultBehaviour is low, do nothing and remain in this state.)
+
+
+** When in MOVING
+
+If reachedImmediateTarget && 
 
 
 * Movement
 
-sdfj
-
 ** moveToAdjacent  						     :method:
 
-dsk
+: public void moveToAdjacent(CubeLocation destination)
+
+Only if in allowing state: NOTHING, RESTING_HP, RESTING_STAMINA, WORKING:
+immediateTarget is set to destination.
 
 
 ** moveTo  							     :method:
 
-sdklfj
+: public void moveTo(CubeLocation destination)
+
+Only if in allowing state: NOTHING, RESTING_HP, RESTING_STAMINA, WORKING:
+path is set to an ArrayList of consecutive (opeenvolgende) CubeLocations to be
+followed cube by cube.
 
 
 * Combat
 
-sjdf
-
 ** attack 							     :method:
 
-sdjf
+: public void attack(Unit victim)
+
+Only if in allowing state: NOTHING, RESTING_HP, RESTING_STAMINA, WORKING:
+Set the shouldAttack flag high. There is an internal victim variable, which is
+used later on, when actually attacking. Set the victim variable to passed
+victim.
 
 
 ** defend 							     :method:
 
-sdlkfjd
+: public void defend(Unit attacker)
+
+An instantaneous response to the attack. Everything is handled immediately:
+dodging, blocking, damage taking, teleportation. The state of the defendant is
+set to NOTHING, and this method is the only one to break the FSM model.
+attacker is used to get information about damage done.
 
 
 * rest 								     :method:
 
-sdjf
+: public void rest()
+
+Only if in allowing state: NOTHING, WORKING:
+The shouldRest flag is set to high.
 
 
 * work 								     :method:
 
-sjdfdsj
+: public void work()
+
+Only if in allowing state: NOTHING, RESTING_HP, RESTING_STAMINA:
+The shouldWork flag is set to high.
+
+
+* Extra stuff
+
+** Helper classes
+
+*** Position
+
+: public class Position
+
+Holds three doubles: one for x, one for y, and for z. Getters and setters must
+be implemented because it will be a mutable object to hold the actual and
+previous position of Units.
+
+** Helper variables
+
+*** previousPosition
+
+: private Position previousPosition
+
+Holds the previous position of the Unit. Very important to determine whether it
+has reached its destination.
+
+
+** Helper methods
+
+*** transitionToRestingInit
+
+: private void transitionToRestingInit()
+
+Set state to RESTING_INIT. Set restingInitialCountdown to the time it would take
+ to restore 1 HP (see pdf or preliminary). Set all flags to low.
+
+
+*** transitionToWorking
+
+: private void transitionToWorking()
+
+Set state to WORKING. Set workingCountdown to the time it takes to complete the
+work (see pdf or preliminary.org). Set all flags to low.
+
+
+*** transitionToAttacking
+
+: private void transitionToAttacking()
+
+Set state to ATTACKING. Set attackingCountdown to the time it takes until you
+can attack (see pdf or preliminary.org). Set all flags to low.
+
+
+*** reachedImmediateTarget
+
+: private boolean reachedImmediateTarget()
+
+Checks whether the Unit has reached the immediateTarget, or even overshot it by
+some distance.
+
+If 
