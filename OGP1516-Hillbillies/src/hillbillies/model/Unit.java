@@ -440,6 +440,110 @@ public class Unit {
 		return 0.0;
 	}
 	
+	/* HP */
+	
+	/**
+	 * @return The HP of this unit 
+	 */
+	public int getHP(){
+		return this.HP;
+	}
+	
+	/**
+	 * Set the hp of this unit to a given HP
+	 * @pre isValidHP(HP)
+	 * @param HP
+	 * 			|The HP you would like to give to this unit
+	 * @Post The HP is set the given HP
+	 * 		|new.getHP() == HP 
+	 */
+	public void setHP(int HP){
+		this.HP = HP;
+	}
+	
+	/**
+	 * Check whether a given HP is valid 
+	 * @param HP
+	 * @return True is and only if HP is between getMinHP() and getMaxHP()
+	 * 		| return HP >= getMinHP() && HP <= getMaxHP
+	 */
+	public boolean isValidHP(int HP){
+		return (HP >= getMinHP() && HP <= getMaxHP());
+	}
+	
+	
+	/**
+	 * the minimum HP a unit can have
+	 * @return The maximum HP a unit can have is 200 * weight/100 * toughness/100
+	 * 		| result == 200 * weight/100 * toughness/100
+	 */
+	private int getMaxHP() {
+		return 200 * weight/100 * toughness/100;
+	}
+	
+	/**
+	 * The minimum HP a unit can have
+	 * @return The lowest HP a unit can have is 0
+	 * 		|result == 0
+	 * 		 
+	 */
+	private int getMinHP() {
+		return 0;
+	}
+	
+	/* Stamina */
+	
+	/**
+	 * @return The Stamina of this unit 
+	 */
+	public int getStamina(){
+		return this.stamina;
+	}
+	
+	/**
+	 * Set the Stamina of this unit to a given Stamina
+	 * @pre isValidStamina(Stamina)
+	 * @param Stamina
+	 * 			|The Stamina you would like to give to this unit
+	 * @Post The HP is set the given Stamina
+	 * 		|new.getStamina() == Stamina 
+	 */
+	public void setStamina(int Stamina){
+		this.stamina = Stamina;
+	}
+	
+	/**
+	 * Check whether a given Stamina is valid 
+	 * @param Stamina
+	 * @return True is and only if Stamina is between getMinStamina() and getMaxStamina()
+	 * 		| return Stamina >= getMinStamina() && Stamina <= getMaxStamina()
+	 */
+	public boolean isValidStamina(int Stamina){
+		return (Stamina >= getMinStamina()) && Stamina <= getMaxStamina());
+	}
+	
+	
+	/**
+	 * the minimum Stamina a unit can have
+	 * @return The maximum Stamina a unit can have is 200 * weight/100 * toughness/100
+	 * 		| result == 200 * weight/100 * toughness/100
+	 */
+	private int getMaxStamina() {
+		return 200 * weight/100 * toughness/100;
+	}
+	
+	/**
+	 * The minimum Stamina a unit can have
+	 * @return The lowest Stamina a unit can have is 0
+	 * 		|result == 0
+	 * 		 
+	 */
+	private int getMinStamina() {
+		return 0;
+	}
+
+
+
 	private String name;
 	private double[] Position;
 	private int weight;
@@ -448,6 +552,7 @@ public class Unit {
 	private int toughness;
 	private boolean enableDefaultBehavior;
 	private double orientation;
-
+	private int HP;
+	private int stamina;
 	
 }
