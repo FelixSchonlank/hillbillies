@@ -6,32 +6,44 @@ nominal, and defensive programming. It is doable (though still a lot of work,
 don't get me wrong).
 
 
-* Time advancing
+* advanceTime  							     :method:
 
-Every time step, we check if we have an ultimate target (if our path is
-non-empty, probably with helper method). If so, we check if there is an
-immediateTarget. If so, we move a bit (use a helper function for this). If there
- is no immediate target, but the path is non-empty, we still have cubes to go,
-so we store one cube of our path in immediateTarget and move a bit to it.
-
-If there is no ultimate target (the path is empty), we will have to 
-
-If there is nothing to do, we will let the Unit do nothing at all if
-default behaviour is disabled, or choose a random activity if it is enabled.
-
-** Movement
-
-There is a variable immediateTarget that stores the cube (or its location) which
-we are currently trying to get to.
-
-*** moveToAdjacent
-
-Sets the immediateTarget variable.
+sdf
 
 
-*** moveTo
+* Movement
 
-Works out a path of cubes to walk, and stores it as a list of cubes (or
-coordinates or whatever) in an ArrayList variable (named path or so).
-Recalling it will make it recalculate and -store the path.
+sdfj
 
+** moveToAdjacent  						     :method:
+
+dsk
+
+
+** moveTo  							     :method:
+
+sdklfj
+
+
+* Combat
+
+sjdf
+
+** attack 							     :method:
+
+sdjf
+
+
+** defend 							     :method:
+
+sdlkfjd
+
+
+* rest 								     :method:
+
+sdjf
+
+
+* work 								     :method:
+
+sjdfdsj
