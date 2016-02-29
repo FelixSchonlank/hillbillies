@@ -92,6 +92,9 @@ getMovementStatus.
 
 ** Fighting
 
+- Functions attack and defend
+- Attacking takes 1 second
+
 *** Dodging
 
 Unit will always first try to dodge an attack. Chance of succes is equal to
