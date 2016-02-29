@@ -126,7 +126,6 @@ public class Unit {
  	     
 	/**
 	 * return the position of the center of the unit
-	 *
 	 */
 	@Basic 
 	public double[] getPosition(){     
@@ -172,6 +171,8 @@ public class Unit {
 	
 	/**
 	 * Return the maximum coordinate in every direction of the Game World
+	 * @return the maximum coordinate of a unit is 50
+	 * 		| result == 50
 	 */
 	@Basic
 	public int getMaxCoordinate(){
@@ -180,6 +181,8 @@ public class Unit {
 	
 	/**
 	 * Return the minimum coordinate in every direction of the board
+	 * @return The minimum coordinate of a unit is 0
+	 * 		| result == 0
 	 */
 	@Basic
 	public int getMinCoordinate(){
@@ -204,11 +207,16 @@ public class Unit {
 	 * @post if the unit can have weight as its weight its weight it set to the given weight
 	 * 		|if (isValidWeight(weight))
 	 * 		|	new.getWeight() == weight
+	 * @post if the unit can not have this weight as weight his weight is set to getMaxWeight()
+	 * 		|	else new.getWeight() == getMaxWeight()
 	 */
 	@Raw
 	public void setWeight(int weight){
 		if (isValidWeight(weight))
 			this.weight = weight;
+		else{
+			this.weight = getMaxWeight();
+		}
 	}
 
 	/**
@@ -223,7 +231,9 @@ public class Unit {
 	}
 	
 	/**
-	 * @return the maximum weight this unit can have
+	 * The maximum weight this unit can have
+	 * @return The maximum Weight of a unit is 200
+	 * 		| result == 200
 	 */
 	@Basic
 	private int getMaxWeight() {
@@ -256,10 +266,16 @@ public class Unit {
 	 * @Post if the agility is a valid agility for this unit the agility of this unit is set to agility
 	 * 		|if (isValidAgility( agility ))
 	 * 		|	new.getAgility() == agility
+	 * @Post if the agility is not a valid agility for the unit the agility is set to getMaxAgility()
+	 * 		|else
+	 * 		|	new.getAgility() == getMaxAgility()
 	 */
 	public void setAgility(int agility ){
 		if (isValidAgility(agility))
 			this.agility = agility;
+		else{
+			this.agility = this.getMaxAgility();
+		}
 	}
 	
 	/**
@@ -273,7 +289,8 @@ public class Unit {
 	}
 	
 	/**
-	 * @return The minimum agility for a unit 
+	 * The minimum agility for a unit
+	 * @return The minimum Agility  
 	 */
 	@Basic
 	public int getMinAgility(){
@@ -305,10 +322,16 @@ public class Unit {
 	 * @post if the given toughness is a valid toughness for this unit, the toughness of this unit is set to toughness
 	 * 		|if (isValidToughness( toughness )
 	 * 		|	new.getToughness() == toughness
+	 * @Post if the given toughness is not a valid toughness for a unit the Toughness is set to getMaxToughness
+	 * 		|else
+	 * 		|	this.getToughness == getMaxToughness() 
 	 */
 	public void setToughness(int toughness ){
 		if (isValidToughness(toughness))
 			this.toughness = toughness;
+		else{
+			this.toughness = toughness;
+		}
 	}
 	
 	/**
@@ -322,7 +345,8 @@ public class Unit {
 	}
 	
 	/**
-	 * @return the minimum toughness a unit can have
+	 * The minimum toughness a unit can have
+	 * @return the Minimum toughness a unit can have is 0 
 	 */
 	@Basic
 	public int getMinToughness(){
@@ -330,7 +354,8 @@ public class Unit {
 	}
 	
 	/**
-	 * @return The maximum toughness a unit can have
+	 * The maximum toughness a unit can have
+	 * @return The maximum toughness is 200
 	 */
 	@Basic
 	public int getMaxToughness(){
@@ -338,6 +363,8 @@ public class Unit {
 	}
 	
 	/* Strength */
+	
+	
 	
 	@Basic 
 	public int getStrength(){
@@ -351,10 +378,16 @@ public class Unit {
 	 * @post if the given strength is a valid strength for this unit the strength of the unit is set to the given strength 
 	 * 		| if (isValidSStrength(strength)) 
 	 * 		|	new.getStrength == strength
+	 * @Post if the given strength is not a valid strength the strength is set to getMaxStength()
+	 * 		|else	
+	 * 		|	this.getStrength() == getMaxStength() 
 	 */
 	private void setStrength(int strength){
 		if (isValidStrength(strength))
 				this.strength = strength;
+		else{
+			this.strength = this.getMaxStrength();
+		}
 	}
 	
 	/**
@@ -440,6 +473,110 @@ public class Unit {
 		return 0.0;
 	}
 	
+	/* HP */
+	
+	/**
+	 * @return The HP of this unit 
+	 */
+	public int getHP(){
+		return this.HP;
+	}
+	
+	/**
+	 * Set the hp of this unit to a given HP
+	 * @pre isValidHP(HP)
+	 * @param HP
+	 * 			|The HP you would like to give to this unit
+	 * @Post The HP is set the given HP
+	 * 		|new.getHP() == HP 
+	 */
+	public void setHP(int HP){
+		this.HP = HP;
+	}
+	
+	/**
+	 * Check whether a given HP is valid 
+	 * @param HP
+	 * @return True is and only if HP is between getMinHP() and getMaxHP()
+	 * 		| return HP >= getMinHP() && HP <= getMaxHP
+	 */
+	public boolean isValidHP(int HP){
+		return (HP >= getMinHP() && HP <= getMaxHP());
+	}
+	
+	
+	/**
+	 * the minimum HP a unit can have
+	 * @return The maximum HP a unit can have is 200 * weight/100 * toughness/100
+	 * 		| result == 200 * weight/100 * toughness/100
+	 */
+	private int getMaxHP() {
+		return 200 * weight/100 * toughness/100;
+	}
+	
+	/**
+	 * The minimum HP a unit can have
+	 * @return The lowest HP a unit can have is 0
+	 * 		|result == 0
+	 * 		 
+	 */
+	private int getMinHP() {
+		return 0;
+	}
+	
+	/* Stamina */
+	
+	/**
+	 * @return The Stamina of this unit 
+	 */
+	public int getStamina(){
+		return this.stamina;
+	}
+	
+	/**
+	 * Set the Stamina of this unit to a given Stamina
+	 * @pre isValidStamina(Stamina)
+	 * @param Stamina
+	 * 			|The Stamina you would like to give to this unit
+	 * @Post The HP is set the given Stamina
+	 * 		|new.getStamina() == Stamina 
+	 */
+	public void setStamina(int Stamina){
+		this.stamina = Stamina;
+	}
+	
+	/**
+	 * Check whether a given Stamina is valid 
+	 * @param Stamina
+	 * @return True is and only if Stamina is between getMinStamina() and getMaxStamina()
+	 * 		| return Stamina >= getMinStamina() && Stamina <= getMaxStamina()
+	 */
+	public boolean isValidStamina(int Stamina){
+		return (Stamina >= getMinStamina()) && Stamina <= getMaxStamina());
+	}
+	
+	
+	/**
+	 * the minimum Stamina a unit can have
+	 * @return The maximum Stamina a unit can have is 200 * weight/100 * toughness/100
+	 * 		| result == 200 * weight/100 * toughness/100
+	 */
+	private int getMaxStamina() {
+		return 200 * weight/100 * toughness/100;
+	}
+	
+	/**
+	 * The minimum Stamina a unit can have
+	 * @return The lowest Stamina a unit can have is 0
+	 * 		|result == 0
+	 * 		 
+	 */
+	private int getMinStamina() {
+		return 0;
+	}
+
+
+
 	private String name;
 	private double[] Position;
 	private int weight;
@@ -448,6 +585,7 @@ public class Unit {
 	private int toughness;
 	private boolean enableDefaultBehavior;
 	private double orientation;
-
+	private int HP;
+	private int stamina;
 	
 }
