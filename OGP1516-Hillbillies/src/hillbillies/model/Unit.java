@@ -765,6 +765,8 @@ public class Unit {
 		}return false;
 	}
 	
+	
+	
 	/**
 	 * Set the state of this unit to RESTING
 	 */
@@ -774,8 +776,12 @@ public class Unit {
 		this.restingStaminaCountdown = getRestingStaminaTime();
 	}
 	
+	/**
+	 * The time needed to get one stamina point
+	 * @return
+	 */
 	private float getRestingStaminaTime() {
-		return ;
+		return toughness/100;
 	}
 	/**
 	 * Set the state of this unit to Attacking
@@ -793,6 +799,15 @@ public class Unit {
 	 */
 	private float getAttacktime() {
 		return 1;
+	}
+	
+	/**
+	 * Set the state of this unit to a given state  
+	 */
+	private void transitionToRestingHP(){
+		this.state = state.RESTING_HP;
+		this.restingHPCountdown = 200/this.getMaxStrength();
+		this.setFlagsLow();
 	}
 	
 	/**
@@ -820,6 +835,10 @@ public class Unit {
 		this.shouldAttack = false;
 	}
 
+	/**
+	 * The time it will take before the next whole point of HP is restored by resting.
+	 */
+	private float restingHPCountdown;
 	/**
 	 * The time it will take before the next whole point of stamina is restored by resting
 	 */
