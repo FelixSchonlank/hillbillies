@@ -11,19 +11,37 @@ import ogp.framework.util.ModelException;
  * 
  * @author Willem Seynaeve and Felix Schönlank
  * 
- *  @invar  The position of each Unit must be a valid position for any                                                                                   
- *         Unit.                                                                                                                                                          
+ * @invar  The position of each Unit must be a valid position for any
+ *         Unit.
  *       | isValidPosition(getPosition())
- *  @invar  The Name of each Unit must be a valid Name for any                                                                                   
- *         unit.                                                                                                                                                          
+ *
+ * @invar  The Name of each Unit must be a valid Name for any
+ *         unit.
  *       | isValidName(getName())
  * 
- *  @invar  The Weight of each unit must be a valid Weight for any                                                                                                               
- *         unit.                                                                                                                                                                
- *       | isValidWeight(getWeight())
- *  @invar  The state of each unit must be a valid state for any
+ * @invar  The Weight of each unit must be a valid Weight for any
  *         unit.
- *       | isValidState(getState())      
+ *       | isValidWeight(getWeight())       
+ *
+ * @invar  The Strength of each Unit must be a valid Strength for any
+ *         Unit.
+ *       | isValidSrength(getSrength())
+ *
+ * @invar  The agility of each unit must be a valid agility for any
+ *         unit.
+ *       | isValidAgility(getAgility())
+ * 
+ * @invar  The HP of each unit must be a valid HP for any
+ *         unit.
+ *       | isValidHP(getHP())
+ *
+ * @invar  The Stamina of each unit must be a valid Stamina for any
+ *         unit.
+ *       | isValidStamina(getStamina())
+ * 
+ * @invar  The state of each unit must be a valid state for any
+ *         unit.
+ *       | isValidState(getState())
  *
  *
  */
@@ -45,38 +63,73 @@ public class Unit {
      *   | this.setPosition(initialPosition) 
 	 * @param  weight                                                                                                                                                                    
 	 *         The Weight for this new unit.                                                                                                                                             
-	 * @post   If the given Weight is a valid Weight for any unit,                                                                                                                       
+	 * @post   If the given Weight is a valid initial Weight for any unit,                                                                                                                       
 	 *         the Weight of this new unit is equal to the given                                                                                                                         
 	 *         Weight. Otherwise, the Weight of this new unit is equal                                                                                                                   
 	 *         to getMaxWeight().                                                                                                                                                        
-	 *       | if (isValidWeight(weight))                                                                                                                                                
+	 *       | if (!notValidInitalWeight(weight))                                                                                                                                                
 	 *       |   then new.getWeight() == weight                                                                                                                                          
 	 *       |   else new.getWeight() == getMaxWeight()
-	 *       VOOR MIJZELF: De controle voor het setten gebeurd in de setter zelf maar er moet wel een onderscheid zijn tussen initial en gewoon setten
-	 * @param agility
-	 * @param strength
+	 * @param  agility
+	 *         The agility for this new unit.
+	 * @post   If the given agility is a valid initial agility for any unit,
+	 *         the agility of this new unit is equal to the given
+	 *         agility. Otherwise, the agility of this new unit is equal
+	 *         to getMaxAgility().
+	 *       | if (!notValidInitialAgility(agility))
+	 *       |   then new.getAgility() == agility
+	 *       |   else new.getAgility() == getMaxAgility()
+	 * @param  strength
+	 *         The Strength for this new Unit.
+	 * @post   If the given Strength is a valid initial Strength for any Unit,
+	 *         the Strength of this new Unit is equal to the given
+	 *         Strength. Otherwise, the Strength of this new Unit is equal
+	 *         to getMaxStength().
+	 *       | if (!notValidInitialSrength(strength))
+	 *       |   then new.getSrength() == strength
+	 *       |   else new.getSrength() == getMaxStength()
 	 * @param toughness
 	 * @param enableDefaultBehavior
 	 * @return
-	 * @throws ModelException if one of the initial attributes are not valid  
-	 * 		|if (notValidInitialToughness( toughness ) || notValidInitialSterngth( strength ) || notValidInitialAgility( agility ) || notValidInitialWeight( weight ))
+	 * @throws ModelException if either name or initialPosition are not valid 
+	 * 		|if (!isValidName(name) || !isValidPosition(position)
      *		|		throw ModelException
      *
-     *  VOOR MIJZELF:
-     *  Ik denk dat de exceptions ook niet juist zijn, enkel de defensieve prop moeten een exception throwen.
-     *   => Nog werk aan de constructor (Ik probeer wel al de documentatie goed te houden zodat he daar kan zien wat je moet doen.
 	 */
 	@Raw
 	public Unit (String name, double[] initialPosition, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws ModelException{
-			if (notValidInitialToughness( toughness ) || notValidInitialSterngth( strength ) || notValidInitialAgility( agility ) || notValidInitialWeight( weight ))
-				throw new ModelException();
+			if (!isValidName(name) || !isValidPosition(initialPosition)){
+				throw new ModelException("Name or position are not valid");
+			}
 			setName( name );
 			setPosition( initialPosition );
-			setAgility( agility );
-			setStrength( strength );
-			setToughness( toughness );
-			setWeight( weight ); /* Weight must be set after strength and agility */ 
+			if (notValidInitialAgility(agility)){
+				setAgility( getMaxAgility() );
+			}
+			else{
+				setAgility( agility );
+			}
+			if (notValidInitialStrength( strength )){
+				setStrength( getMaxStrength() );
+			}
+			else{
+				setStrength( strength );
+			}
+			if (notValidInitialToughness( toughness )){
+				setToughness( getMaxToughness() );
+			}
+			else{
+				setToughness( toughness );
+			}
+			if (notValidInitialWeight( weight )){
+				setWeight( getMaxWeight() ); 		/* Weight must be set after strength and agility */ 
+			}
+			else{
+				setWeight( weight );
+			}
+			
+			/*Should we initialize the HP and stamina and if yes with what? */
 				
 			}
 	/**
@@ -93,7 +146,7 @@ public class Unit {
 	 * @return true if and only if the given strength is larger then 100 or smaller then 25
 	 * 		| strength > 100 || strength < 25
 	 */
-	public boolean notValidInitialSterngth(int strength ){
+	public boolean notValidInitialStrength(int strength ){
 		return strength > 100 || strength < 25;
 	}
 	
@@ -311,16 +364,16 @@ public class Unit {
 	/** 
 	 * Get the agility of the given unit
 	 */
-	@Basic 
+	@Basic /*@Raw*/
 	public int getAgility(){
 		return this.agility;
 	}
 	
 	/**
-	 * Set the agility of this unit to a given agility
+	 * Set the agility of this unit to the given agility
 	 * 
 	 * @param agility
-	 * 			The agility you want to given this unit 
+	 * 			The agility you want to give this unit 
 	 * @Post if the agility is a valid agility for this unit the agility of this unit is set to agility
 	 * 		|if (isValidAgility( agility ))
 	 * 		|	new.getAgility() == agility
@@ -339,8 +392,9 @@ public class Unit {
 	/**
 	 * 
 	 * @param agility
+	 * 			The agility to check
 	 * @return true if and only if the given agility is larger then the minimum agility for a unit and is smaller then the maximum agility 
-	 * 		| agility >= getMinAgility() && agility <= getMaxAgility() 
+	 * 		| result == agility >= getMinAgility() && agility <= getMaxAgility() 
 	 */
 	public boolean isValidAgility(int agility ){
 		return agility >= getMinAgility() && agility <= getMaxAgility();
@@ -368,7 +422,7 @@ public class Unit {
 	/**
 	 * Return the toughness of this unit 
 	 */
-	@Basic
+	@Basic /*@Raw*/
 	public int getToughness(){
 		return this.toughness;
 	}
@@ -395,8 +449,9 @@ public class Unit {
 	/**
 	 * 
 	 * @param toughness
+	 * 			the toughness to check
 	 * @return true if and only if the toughness is larger then the minimum toughness and smaller then the maximum toughness
-	 * 			| if toughness >= getMinToughness() && toughness <= getMaxToughness() 
+	 * 			|result == if toughness >= getMinToughness() && toughness <= getMaxToughness() 
 	 */
 	public boolean isValidToughness(int toughness ){
 		return toughness >= getMinToughness() && toughness <= getMaxToughness();
@@ -423,8 +478,10 @@ public class Unit {
 	/* Strength */
 	
 	
-	
-	@Basic 
+	/**                                                                                                                                                                                  
+	 * Return the Strength of this Unit.                                                                                                                                                 
+	 */
+	@Basic /*@Raw*/
 	public int getStrength(){
 		return this.strength;
 	}
@@ -433,6 +490,7 @@ public class Unit {
 	 * Set the strength of this unit to a given strength 
 	 * 
 	 * @param strength
+	 * 		| The new strength for this unit 
 	 * @post if the given strength is a valid strength for this unit the strength of the unit is set to the given strength 
 	 * 		| if (isValidSStrength(strength)) 
 	 * 		|	new.getStrength == strength
@@ -453,7 +511,7 @@ public class Unit {
 	 * @param strength
 	 * 		The strength you want to check
 	 * @return true if and only if the given strength is between the maximum and the minimum strength of a unit 
-	 * 			| (strength >= getMinStrength() && strength <= getMaxStrength())
+	 * 			| result == (strength >= getMinStrength() && strength <= getMaxStrength())
 	 */
 	private boolean isValidStrength(int strength ){
 		return strength >= getMinStrength() && strength <= getMaxStrength();
@@ -536,19 +594,25 @@ public class Unit {
 	/**
 	 * @return The HP of this unit 
 	 */
+	@Basic /*@Raw*/
 	public int getHP(){
 		return this.HP;
 	}
 	
 	/**
-	 * Set the hp of this unit to a given HP
-	 * @pre isValidHP(HP)
-	 * @param HP
-	 * 			|The HP you would like to give to this unit
-	 * @Post The HP is set the given HP
-	 * 		|new.getHP() == HP 
-	 */
+	* Set the HP of this unit to the given HP.                                                                                                                                          
+	*                                                                                                                                                                                   
+ 	* @param  HP                                                                                                                                                                        
+ 	*         The new HP for this unit.                                                                                                                                                 
+ 	* @pre    The given HP must be a valid HP for any                                                                                                                                   
+ 	*         unit.                                                                                                                                                                     
+ 	*       | isValidHP(HP)                                                                                                                                                             
+ 	* @post   The HP of this unit is equal to the given                                                                                                                                 
+ 	*         HP.                                                                                                                                                                       
+ 	*       | new.getHP() == HP 
+	*/
 	public void setHP(int HP){
+		assert isValidHP( HP );
 		this.HP = HP;
 	}
 	
@@ -556,7 +620,7 @@ public class Unit {
 	 * Check whether a given HP is valid 
 	 * @param HP
 	 * @return True is and only if HP is between getMinHP() and getMaxHP()
-	 * 		| return HP >= getMinHP() && HP <= getMaxHP
+	 * 		| result ==  HP >= getMinHP() && HP <= getMaxHP
 	 */
 	public boolean isValidHP(int HP){
 		return (HP >= getMinHP() && HP <= getMaxHP());
@@ -587,30 +651,34 @@ public class Unit {
 	/**
 	 * @return The Stamina of this unit 
 	 */
+	@Basic /*@Raw*/
 	public int getStamina(){
 		return this.stamina;
 	}
 	
 	/**
 	 * Set the Stamina of this unit to a given Stamina
-	 * @pre isValidStamina(Stamina)
+	 * @Pre  The given Stamina must be a valid Stamina for any unit.     
+	 *         |isValidStamina(Stamina)
 	 * @param Stamina
-	 * 			|The Stamina you would like to give to this unit
+	 * 			The Stamina you would like to give to this unit
 	 * @Post The HP is set the given Stamina
 	 * 		|new.getStamina() == Stamina 
 	 */
 	public void setStamina(int Stamina){
+		assert isValidStamina( Stamina );
 		this.stamina = Stamina;
 	}
 	
 	/**
 	 * Check whether a given Stamina is valid 
 	 * @param Stamina
+	 * 			The stamina to check
 	 * @return True is and only if Stamina is between getMinStamina() and getMaxStamina()
-	 * 		| return Stamina >= getMinStamina() && Stamina <= getMaxStamina()
+	 * 		| result == Stamina >= getMinStamina() && Stamina <= getMaxStamina()
 	 */
 	public boolean isValidStamina(int Stamina){
-		return (Stamina >= getMinStamina()) && Stamina <= getMaxStamina();
+		return (Stamina >= getMinStamina() && Stamina <= getMaxStamina());
 	}
 	
 	
@@ -692,6 +760,5 @@ public class Unit {
 	private double orientation;
 	private int HP;
 	private int stamina;
-
 
 }
