@@ -30,7 +30,6 @@ There are 7 states:
 - RESTING_STAMINA
 - WORKING
 - ATTACKING
--> enum maken
 
 *Don't forget to check if deltaTime was maximally 0.2 seconds!*
 
@@ -314,7 +313,7 @@ work (see pdf or preliminary.org). Set all flags to low.
 
 Set state to ATTACKING. Set attackingCountdown to the time it takes until you
 can attack (see pdf or preliminary.org). Set all flags to low.
-
+DONE
 
 *** reachedImmediateTarget
 
@@ -335,4 +334,4 @@ some distance.
 : private boolean inRangeForAttack(Unit victim)
 
 Checks whether the victim is in range for the attack (in the same or an adjacent
-cube).
+cube).  DONE

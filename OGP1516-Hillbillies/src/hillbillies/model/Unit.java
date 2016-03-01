@@ -700,9 +700,61 @@ public class Unit {
 	private int getMinStamina() {
 		return 0;
 	}
+	
+	/* Helper methods */
+	
+	/**
+	 * 
+	 * @param victim
+	 * 			|The unit you want to attack
+	 * @return True if and only if the position of victim is a neighbouring cube of the position of this unit 
+	 * 			|for (i = 0; i < this.getPosition().length ; i++)
+	 * 			|	this.getPosition()[i] == victim.getPosition()[i] + 1 || this.getPositon()[i] == victim.getPosition()[i] - 1
+	 * 			|
+	 */
+	private boolean inRangeForAttack(Unit victim){
+		for ( int i = 0; i < this.getPosition().length; i++){
+			if (this.getPosition()[i] == victim.getPosition()[i] + 1 || this.getPosition()[i] == victim.getPosition()[i] - 1)
+				return true;
+		}return false;
+	}
+	
+	
+	/**
+	 * Set the state of this unit to Attacking
+	 */
+	private void transitionToAttacking(){
+		this.state = ATTACKING;
+		this.setFlagsLow();
+	}
+	
+	
+	
+	/**
+	 * Set the state of this unit to Attacking
+	 */
+	private void transitionToWorking(){
+		this.state = WORKING;
+		this.setFlagsLow();
+	}
+	
+	/**
+	 * set all the flags low
+	 */
+	private void setFlagsLow(){
+		this.shouldWork = false;
+		this.shouldRest = false;
+		this.shouldAttack = false;
+	}
+	
+	public State getState(){
+		return this.state;
+	}
 
 
-
+	private boolean shouldRest;
+	private boolean shouldWork;
+	private boolean shouldAttack;
 	private String name;
 	private double[] Position;
 	private int weight;
@@ -713,13 +765,6 @@ public class Unit {
 	private double orientation;
 	private int HP;
 	private int stamina;
-
-
-
-
-
-
-
-
+	private State state;
 
 }
