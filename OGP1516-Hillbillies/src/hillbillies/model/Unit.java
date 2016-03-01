@@ -18,9 +18,12 @@ import ogp.framework.util.ModelException;
  *         unit.                                                                                                                                                          
  *       | isValidName(getName())
  * 
- * @invar  The Weight of each unit must be a valid Weight for any                                                                                                               
+ *  @invar  The Weight of each unit must be a valid Weight for any                                                                                                               
  *         unit.                                                                                                                                                                
- *       | isValidWeight(getWeight())                                                                                                                                           
+ *       | isValidWeight(getWeight())
+ *  @invar  The state of each unit must be a valid state for any
+ *         unit.
+ *       | isValidState(getState())      
  *
  *
  */
@@ -607,7 +610,7 @@ public class Unit {
 	 * 		| return Stamina >= getMinStamina() && Stamina <= getMaxStamina()
 	 */
 	public boolean isValidStamina(int Stamina){
-		return (Stamina >= getMinStamina()) && Stamina <= getMaxStamina());
+		return (Stamina >= getMinStamina()) && Stamina <= getMaxStamina();
 	}
 	
 	
@@ -629,7 +632,54 @@ public class Unit {
 	private int getMinStamina() {
 		return 0;
 	}
+	
 
+	/**
+	 * Return the state of this unit.
+	 */
+	@Basic @Raw
+	public State getState() {
+		return this.state;
+	}
+
+	/**
+	 * Check whether the given state is a valid state for
+	 * any unit.
+	 *  
+	 * @param  state
+	 *         The state to check.
+	 * @return True iff the state is not null.
+	 *       | result == state != null
+	 */
+	public static boolean isValidState(State state) {
+		return state != null;
+	}
+
+	/**
+	 * Set the state of this unit to the given state.
+	 * 
+	 * @param  state
+	 *         The new state for this unit.
+	 * @post   The state of this new unit is equal to
+	 *         the given state.
+	 *       | new.getState() == state
+	 * @throws IllegalArgumentException
+	 *         The given state is not a valid state for any
+	 *         unit.
+	 *       | ! isValidState(getState())
+	 */
+	@Raw
+	public void setState(State state) 
+			throws IllegalArgumentException {
+		if (! isValidState(state))
+			throw new IllegalArgumentException();
+		this.state = state;
+	}
+
+	/**
+	 * Variable registering the state of this unit.
+	 */
+	private State state;
 
 
 	private String name;
@@ -642,6 +692,6 @@ public class Unit {
 	private double orientation;
 	private int HP;
 	private int stamina;
-	
-	
+
+
 }
