@@ -1,5 +1,6 @@
 package hillbillies.model;
 import java.util.*;
+
 import java.lang.Math;
 
 import ogp.framework.util.*;
@@ -702,6 +703,7 @@ public class Unit {
 	}
 	
 
+
 	/**
 	 * Return the state of this unit.
 	 */
@@ -721,6 +723,7 @@ public class Unit {
 	 */
 	public static boolean isValidState(State state) {
 		return state != null;
+		
 	}
 
 	/**
@@ -776,12 +779,97 @@ public class Unit {
 		return (y < x && x < z) || (z < x && x < y);
 	}
 
+/* Helper methods */
+	
+	/**
+	 * 
+	 * @param victim
+	 * 			|The unit you want to attack
+	 * @return True if and only if the position of victim is a neighbouring cube of the position of this unit 
+	 * 			|for (i = 0; i < this.getPosition().length ; i++)
+	 * 			|	this.getPosition()[i] == victim.getPosition()[i] + 1 || this.getPositon()[i] == victim.getPosition()[i] - 1
+	 * 			|
+	 */
+	private boolean inRangeForAttack(Unit victim){
+		for ( int i = 0; i < this.getPosition().length; i++){
+			if (this.getPosition()[i] == victim.getPosition()[i] + 1 || this.getPosition()[i] == victim.getPosition()[i] - 1)
+				return true;
+		}return false;
+	}
+	
+	/**
+	 * Set the state of this unit to RESTING
+	 */
+	private void transitionToRestingSamina(){
+		this.state = state.RESTING_STAMINA;
+		this.setFlagsLow();
+		this.restingStaminaCountdown = getRestingStaminaTime();
+	}
+	
+	private float getRestingStaminaTime() {
+		return ;
+	}
+	/**
+	 * Set the state of this unit to Attacking
+	 */
+	private void transitionToAttacking(){
+		this.state = state.ATTACKING;
+		this.setFlagsLow();
+		this.attackingCountdown = getAttacktime();
+	}
+	
+	
+	/**
+	 * The time it takes for a unit to attack
+	 * @return
+	 */
+	private float getAttacktime() {
+		return 1;
+	}
+	
+	/**
+	 * Set the state of this unit to Attacking
+	 */
+	private void transitionToWorking(){
+		this.state = state.WORKING;
+		this.workingCountdown = getWorkTime();
+		this.setFlagsLow();
+	}
+	
+	/**
+	 * The worktime for this unit
+	 */
+	public float getWorkTime(){
+		return 500/this.getStrength();
+	}
+	
+	/**
+	 * set all the flags low
+	 */
+	private void setFlagsLow(){
+		this.shouldWork = false;
+		this.shouldRest = false;
+		this.shouldAttack = false;
+	}
+
+	/**
+	 * The time it will take before the next whole point of stamina is restored by resting
+	 */
+	private float restingStaminaCountdown;
+	/**
+	 * The time it will take before the work is done
+	 */
+	private float workingCountdown;
+	/**
+	 * The time it will take before the attack is actually carried out
+	 */
+	private float attackingCountdown;
 	/**
 	 * Variable registering the state of this unit.
 	 */
-	private State state;
-
-
+	private boolean shouldRest;
+	private boolean shouldWork;
+	private boolean shouldAttack;
 	private String name;
 	private double[] Position;
 	private int weight;
@@ -792,5 +880,6 @@ public class Unit {
 	private double orientation;
 	private int HP;
 	private int stamina;
+	private State state;
 
 }
