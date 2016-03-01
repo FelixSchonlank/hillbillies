@@ -797,7 +797,17 @@ public class Unit {
 	private float getAttackingTime() {
 		return 1f;
 	}
-	
+
+
+	/**
+	 * Set the state of this unit to RestingHP
+	 */
+	private void transitionToRestingHP(){
+		this.state = state.RESTING_HP;
+		this.restingHPCountdown = 200/this.getMaxStrength();
+		this.setFlagsLow();
+	}
+
 	/**
 	 * Set the state of this unit to Working
 	 * @effect The new state will be State.WORKING
@@ -815,7 +825,7 @@ public class Unit {
 	 * 		   500/this.getStrength()
 	 * 		| result == 500/this.getStrength()
 	 */
-	public float getWorkTime(){
+	public float getWorkingTime(){
 		return 500/this.getStrength();
 	}
 	
@@ -877,6 +887,10 @@ public class Unit {
 		this.shouldAttack = false;
 	}
 
+	/**
+	 * The time it will take before the next whole point of HP is restored by resting.
+	 */
+	private float restingHPCountdown;
 	/**
 	 * The time it will take before the next whole point of stamina is restored by resting
 	 */
