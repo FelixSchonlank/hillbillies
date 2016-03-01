@@ -743,6 +743,38 @@ public class Unit {
 			throw new IllegalArgumentException();
 		this.state = state;
 	}
+	
+	/**
+	 * Checks whether this Unit has reached its immediateTarget, or possibly
+	 *  overshot it by some distance.
+	 * @return true iff reached or overshot the immediateTarget position
+	 * 	| result == between(immediateTarget[0], previousPosition[0], position[0])
+	 *	|		|| between(immediateTarget[1], previousPosition[1], position[1])
+	 *	|		|| between(immediateTarget[2], previousPosition[2], position[2])
+	 */
+	private boolean reachedImmediateTarget() {
+		return (between(immediateTarget[0], previousPosition[0], position[0])
+				|| between(immediateTarget[1], previousPosition[1], position[1])
+				|| between(immediateTarget[2], previousPosition[2], position[2]));
+	}
+	
+	
+	/**
+	 * Checks whether x lies in between y and z. It doesn't matter if y is to
+	 * its left and z to its right or the other way around; both situations
+	 * count.
+	 * @param x
+	 *        The value that should be in the middle
+	 * @param y
+	 *        One of the ends
+	 * @param z
+	 *        The other end
+	 * @return true iff x is between y and z.
+	 *        | result == (y < x && x < z) || (z < x && x < y)
+	 */
+	private boolean between(float x, float y, float z){
+		return (y < x && x < z) || (z < x && x < y);
+	}
 
 	/**
 	 * Variable registering the state of this unit.
