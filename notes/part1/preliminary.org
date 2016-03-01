@@ -34,6 +34,7 @@ Made with Emacs Org Mode. Minor changes might disrupt Org's work flow
 - Maximum = round-up of 200 * weight/100 * toughness/100
 - Integers (presumably)
 - Always ∈ [0;maximum]
+- Initial = 0??
 
 
 ** Orientation 							      :Total:
