@@ -1,5 +1,6 @@
 *.class
 *~
+\#*#
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -18,3 +19,6 @@ bin/
 .project
 .settings
 .metadata
+
+# Things org creates
+*.html
