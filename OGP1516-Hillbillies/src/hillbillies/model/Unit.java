@@ -49,7 +49,10 @@ import ogp.framework.util.ModelException;
  */
 public class Unit {
 	
+	
+	
 	/* Constructor*/
+	
 	/**
 	 * Create a new unit with a given name, Position, weight, agility, strength, toughness and behavior
 	 * 
@@ -135,7 +138,9 @@ public class Unit {
 		/*TODO Should we initialize the HP and stamina and if yes with what? */
 
 	}
+
 	/**
+
 	 * Checks whether the given value is a valid initial value for toughness.
 	 * @return true if and only if the given toughness is not larger than 100 or smaller than 25
 	 * 		| toughness > 100 || toughness < 25
@@ -174,6 +179,7 @@ public class Unit {
 	
 			
 	/* Name */
+	
 	/**
 	 * Give the name of this unit
 	 */
@@ -203,7 +209,7 @@ public class Unit {
 	}
 	
 	/**
-	 *  Check whether the given name is a valid name for                                                                                                        
+	 * Check whether the given name is a valid name for                                                                                                        
 	 * any Unit.
 	 *   
 	 * @param name
@@ -216,10 +222,10 @@ public class Unit {
 		return ((name != null) && (Character.isUpperCase(name.charAt(0)) && (name.length() >= 2)));
 	}
 	
-
+	
 	
 	/* Position */
-
+	
 	/**
 	 * return the position of the center of the unit
 	 */
@@ -249,9 +255,8 @@ public class Unit {
 		this.Position = position;
 	}
 	
-
 	/**
-	 *Checks whether the given position is a valid position for any Unit.
+	 * Checks whether the given position is a valid position for any Unit.
 	 *
 	 *@param position 
 	 *		The position to check
@@ -297,6 +302,7 @@ public class Unit {
 	}
 	
 	
+	
 	/* Weight */
 	
 	/**
@@ -306,7 +312,7 @@ public class Unit {
 	public int getWeight(){
 		return this.weight;
 	}
-	
+
 	/**                                                                                                                                                                                  
 	 * Set the Weight of this unit to the given Weight.                                                                                                                                  
 	 *                                                                                                                                                                                   
@@ -321,9 +327,9 @@ public class Unit {
 	 *       |		new.getWeight() == getMaxWeight()                                                                                                                                         
 	 */
 	@Raw
-	    public void setWeight(int weight) {
-	    if (isValidWeight(weight))
-	        this.weight = weight;
+	public void setWeight(int weight) {
+		if (isValidWeight(weight))
+			this.weight = weight;
 		else{
 			this.weight = getMaxWeight();
 		}
@@ -362,7 +368,10 @@ public class Unit {
 		return ((this.getStrength() + this.getAgility()) / 2);
 	}
 
+	
+	
 	/* Agility */
+	
 	/** 
 	 * Get the agility of the given unit
 	 * @return The agility of the unit
@@ -423,6 +432,8 @@ public class Unit {
 	public int getMaxAgility(){
 		return 200;
 	}
+	
+	
 	
 	/* toughness */
 	
@@ -486,8 +497,9 @@ public class Unit {
 		return 200;
 	}
 	
-	/* Strength */
 	
+	
+	/* Strength */
 	
 	/**                                                                                                                                                                                  
 	 * Return the Strength of this Unit.                                                                                                                                                 
@@ -547,6 +559,8 @@ public class Unit {
 		return 200;
 	}
 	
+	
+	
 	/*Orientation*/
 	
 	/**
@@ -557,6 +571,11 @@ public class Unit {
 		return this.orientation;
 	}
 	
+	/**
+	 * Give the default orientation of a Unit.
+	 * @return The default orientation of a Unit.
+	 * 		| result == Math.PI / 2
+	 */
 	@Basic @Immutable
 	public double getDefaultOrientation(){
 		return Math.PI/2;
@@ -586,7 +605,6 @@ public class Unit {
 		}
 	}
 	
-	
 	/**
 	 * @return The maximum possible orientation 
 	 */
@@ -603,6 +621,8 @@ public class Unit {
 		return 0.0;
 	}
 	
+	
+	
 	/* HP */
 	
 	/**
@@ -614,17 +634,17 @@ public class Unit {
 	}
 	
 	/**
-	* Set the HP of this unit to the given HP.                                                                                                                                          
-	*                                                                                                                                                                                   
- 	* @param  HP                                                                                                                                                                        
- 	*         The new HP for this unit.                                                                                                                                                 
- 	* @pre    The given HP must be a valid HP for any                                                                                                                                   
- 	*         unit.                                                                                                                                                                     
- 	*       | isValidHP(HP)                                                                                                                                                             
- 	* @post   The HP of this unit is equal to the given                                                                                                                                 
- 	*         HP.                                                                                                                                                                       
- 	*       | new.getHP() == HP 
-	*/
+	 * Set the HP of this unit to the given HP.                                                                                                                                          
+	 *                                                                                                                                                                                   
+	 * @param  HP                                                                                                                                                                        
+	 *         The new HP for this unit.                                                                                                                                                 
+	 * @pre    The given HP must be a valid HP for any                                                                                                                                   
+	 *         unit.                                                                                                                                                                     
+	 *       | isValidHP(HP)                                                                                                                                                             
+	 * @post   The HP of this unit is equal to the given                                                                                                                                 
+	 *         HP.                                                                                                                                                                       
+	 *       | new.getHP() == HP 
+	 */
 	public void setHP(int HP){
 		assert isValidHP( HP );
 		this.HP = HP;
@@ -639,7 +659,6 @@ public class Unit {
 	public boolean isValidHP(int HP){
 		return (HP >= getMinHP() && HP <= getMaxHP());
 	}
-	
 	
 	/**
 	 * the minimum HP a unit can have
@@ -659,6 +678,8 @@ public class Unit {
 	private int getMinHP() {
 		return 0;
 	}
+	
+	
 	
 	/* Stamina */
 	
@@ -695,7 +716,6 @@ public class Unit {
 		return (Stamina >= getMinStamina() && Stamina <= getMaxStamina());
 	}
 	
-	
 	/**
 	 * the minimum Stamina a unit can have
 	 * @return The maximum Stamina a unit can have is 200 * weight/100 * toughness/100
@@ -714,8 +734,7 @@ public class Unit {
 	private int getMinStamina() {
 		return 0;
 	}
-
-
+	
 	/**
 	 * Return the state of this unit.
 	 */
@@ -758,8 +777,10 @@ public class Unit {
 			throw new IllegalArgumentException();
 		this.state = state;
 	}
-
-/* Helper methods */
+	
+	
+	
+	/* Helper methods */
 	
 	/**
 	 * Set the state of this unit to Nothing 
@@ -768,6 +789,7 @@ public class Unit {
 		this.state = state.NOTHING;
 		this.setFlagsLow();
 	}
+
 	/**
 	 * Set the state of this unit to Resting_init
 	 */
@@ -776,7 +798,6 @@ public class Unit {
 		this.restingInitialCountdown = this.getRestingHPTime();
 		this.setFlagsLow();
 	}
-	
 	
 	/**
 	 * Set the state of this unit to RestingHP
@@ -795,7 +816,6 @@ public class Unit {
 	private float getRestingHPTime(){
 		return 200/this.getStrength();
 	}
-	
 	
 	/**
 	 * Set the state of this unit to RESTING
@@ -838,8 +858,6 @@ public class Unit {
 		return 500/this.getStrength();
 	}
 	
-	
-	
 	/**
 	 * Set the state of this unit to Attacking
 	 */
@@ -848,7 +866,6 @@ public class Unit {
 		this.setFlagsLow();
 		this.attackingCountdown = getAttackingTime();
 	}
-	
 	
 	/**
 	 * Gives the time it takes for a unit to attack
@@ -859,7 +876,6 @@ public class Unit {
 	private float getAttackingTime() {
 		return 1f;
 	}
-	
 	
 	/**
 	 * Checks whether this Unit has reached its immediateTarget, or possibly
@@ -874,7 +890,6 @@ public class Unit {
 				|| between(immediateTarget[1], previousPosition[1], Position[1])
 				|| between(immediateTarget[2], previousPosition[2], Position[2]));
 	}
-	
 	
 	/**
 	 * Checks whether x lies in between y and z. It doesn't matter if y is to
@@ -918,48 +933,60 @@ public class Unit {
 		this.shouldAttack = false;
 	}
 	
+	
+	
 	/*Variables*/
 	
 	/**
 	 * Holds the previous position of the Unit. Very important to determine whether it has reached its destination
 	 */
 	private double[] previousPosition;
+	
 	/**
 	 * The place that the Unit is currently going
 	 */
 	private double[] immediateTarget;
+	
 	/**
 	 * A list of positions that the Unit should walk towards, in correct order
 	 */
 	private List<double[]> path;
+	
 	/**
 	 * The time it will take before the next whole point of stamina is subtracted from the Unit's stamina gauge
 	 */
 	private float sprintingStaminaDecreaseCountdown;
+	
 	/**
 	 * The time it will take before the attack is actually carried out
 	 */
 	private float restingInitialCountdown;
+	
 	/**
 	 * The time it will take before the next whole point of HP is restored by resting.
 	 */
 	private float restingHPCountdown;
+	
 	/**
 	 * The time it will take before the next whole point of stamina is restored by resting
 	 */
 	private float restingStaminaCountdown;
+	
 	/**
 	 * The time it will take before the work is done
 	 */
 	private float workingCountdown;
+	
 	/**
 	 * The time it will take before the attack is actually carried out
 	 */
 	private float attackingCountdown;
+	
 	/**
 	 * The unit that will be attacked once the attackingCountdown is done
 	 */
 	private Unit victim;
+	
 	private boolean shouldRest;
 	private boolean shouldWork;
 	private boolean shouldAttack;
@@ -973,6 +1000,7 @@ public class Unit {
 	private double orientation;
 	private int HP;
 	private int stamina;
+	
 	/**
 	 * Variable registering the state of this unit.
 	 */
