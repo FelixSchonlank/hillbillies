@@ -587,77 +587,86 @@ public class Unit {
 	
 	
 	
+	
+	/* Orientation */
+	
 	/* Orientation */
 	
 	/**
-	 * @return The Orientation of a Unit in radians 
+	 * Gives the Orientation of a Unit in radians 
 	 */
 	@Basic
 	public double getOrientation(){
 		return this.orientation;
 	}
 	
+	
 	/**
 	 * Give the default orientation of a Unit.
-	 * @return The default orientation of a Unit.
-	 * 		| result == Math.PI / 2
 	 */
 	@Basic @Immutable
 	public double getDefaultOrientation(){
-		return Math.PI/2;
+		return defaultOrientation;
 	}
+	
 	
 	/**
 	 * Set the orientation of the unit to a given orientation
 	 * 
-	 * @param Orientation
-	 * @Post if the orientation is larger then getMaxOrientation() the given orientation is decremented by getMaxOrientation() until it is smaller then getMaxOrientation()
+	 * @param orientation
+	 * @post if the orientation is larger then getMaxOrientation() the given orientation is decremented by getMaxOrientation() until it is smaller then getMaxOrientation()
 	 * 		|if (this.getOrientation() >= getMaxOrientation())
 	 * 		|	new.getOrientation() == orientation % getMaxOrientation()
-	 * @Post If the orientation smaller then getMinOrientation()
-	 * 		|if (this.getOrientation() >= getMinOrientation())
+	 * @post If the orientation smaller then getMinOrientation()
+	 * 		|if (this.getOrientation() <= getMinOrientation())
 	 * 		|	new.getOrientation() == getMaxOrientation() - (Orientation % getMaxOrientation())
-	 * @Post If the orientation is non of the previous the orientation is set to the given orientation   
+	 * @post If the orientation is none of the previous the orientation is set to the given orientation   
 	 * 		|else 
 	 * 		|	new.getOrientation() == orientation 
 	 */
-	public void setOrientation(double Orientation){
-		Orientation %=  Orientation;
-		if (Orientation < 0 ){
-			this.setOrientation(this.getMaxOrientation() - Orientation);
+	public void setOrientation(double orientation){
+		orientation %=  orientation;
+		if (orientation < 0 ){
+			this.setOrientation(getMaxOrientation() - orientation);
 		}
 		else{
-			this.setOrientation(Orientation);
+			this.setOrientation(orientation);
 		}
 	}
 	
+	
 	/**
-	 * @return The maximum possible orientation 
+	 * Gives the maximum possible orientation 
 	 */
 	@Basic @Immutable
 	public double getMaxOrientation(){
-		return 2 * Math.PI;
+		return maxOrientation;
 	}
+	
 	 
 	/**
-	 * @return the minimum possible orientation 
+	 * Gives the minimum possible orientation 
 	 */
 	@Basic @Immutable
 	public double getMinOrientation(){
-		return 0.0;
+		return minOrientation;
 	}
+	
 	
 	
 	
 	/* HP */
 	
+	/* HP */
+	
 	/**
-	 * @return The HP of this unit 
+	 * Gives the HP of this unit 
 	 */
-	@Basic @Raw
+	@Basic
 	public int getHP(){
 		return this.HP;
 	}
+	
 	
 	/**
 	 * Set the HP of this unit to the given HP.                                                                                                                                          
@@ -672,9 +681,10 @@ public class Unit {
 	 *       | new.getHP() == HP 
 	 */
 	public void setHP(int HP){
-		assert isValidHP( HP );
+		assert isValidHP(HP);
 		this.HP = HP;
 	}
+	
 	
 	/**
 	 * Check whether a given HP is valid 
@@ -686,80 +696,91 @@ public class Unit {
 		return (HP >= getMinHP() && HP <= getMaxHP());
 	}
 	
+	
 	/**
 	 * the minimum HP a unit can have
 	 * @return The maximum HP a unit can have is 200 * weight/100 * toughness/100
 	 * 		| result == 200 * weight/100 * toughness/100
 	 */
 	private int getMaxHP() {
-		return 200 * weight/100 * toughness/100;
+		return 2 * this.getWeight() * this.getToughness() / 100;
 	}
+	
 	
 	/**
 	 * The minimum HP a unit can have
-	 * @return The lowest HP a unit can have is 0
-	 * 		|result == 0
-	 * 		 
 	 */
-	private int getMinHP() {
-		return 0;
+	@Basic @Immutable
+	private static int getMinHP() {
+		return minHP;
 	}
+	
 	
 	
 	
 	/* Stamina */
 	
+	
 	/**
-	 * @return The Stamina of this unit 
+	 * Gives the Stamina of this unit 
 	 */
-	@Basic @Raw
+	@Basic
 	public int getStamina(){
 		return this.stamina;
 	}
 	
+	
 	/**
 	 * Set the Stamina of this unit to a given Stamina
-	 * @Pre  The given Stamina must be a valid Stamina for any unit.     
-	 *         |isValidStamina(Stamina)
-	 * @param Stamina
+	 * @param stamina
 	 * 			The Stamina you would like to give to this unit
-	 * @Post The HP is set the given Stamina
-	 * 		|new.getStamina() == Stamina 
+	 * @Pre  The given Stamina must be a valid Stamina for any unit.     
+	 *         |isValidStamina(stamina)
+	 * @post The stamina is set the given Stamina
+	 * 		|new.getStamina() == stamina 
 	 */
-	public void setStamina(int Stamina){
-		assert isValidStamina( Stamina );
-		this.stamina = Stamina;
+	public void setStamina(int stamina){
+		assert isValidStamina( stamina );
+		this.stamina = stamina;
 	}
+	
 	
 	/**
 	 * Check whether a given Stamina is valid 
-	 * @param Stamina
+	 * @param stamina
 	 * 			The stamina to check
-	 * @return True is and only if Stamina is between getMinStamina() and getMaxStamina()
-	 * 		| result == Stamina >= getMinStamina() && Stamina <= getMaxStamina()
+	 * @return True if and only if Stamina is between getMinStamina() and getMaxStamina()
+	 * 		| result == stamina >= getMinStamina() && stamina <= getMaxStamina()
 	 */
-	public boolean isValidStamina(int Stamina){
-		return (Stamina >= getMinStamina() && Stamina <= getMaxStamina());
+	public boolean isValidStamina(int stamina){
+		return (stamina >= getMinStamina() && stamina <= getMaxStamina());
 	}
 	
+	
 	/**
-	 * the minimum Stamina a unit can have
-	 * @return The maximum Stamina a unit can have is 200 * weight/100 * toughness/100
-	 * 		| result == 200 * weight/100 * toughness/100
+	 * the maximum Stamina a unit can have
+	 * @return The maximum Stamina a unit can have is 2 * weight * toughness / 100
+	 * 		| result == 2 * weight * toughness / 100
 	 */
 	private int getMaxStamina() {
-		return 200 * weight/100 * toughness/100;
+		return 2 * weight * toughness /100;
 	}
+	
 	
 	/**
 	 * The minimum Stamina a unit can have
-	 * @return The lowest Stamina a unit can have is 0
-	 * 		|result == 0
-	 * 		 
+	 * @return The lowest Stamina a unit can have
+	 * 		|result == minStamina	 
 	 */
+	@Basic @Immutable
 	private int getMinStamina() {
-		return 0;
+		return minStamina;
 	}
+	
+	
+	
+	
+	/* State */
 	
 	/**
 	 * Return the state of this unit.
@@ -768,21 +789,7 @@ public class Unit {
 	public State getState() {
 		return this.state;
 	}
-
-	/**
-	 * Check whether the given state is a valid state for
-	 * any unit.
-	 *  
-	 * @param  state
-	 *         The state to check.
-	 * @return True iff the state is not null.
-	 *       | result == state != null
-	 */
-	public static boolean isValidState(State state) {
-		return state != null;
-		
-	}
-
+	
 	/**
 	 * Set the state of this unit to the given state.
 	 * 
@@ -804,7 +811,24 @@ public class Unit {
 		this.state = state;
 	}
 	
+
+	/**
+	 * Check whether the given state is a valid state for
+	 * any unit.
+	 *  
+	 * @param  state
+	 *         The state to check.
+	 * @return True iff the state is not null.
+	 *       | result == state != null
+	 */
+	public static boolean isValidState(State state) {
+		return state != null;
+	}
 	
+	
+	
+	
+	/* Helper methods */
 	
 	/* Helper methods */
 	
@@ -971,6 +995,11 @@ public class Unit {
 	private static final int maxAgility = 200;
 	private static final int minStrength = 0;
 	private static final int maxStrength = 200;
+	private static final double defaultOrientation = Math.PI / 2;
+	private static final double minOrientation = 0;
+	private static final double maxOrientation = Math.PI * 2;
+	private static final int minHP = 0;
+	private static final int minStamina = 0;
 	
 	
 	
