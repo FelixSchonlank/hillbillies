@@ -762,6 +762,42 @@ public class Unit {
 /* Helper methods */
 	
 	/**
+	 * Set the state of this unit to Nothing 
+	 */
+	private void transitionToNothing(){
+		this.state = state.NOTHING;
+		this.setFlagsLow();
+	}
+	/**
+	 * Set the state of this unit to Resting_init
+	 */
+	private void transitionToRestingInit(){
+		this.state = state.RESTING_INIT;
+		this.restingInitialCountdown = this.getRestingHPTime();
+		this.setFlagsLow();
+	}
+	
+	
+	/**
+	 * Set the state of this unit to RestingHP
+	 */
+	private void transitionToRestingHP(){
+		this.state = state.RESTING_HP;
+		this.restingHPCountdown = this.getRestingHPTime();
+		this.setFlagsLow();
+	}
+	
+	/**
+	 * The time it takes for a unit to restore one HP
+	 * @return
+	 */
+	@Basic  
+	private float getRestingHPTime(){
+		return 200/this.getStrength();
+	}
+	
+	
+	/**
 	 * Set the state of this unit to RESTING
 	 */
 	private void transitionToRestingStamina(){
@@ -775,37 +811,9 @@ public class Unit {
 	 * @return The time it takes for a unit to restore some amount of stamina
 	 * 		| result == 0.2f
 	 */
+	@Basic 
 	private float getRestingStaminaTime() {
 		return 0.2f;
-	}
-	
-	/**
-	 * Set the state of this unit to Attacking
-	 */
-	private void transitionToAttacking(){
-		this.state = State.ATTACKING;
-		this.setFlagsLow();
-		this.attackingCountdown = getAttackingTime();
-	}
-	
-	
-	/**
-	 * Gives the time it takes for a unit to attack
-	 * @return The time it takes for a unit to attack
-	 * 		| result == 1f
-	 */
-	private float getAttackingTime() {
-		return 1f;
-	}
-
-
-	/**
-	 * Set the state of this unit to RestingHP
-	 */
-	private void transitionToRestingHP(){
-		this.state = state.RESTING_HP;
-		this.restingHPCountdown = 200/this.getMaxStrength();
-		this.setFlagsLow();
 	}
 
 	/**
@@ -825,8 +833,31 @@ public class Unit {
 	 * 		   500/this.getStrength()
 	 * 		| result == 500/this.getStrength()
 	 */
+	@Basic 
 	public float getWorkingTime(){
 		return 500/this.getStrength();
+	}
+	
+	
+	
+	/**
+	 * Set the state of this unit to Attacking
+	 */
+	private void transitionToAttacking(){
+		this.state = State.ATTACKING;
+		this.setFlagsLow();
+		this.attackingCountdown = getAttackingTime();
+	}
+	
+	
+	/**
+	 * Gives the time it takes for a unit to attack
+	 * @return The time it takes for a unit to attack
+	 * 		| result == 1f
+	 */
+	@Basic @Immutable
+	private float getAttackingTime() {
+		return 1f;
 	}
 	
 	
@@ -839,9 +870,9 @@ public class Unit {
 	 *	|		|| between(immediateTarget[2], previousPosition[2], position[2])
 	 */
 	private boolean reachedImmediateTarget() {
-		return (between(immediateTarget[0], previousPosition[0], position[0])
-				|| between(immediateTarget[1], previousPosition[1], position[1])
-				|| between(immediateTarget[2], previousPosition[2], position[2]));
+		return (between(immediateTarget[0], previousPosition[0], Position[0])
+				|| between(immediateTarget[1], previousPosition[1], Position[1])
+				|| between(immediateTarget[2], previousPosition[2], Position[2]));
 	}
 	
 	
@@ -858,7 +889,7 @@ public class Unit {
 	 * @return true iff x is between y and z.
 	 *        | result == (y < x && x < z) || (z < x && x < y)
 	 */
-	private boolean between(float x, float y, float z){
+	private boolean between(double x, double y, double z){
 		return (y < x && x < z) || (z < x && x < y);
 	}
 	
@@ -886,7 +917,29 @@ public class Unit {
 		this.shouldRest = false;
 		this.shouldAttack = false;
 	}
-
+	
+	/*Variables*/
+	
+	/**
+	 * Holds the previous position of the Unit. Very important to determine whether it has reached its destination
+	 */
+	private double[] previousPosition;
+	/**
+	 * The place that the Unit is currently going
+	 */
+	private double[] immediateTarget;
+	/**
+	 * A list of positions that the Unit should walk towards, in correct order
+	 */
+	private List<double[]> path;
+	/**
+	 * The time it will take before the next whole point of stamina is subtracted from the Unit's stamina gauge
+	 */
+	private float sprintingStaminaDecreaseCountdown;
+	/**
+	 * The time it will take before the attack is actually carried out
+	 */
+	private float restingInitialCountdown;
 	/**
 	 * The time it will take before the next whole point of HP is restored by resting.
 	 */
@@ -904,8 +957,9 @@ public class Unit {
 	 */
 	private float attackingCountdown;
 	/**
-	 * Variable registering the state of this unit.
+	 * The unit that will be attacked once the attackingCountdown is done
 	 */
+	private Unit victim;
 	private boolean shouldRest;
 	private boolean shouldWork;
 	private boolean shouldAttack;
@@ -919,6 +973,9 @@ public class Unit {
 	private double orientation;
 	private int HP;
 	private int stamina;
+	/**
+	 * Variable registering the state of this unit.
+	 */
 	private State state;
 
 }

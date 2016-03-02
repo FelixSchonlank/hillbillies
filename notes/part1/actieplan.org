@@ -216,7 +216,7 @@ A list of positions that the Unit should walk towards, in correct order.
 
 *** sprintingStaminaDecreaseCountdown
 
-: prviate float sprintingStaminaDecreaseCountdown
+: private float sprintingStaminaDecreaseCountdown
 
 The time it will take before the next whole point of stamina is subtracted from
 the Unit's stamina gauge.
