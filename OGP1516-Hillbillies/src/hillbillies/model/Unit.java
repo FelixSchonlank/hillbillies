@@ -199,6 +199,71 @@ public class Unit {
 	/* Methods */
 	
 	/**
+	 * 
+	 * @param dx
+	 * 		The difference in cubes to go in x direction
+	 * @param dy
+	 * 		The difference in cubes to go in y direction 
+	 * @param dz
+	 * 		The difference in cubes to go in z direction
+	 * @throws ModelException
+	 * 		If not in the right state to perform this action
+	 * 		| !(this.getState() == State.NOTHING ||
+	 * 		| 	this.getState() == State.RESTING_HP ||
+	 *		| 	this.getState() == State.RESTING_STAMINA ||
+	 *		| 	this.getState() == State.WORKING)
+	 * @throws ModelException
+	 * 		If at least one of the parameters is not -1, 0, or 1
+	 * 		| !(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1)
+	 * @throws ModelException
+	 * 		If the calculated destination is out of bounds
+	 * 		| destination[0] < getMinCoordinate() || destination[0] >= getMaxCoordinate() ||
+	 * 		| destination[1] < getMinCoordinate() || destination[1] >= getMaxCoordinate() ||
+	 * 		| destination[2] < getMinCoordinate() || destination[2] >= getMaxCoordinate()
+	 */
+	public void moveToAdjacent(int dx, int dy, int dz) throws ModelException {
+		if (!(this.getState() == State.NOTHING ||
+				this.getState() == State.RESTING_HP ||
+				this.getState() == State.RESTING_STAMINA ||
+				this.getState() == State.WORKING)){
+			throw new ModelException("Cannot do moveToAdjacent from this state");
+		}else if(!(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1)){
+			throw new ModelException("One of the parameters not -1, 0, or 1.");
+		}else{
+			int[] currentCube = cubeCoordinates(this.getPosition());
+			int[] destination = new int[] {currentCube[0]+dx, currentCube[1]+dy, currentCube[2]+dz};
+			if(destination[0] < getMinCoordinate() || destination[0] >= getMaxCoordinate() ||
+					destination[1] < getMinCoordinate() || destination[1] >= getMaxCoordinate() ||
+					destination[2] < getMinCoordinate() || destination[2] >= getMaxCoordinate()){
+				throw new ModelException("One of the coordinates is out of bounds.");
+			}
+			immediateTarget = cubeCenter(destination);
+		}
+	}
+	
+	public void moveTo() throws ModelException {
+		
+	}
+	
+	/**
+	 * Set the shouldAttack flag high and set this.victim to the given victim
+	 * @param victim 
+	 * @Post the shouldAttack flag is set high and this.victim is set to the given victim
+	 * 		|this.shouldAttack && this.victim == victim
+	 * @throws modelexception if state is not NOTHING, RESTING_HP, RESTING_STAMINA or WORKING or if the victim is null 
+	 * 		|if (victim == null || !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA || this.getState() ==WORKING))
+	 * 		|	throw modelException
+	 */
+	public void attack(Unit victim) throws ModelException{
+		if (victim == null || !(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA || this.getState() == state.WORKING)){
+			throw new ModelException("Can not attack in this state");
+		}else{
+			this.shouldAttack = true;
+			this.victim = victim;
+		}
+	}
+	
+	/**
 	 * An instantaneous response to the attack. Everything is handled immediately:
 	 * dodging, blocking, damage taking, teleportation.
 	 * @param attacker
@@ -227,27 +292,9 @@ public class Unit {
 	}
 	
 	/**
-	 * Set the shouldAttack flag high and set this.victim to the given victim
-	 * @param victim 
-	 * @Post the shouldAttack flag is set high and this.victim is set to the given victim
-	 * 		|this.shouldAttack && this.victim == victim
-	 * @throws modelexception if state is not NOTHING, RESTING_HP, RESTING_STAMINA or WORKING or if the victim is null 
-	 * 		|if (victim == null || !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA || this.getState() ==WORKING))
-	 * 		|	throw modelException
-	 */
-	public void attack(Unit victim) throws ModelException{
-		if (victim == null || !(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA || this.getState() == state.WORKING)){
-			throw new ModelException("Can not attack in this state");
-		}else{
-			this.shouldAttack = true;
-			this.victim = victim;
-		}
-	}
-	
-	/**
 	 * Set shouldRest flag to high
 	 * @Post The shouldRest flag is set to high
-	 * 		|new.shouldRest  
+	 * 		|new.shouldRest
 	 * @throws ModelException if the state is not NOTHING or WORKING
 	 * 		|if (!(state == state.NOTHING || state == state.WORKING))
 	 * 		|	throw ModelException
@@ -255,6 +302,8 @@ public class Unit {
 	public void rest() throws ModelException{
 		if (!(this.getState() == state.NOTHING || this.getState() == state.WORKING)){
 			throw new ModelException("Can not go to resting from this state");
+		}else{
+			this.shouldRest = true;
 		}
 	}
 	
@@ -1175,6 +1224,39 @@ public class Unit {
 		}else{
 			this.setHP(getMinHP());
 		}
+	}
+	
+	/**
+	 * Gives back the integer coordinates of the cube that the given position is in.
+	 * @param position
+	 * 		The given position
+	 * @return The integer coordinates of the cube that the given position is in.
+	 * 		| result == new int[] {(int)position[0], (int)position[1], (int)position[2]}
+	 * @throws ModelException
+	 * 		If position is not inside any cube
+	 * 		| position[0] < getMinCoordinate() || position[0] >= getMaxCoordinate() ||
+	 * 		| position[1] < getMinCoordinate() || position[1] >= getMaxCoordinate() ||
+	 * 		| position[2] < getMinCoordinate() || position[2] >= getMaxCoordinate()
+	 */
+	private static int[] cubeCoordinates(double[] position) throws ModelException {
+		if(position[0] < getMinCoordinate() || position[0] >= getMaxCoordinate() ||
+				position[1] < getMinCoordinate() || position[1] >= getMaxCoordinate() ||
+				position[2] < getMinCoordinate() || position[2] >= getMaxCoordinate()){
+			throw new ModelException("position out of bounds.");
+		}
+		return new int[] {(int)position[0], (int)position[1], (int)position[2]};
+	}
+	
+	private static double[] cubeCenter(int[] position) throws ModelException {
+		if(position.length != 3){
+			throw new ModelException("position dimension should be 3.");
+		}
+		if(position[0] < getMinCoordinate() || position[0] >= getMaxCoordinate() ||
+				position[1] < getMinCoordinate() || position[1] >= getMaxCoordinate() ||
+				position[2] < getMinCoordinate() || position[2] >= getMaxCoordinate()){
+			throw new ModelException("position out of bounds.");
+		}
+		return new double[] {((double)position[0])+0.5, ((double)position[1])+0.5, ((double)position[2])+0.5};
 	}
 	
 	
