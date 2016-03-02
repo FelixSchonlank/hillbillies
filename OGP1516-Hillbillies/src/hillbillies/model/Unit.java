@@ -194,7 +194,57 @@ public class Unit {
 	}
 	
 	
-			
+	/* Methods*/
+	
+	/**
+	 * Set the shouldAttack flag high and set this.victim to the given victim
+	 * @param victim 
+	 * @Post the shouldAttack flag is set high and this.victim is set to the given victim
+	 * 		|this.shouldAttack && this.victim == victim
+	 * @throws modelexception if state is not NOTHING, RESTING_HP, RESTING_STAMINA or WORKING or if the victim is null 
+	 * 		|if (victim == null || !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA || this.getState() ==WORKING))
+	 * 		|	throw modelException
+	 */
+	public void attack(Unit victim) throws ModelException{
+		if (victim == null || !(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA || this.getState() == state.WORKING)){
+			throw new ModelException("Can not attack in this state");
+		}else{
+			this.shouldAttack = true;
+			this.victim = victim;
+		}
+	}
+	
+	/**
+	 * Set shouldRest flag to high
+	 * @Post The shouldRest flag is set to high
+	 * 		|new.shouldRest  
+	 * @throws ModelException if the state is not NOTHING or WORKING
+	 * 		|if (!(state == state.NOTHING || state == state.WORKING))
+	 * 		|	throw ModelException
+	 */
+	public void rest() throws ModelException{
+		if (!(this.getState() == state.NOTHING || this.getState() == state.WORKING)){
+			throw new ModelException("Can not go to resting from this state");
+		}
+	}
+	
+	/**
+	 * Set the shouldWork flag  to high
+	 * @Post ShouldWork is set to true
+	 * 		|this.shouldWork
+	 * @throws ModelException if the state of the unit is not NOTHING, RESTING_HP or RESTING_STAMINA 
+	 * 		|if (!(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA))
+	 * 		|		throw ModelException
+	 */
+	public void work() throws ModelException{
+		if (!(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA))
+			throw new ModelException("Can not go to working from this state");
+		else{
+			this.shouldWork = true;
+		}
+	}
+	
+	
 	/* Name */
 	
 	/**
