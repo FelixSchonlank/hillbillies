@@ -3,6 +3,7 @@ package hillbillies.model;
 import java.util.*;
 
 import java.lang.Math;
+import java.util.Random;
 
 import ogp.framework.util.*;
 
@@ -193,6 +194,37 @@ public class Unit {
 		return (weight <= 100 && weight >= 25);
 	}
 	
+	
+	
+	/* Methods */
+	
+	/**
+	 * An instantaneous response to the attack. Everything is handled immediately:
+	 * dodging, blocking, damage taking, teleportation.
+	 * @param attacker
+	 * 		The attacking unit. This parameter is used to get information about
+	 * 		the damage that should be done.
+	 * @throws IllegalArgumentException
+	 * 		If attacker is null
+	 * 		| attacker == null
+	 */
+	public void defend(Unit attacker) throws IllegalArgumentException, ModelException {
+		if(attacker == null){
+			throw new IllegalArgumentException("Attacker shouldn't be null.");
+		}
+		
+		pointAt(attacker);
+		
+		if(dodgeSucceeds(attacker)){
+			try{
+				dodge();
+			}catch(ModelException e){
+				throw e;
+			}
+		}else if(!blockSucceeds(attacker)){
+			takeDamage(attacker.getStrength() / 10);
+		}
+	}
 	
 			
 	/* Name */
@@ -988,6 +1020,113 @@ public class Unit {
 		this.shouldAttack = false;
 	}
 	
+	
+	/**
+	 * Makes this Unit point directly at the other Unit.
+	 * @param other
+	 * 		The other Unit to look at.
+	 * @post Unit will be looking at other.
+	 * 		| new.getOrientation() == Math.atan2(other.getPosition()[1] - this.getPosition()[1],
+	 * 								  other.getPosition()[0] - this.getPosition()[0])
+	 * @throw IllegalArgumentException
+	 * 		If other is null
+	 * 		| other == null
+	 */
+	private void pointAt(Unit other) throws IllegalArgumentException {
+		if(other == null){
+			throw new IllegalArgumentException("other shouldn't be null.");
+		}
+		this.setOrientation(Math.atan2(other.getPosition()[1] - this.getPosition()[1], other.getPosition()[0] - this.getPosition()[0]));
+	}
+	
+	/**
+	 * Returns whether the dodge succeeded or not (by chance)
+	 * @param attacker
+	 * 		The attacking Unit, used for information
+	 * @return true or false based on chance.
+	 * 		The chance is equal to 0.20 * this.getAgility() / attacker.getAgility()
+	 * 		If the chance is >= 1, it always succeeds.
+	 * @throws IllegalArgumentException
+	 * 		If the attacker is null
+	 * 		| attacker == null
+	 */
+	private boolean dodgeSucceeds(Unit attacker) throws IllegalArgumentException {
+		if(attacker == null){
+			throw new IllegalArgumentException();
+		}
+		double chance = 0.20 * this.getAgility() / attacker.getAgility();
+		Random random = new Random();
+		if(random.nextDouble() > chance){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	/**
+	 * Moves the Unit to random position in the game world within dodging bounds.
+	 */
+	private void dodge() throws ModelException{
+		Random random = new Random();
+		double[] destination;
+		do{
+			destination = new double[] {
+					(random.nextBoolean()?1:-1) * random.nextDouble(),
+					(random.nextBoolean()?1:-1) * random.nextDouble(),
+					(random.nextBoolean()?1:-1) * random.nextDouble()
+					};
+		}while((destination[0]==0 && destination[1]==0 && destination[2]==0) || 
+				destination[0] > getMaxCoordinate() || destination[0] <= getMinCoordinate() || 
+				destination[1] > getMaxCoordinate() || destination[1] <= getMinCoordinate() ||
+				destination[2] > getMaxCoordinate() || destination[2] <= getMinCoordinate());
+		try {
+			this.setPosition(destination);
+		} catch (ModelException e) {
+			throw e;
+		}
+	}
+	
+	/**
+	 * Returns whether the block succeeded or not (by chance)
+	 * @param attacker
+	 * 		The attacking Unit, used for information
+	 * @return true or false based on chance.
+	 * 		The chance is equal to 0.25 * (this.getAgility() + this.getStrength()) / (attacker.getAgility() + attacker.getStrength())
+	 * @throws IllegalArgumentException
+	 * 		If the attacker is null
+	 * 		| attacker == null
+	 */
+	private boolean blockSucceeds(Unit attacker) throws IllegalArgumentException {
+		if(attacker == null){
+			throw new IllegalArgumentException();
+		}
+		double chance = 0.25 * (this.getAgility() + this.getStrength()) / (attacker.getAgility() + attacker.getStrength());
+		Random random = new Random();
+		if(random.nextDouble() > chance){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	/**
+	 * Reduces HP by given number of points. If that would bring the Unit below
+	 * the minimum, HP is instead set to the minimum
+	 * @param damage
+	 * 		The number of HP to reduce by
+	 * @post If the HP can be reduced properly, it is
+	 * 		| if(isValidHP(this.getHP() - damage))
+	 * 		|   then this.setHP(this.getHP() - damage);
+	 * 		| else
+	 * 		|   this.setHP(getMinHP());
+	 */
+	private void takeDamage(int damage){
+		if(isValidHP(this.getHP() - damage)){
+			this.setHP(this.getHP() - damage);
+		}else{
+			this.setHP(getMinHP());
+		}
+	}
 	
 	
 	
