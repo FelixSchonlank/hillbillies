@@ -1,4 +1,5 @@
 package hillbillies.model;
+
 import java.util.*;
 
 import java.lang.Math;
@@ -9,6 +10,7 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 import ogp.framework.util.ModelException;
+
 /**
  * 
  * @author Willem Seynaeve and Felix Schönlank
@@ -32,6 +34,9 @@ import ogp.framework.util.ModelException;
  * @invar  The agility of each unit must be a valid agility for any
  *         unit.
  *       | isValidAgility(getAgility())
+ *       
+ * @invar  The toughness of each unit must be a valid toughness for any unit.
+ *       | isValidToughness(getToughness())
  * 
  * @invar  The HP of each unit must be a valid HP for any
  *         unit.
