@@ -51,7 +51,7 @@ public class Unit {
 	
 	
 	
-	/* Constructor*/
+	/* Constructor */
 	
 	/**
 	 * Create a new unit with a given name, Position, weight, agility, strength, toughness and behavior
@@ -60,7 +60,7 @@ public class Unit {
      *      The name for this new Unit.                                                                                                                       
   	 * @effect The name of this new unit is set to                                                                                                               
      *      the given name.                                                                                                                                              
-     *    | this.setName(name) 
+     *    | this.setName(name)
 	 * @param initialPosition
      *     The position for this new Unit.                                                                                                                       
   	 * @effect The Position of this new Unit is set to                                                                                                               
@@ -72,7 +72,7 @@ public class Unit {
 	 *         the Weight of this new unit is equal to the given                                                                                                                         
 	 *         Weight. Otherwise, the Weight of this new unit is equal                                                                                                                   
 	 *         to getMaxWeight().                                                                                                                                                        
-	 *       | if (!validInitalWeight(weight))                                                                                                                                                
+	 *       | if (validInitalWeight(weight))                                                                                                                                                
 	 *       |   then new.getWeight() == weight                                                                                                                                          
 	 *       |   else new.getWeight() == getMaxWeight()
 	 * @param  agility
@@ -81,7 +81,7 @@ public class Unit {
 	 *         the agility of this new unit is equal to the given
 	 *         agility. Otherwise, the agility of this new unit is equal
 	 *         to getMaxAgility().
-	 *       | if (!validInitialAgility(agility))
+	 *       | if (validInitialAgility(agility))
 	 *       |   then new.getAgility() == agility
 	 *       |   else new.getAgility() == getMaxAgility()
 	 * @param  strength
@@ -90,11 +90,19 @@ public class Unit {
 	 *         the Strength of this new Unit is equal to the given
 	 *         Strength. Otherwise, the Strength of this new Unit is equal
 	 *         to getMaxStength().
-	 *       | if (!validInitialSrength(strength))
-	 *       |   then new.getSrength() == strength
-	 *       |   else new.getSrength() == getMaxStength()
+	 *       | if (validInitialSrength(strength))
+	 *       |   then new.getStrength() == strength
+	 *       |   else new.getStrength() == getMaxStength()
 	 * @param toughness
+	 *        The Toughness for this new Unit.
+	 * @post   If the given Toughness is a valid initial Toughness for any Unit,
+	 * 		   the Toughness of this new Unit is equal to the given Toughness.
+	 * 		   Otherwise, the Toughness of this new Unit is equal to getMaxToughness().
+	 * 		 | if (validInitialToughness(tougness))
+	 * 		 |   then new.getToughness() == toughness
+	 * 		 |   else new.getToughness() == getMaxToughness()
 	 * @param enableDefaultBehavior
+	 * 		  Whether the Unit starts with default behaviour on.
 	 * @throws ModelException if either name or initialPosition are not valid 
 	 * 		|if (!isValidName(name) || !isValidPosition(position))
      *		|		throw ModelException
@@ -134,46 +142,50 @@ public class Unit {
 		}else{
 			setWeight( weight );
 		}
-
-		/*TODO Should we initialize the HP and stamina and if yes with what? */
+		
+		setHP(getMaxHP());
+		setStamina(getMaxStamina());
 
 	}
-
+	
+	
+	
+	/* Initial attribute checkers */
+	
 	/**
-
 	 * Checks whether the given value is a valid initial value for toughness.
 	 * @return true if and only if the given toughness is not larger than 100 or smaller than 25
-	 * 		| toughness > 100 || toughness < 25
+	 * 		| result == (toughness <= 100 && toughness >= 25)
 	 */
 	private boolean validInitialToughness(int toughness ){
-		return !(toughness > 100 && toughness < 25);
+		return (toughness <= 100 && toughness >= 25);
 	}
 	
 	/**
 	 * Checks whether the given value is a valid initial value for strength.
 	 * @return true if and only if the given strength is not larger then 100 or smaller then 25
-	 * 		| strength > 100 || strength < 25
+	 * 		| result (strength <= 100 && strength >= 25)
 	 */
 	private boolean validInitialStrength(int strength ){
-		return !(strength > 100 && strength < 25);
+		return (strength <= 100 && strength >= 25);
 	}
 	
 	/**
 	 * Checks whether the given value is a valid initial value for agility.
 	 * @return true if and only if the given agility is not larger then 100 or smaller then 25
-	 * 		| agility > 100 || agility < 25
+	 * 		| result == (agility <= 100 && agility >= 25)
 	 */
 	private boolean validInitialAgility(int agility ){
-		return !(agility > 100 && agility < 25);
+		return (agility <= 100 && agility >= 25);
 	}
 	
 	/**
 	 * Checks whether the given value is a valid initial value for weight.
 	 * @return true if and only if the given weight is not larger then 100 or smaller then 25
-	 * 		| weight > 100 || weight < 25
+	 * 		| result == (weight <= 100 && weight >= 25)
 	 */
 	private boolean validInitialWeight(int weight ){
-		return !(weight > 100 && weight < 25);
+		return (weight <= 100 && weight >= 25);
 	}
 	
 	
@@ -190,8 +202,6 @@ public class Unit {
 	
 	/**
 	 * Set the name of this unit to a given name
-                                                                                                 
-	 *                                                                                                                                                                                   
 	 * @param  name                                                                                                                                                         
 	 *         The new name for this unit.                                                                                                                       
 	 * @post   The name of this unit is equal to                                                                                                             
@@ -200,8 +210,9 @@ public class Unit {
 	 * @throws ModelException                                                                                                                                                        
 	 *         The given name is not a valid name for any                                                                                                      
 	 *         Unit.                                                                                                                                                          
-	 *       | ! isValidName(getName())                                                                                                                        
+	 *       | !isValidName(getName())                                                                                                                        
 	 */
+	@Raw
 	public void setName(String name) throws ModelException {
 		if (!isValidName(name))
 			throw new ModelException();
@@ -215,10 +226,10 @@ public class Unit {
 	 * @param name
 	 * 			The name to check
 	 * @return True if and only if the name is longer then 2 and the first character is upper case
-	 * 			| if (!(name == null) && isUpperCase(name.charAt(0) && name.lenth() >= 2)
-	 * 			| 		result == true 
+	 * 			| result == (!(name == null) && isUpperCase(name.charAt(0) && name.length() >= 2)
 	 */
-	public boolean isValidName(String name) {
+	@Raw
+	public static boolean isValidName(String name) {
 		return ((name != null) && (Character.isUpperCase(name.charAt(0)) && (name.length() >= 2)));
 	}
 	
@@ -229,7 +240,7 @@ public class Unit {
 	/**
 	 * return the position of the center of the unit
 	 */
-	@Basic @Raw
+	@Basic
 	public double[] getPosition(){     
 	    return this.Position;
 	}
@@ -245,9 +256,8 @@ public class Unit {
 	 * @throws ModelException                                                                                                                                                        
 	 *         The given Position is not a valid Position for any                                                                                                      
 	 *         Unit.                                                                                                                                                          
-	 *       | ! isValidPosition(this.getPosition())                                                                                                                        
+	 *       | ! isValidPosition(position)                                                                                                                        
 	 */
-	@Raw
 	public void setPosition(double[] position)
 			throws ModelException {
 		if (! isValidPosition(position))
@@ -262,19 +272,19 @@ public class Unit {
 	 *		The position to check
 	 *@return True if and only if 
 	 *             position contains exactly 3 elements
-	 *             all tree coordinates are positive and smaller or equal to getMaxCoordinate()
-	 *             |position.lenth == 3
-	 *             |for each i in position.lenth:
-	 *             |    if (! (position[i] >=0 and position <= getMaxCoordinate()))
+	 *             all tree coordinates are positive and smaller than or equal to getMaxCoordinate()
+	 *             |for each i in position.length:
+	 *             |    if (! (position[i] >= getMinCoordinate() and position < getMaxCoordinate()))
 	 *             |		result == false
-	 *             | result == result && position.length == 3
+	 *             | result == (result && position.length == 3)
 	 */
-	public boolean isValidPosition(double[] position){     
+	@Raw
+	public static boolean isValidPosition(double[] position){     
 	    if (position.length != 3){
 	    	return false;
 	    }
 	    for (double coordinate : position){              
-	    	if (!(coordinate >= getMinCoordinate() && (coordinate <= getMaxCoordinate()))){ 
+	    	if (!(coordinate >= getMinCoordinate() && (coordinate < getMaxCoordinate()))){ 
 	    		return false;
 	    	}
 	    }
@@ -283,25 +293,27 @@ public class Unit {
 	
 	/**
 	 * Return the maximum coordinate in every direction of the Game World
-	 * @return the maximum coordinate of a unit is 50
-	 * 		| result == 50
+	 * @return the maximum coordinate of a unit
+	 * 		| result == maxCoordinate
 	 */
-	@Basic
-	public static int getMaxCoordinate(){
-		return 50;
+	@Basic @Immutable
+	public static double getMaxCoordinate(){
+		return maxCoordinate;
 	}
 	
 	/**
 	 * Return the minimum coordinate in every direction of the board
-	 * @return The minimum coordinate of a unit is 0
-	 * 		| result == 0
+	 * @return The minimum coordinate of a unit
+	 * 		| result == minCoordinate
 	 */
-	@Basic
-	public static int getMinCoordinate(){
-		return 0;
+	@Basic @Immutable
+	public static double getMinCoordinate(){
+		return minCoordinate;
 	}
 	
 	
+	
+	/* Weight */
 	
 	/* Weight */
 	
@@ -313,6 +325,7 @@ public class Unit {
 		return this.weight;
 	}
 
+	
 	/**                                                                                                                                                                                  
 	 * Set the Weight of this unit to the given Weight.                                                                                                                                  
 	 *                                                                                                                                                                                   
@@ -321,20 +334,21 @@ public class Unit {
 	 * @post   If the given Weight is a valid Weight for any unit,                                                                                                                       
 	 *         the Weight of this new unit is equal to the given                                                                                                                         
 	 *         Weight.                                                                                                                                                                   
-	 *       | if (isValidWeight(weight))                                                                                                                                                
+	 *       | if (canHaveAsWeight(weight))                                                                                                                                                
 	 *       |   then new.getWeight() == weight 
 	 *       |else 
 	 *       |		new.getWeight() == getMaxWeight()                                                                                                                                         
 	 */
 	@Raw
 	public void setWeight(int weight) {
-		if (isValidWeight(weight))
+		if (canHaveAsWeight(weight))
 			this.weight = weight;
 		else{
 			this.weight = getMaxWeight();
 		}
 	}
 
+	
 	/**
 	 * Check whether the given Weight is a valid Weight for                                                                                                                              
 	 * any unit.                                                                                                                                                                         
@@ -344,19 +358,19 @@ public class Unit {
 	 * @return true if and only if the weight is between 0 and 200 inclusively and the weight is not larger then the maximum weight 
 	 * 			| result == weight <= getMaxWeight() && weight >= 0 && weight <= 200
 	 */
-	private boolean isValidWeight(int weight) {
+	public boolean canHaveAsWeight(int weight) {
 		return weight <= getMaxWeight() && weight >= getMinWeight()  ;
 	}
 	
+	
 	/**
 	 * The maximum weight this unit can have
-	 * @return The maximum Weight of a unit is 200
-	 * 		| result == 200
 	 */
-	@Basic
-	private int getMaxWeight() {
-		return 200;
+	@Basic @Immutable
+	private static int getMaxWeight() {
+		return maxWeight;
 	}
+	
 
 	/**
 	 * The minimum weight a unit can have 
@@ -370,6 +384,9 @@ public class Unit {
 
 	
 	
+	
+	/* Agility */
+	
 	/* Agility */
 	
 	/** 
@@ -382,6 +399,7 @@ public class Unit {
 		return this.agility;
 	}
 	
+	
 	/**
 	 * Set the agility of this unit to the given agility
 	 * 
@@ -391,49 +409,53 @@ public class Unit {
 	 * 		|if (isValidAgility( agility ))
 	 * 		|	new.getAgility() == agility
 	 * @Post if the agility is not a valid agility for the unit the agility is set to getMaxAgility()
-	 * 		|else
+	 * 		|if (!isValidAgility(agility))
 	 * 		|	new.getAgility() == getMaxAgility()
 	 */
+	@Raw
 	public void setAgility(int agility ){
 		if (isValidAgility(agility))
 			this.agility = agility;
 		else{
-			this.agility = this.getMaxAgility();
+			this.agility = getMaxAgility();
 		}
 	}
 	
+	
 	/**
-	 * 
+	 * Checks whether a given agility is valid.
 	 * @param agility
 	 * 			The agility to check
-	 * @return true if and only if the given agility is larger then the minimum agility for a unit and is smaller then the maximum agility 
-	 * 		| result == agility >= getMinAgility() && agility <= getMaxAgility() 
+	 * @return true if and only if the given agility is larger than the minimum agility for a unit and is smaller then the maximum agility 
+	 * 		| result == (agility >= getMinAgility() && agility <= getMaxAgility())
 	 */
+	@Raw
 	public boolean isValidAgility(int agility ){
 		return agility >= getMinAgility() && agility <= getMaxAgility();
 	}
 	
+	
 	/**
 	 * The minimum agility for a unit
-	 * @return The minimum Agility: 0
-	 * 		| result == 0  
 	 */
-	@Immutable
-	public int getMinAgility(){
-		return 0;
+	@Basic @Immutable
+	public static int getMinAgility(){
+		return minAgility;
 	}
+	
 	
 	/**
 	 * Gives the highest agility a unit can have
-	 * @return the maximum agility a unit can have
-	 * 		| result == 200 
 	 */
-	@Immutable
-	public int getMaxAgility(){
-		return 200;
+	@Basic @Immutable
+	public static int getMaxAgility(){
+		return maxAgility;
 	}
 	
 	
+	
+	
+	/* Toughness */
 	
 	/* toughness */
 	
@@ -499,7 +521,9 @@ public class Unit {
 	
 	
 	
+	
 	/* Strength */
+	
 	
 	/**                                                                                                                                                                                  
 	 * Return the Strength of this Unit.                                                                                                                                                 
@@ -509,59 +533,61 @@ public class Unit {
 		return this.strength;
 	}
 	
+	
 	/**
 	 * Set the strength of this unit to a given strength 
 	 * 
 	 * @param strength
 	 * 		| The new strength for this unit 
 	 * @post if the given strength is a valid strength for this unit the strength of the unit is set to the given strength 
-	 * 		| if (isValidSStrength(strength)) 
-	 * 		|	new.getStrength == strength
-	 * @Post if the given strength is not a valid strength the strength is set to getMaxStength()
+	 * 		| if (isValidStrength(strength)) 
+	 * 		|	new.getStrength() == strength
+	 * @Post if the given strength is not a valid strength the strength is set to getMaxStrength()
 	 * 		|else	
-	 * 		|	new.getStrength() == getMaxStength() 
+	 * 		|	new.getStrength() == getMaxStrength() 
 	 */
+	@Raw
 	private void setStrength(int strength){
 		if (isValidStrength(strength))
 				this.strength = strength;
 		else{
-			this.strength = this.getMaxStrength();
+			this.strength = getMaxStrength();
 		}
 	}
 	
+	
 	/**
-	 * 
+	 * Checks if a given strength is valid
 	 * @param strength
 	 * 		The strength you want to check
 	 * @return true if and only if the given strength is between the maximum and the minimum strength of a unit 
 	 * 			| result == (strength >= getMinStrength() && strength <= getMaxStrength())
 	 */
-	private boolean isValidStrength(int strength ){
+	@Raw
+	private static boolean isValidStrength(int strength ){
 		return strength >= getMinStrength() && strength <= getMaxStrength();
 	}
 	
+	
 	/**
 	 * Gives the minimal strength of a unit
-	 * @return The minimum strength of a unit
-	 * 		| result == 0 
 	 */
 	@Basic @Immutable
-	public int getMinStrength(){
-		return 0;
+	public static int getMinStrength(){
+		return minStrength;
 	}
+	
 	/**
 	 * Gives the maximal strength of a unit
-	 * @return The maximum strength a unit an have
-	 * 		| result == 200 
 	 */
 	@Basic @Immutable
-	public int getMaxStrength(){
-		return 200;
+	public static int getMaxStrength(){
+		return maxStrength;
 	}
 	
 	
 	
-	/*Orientation*/
+	/* Orientation */
 	
 	/**
 	 * @return The Orientation of a Unit in radians 
@@ -935,7 +961,20 @@ public class Unit {
 	
 	
 	
-	/*Variables*/
+	
+	/* Constants */
+	
+	private static final double maxCoordinate = 50;
+	private static final double minCoordinate = 0;
+	private static final int maxWeight = 200;
+	private static final int minAgility = 0;
+	private static final int maxAgility = 200;
+	private static final int minStrength = 0;
+	private static final int maxStrength = 200;
+	
+	
+	
+	/* Variables */
 	
 	/**
 	 * Holds the previous position of the Unit. Very important to determine whether it has reached its destination
