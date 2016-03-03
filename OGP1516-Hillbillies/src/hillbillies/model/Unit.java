@@ -51,7 +51,9 @@ import ogp.framework.util.ModelException;
  *         unit.
  *       | isValidState(getState())
  *
- *
+ * @invar  Each Unit can have its default behavior as default behavior.
+ *       | isValidDefaultBehaviorEnabled(this.getDefaultBehaviorEnabled())
+ *       
  */
 public class Unit {
 	
@@ -107,10 +109,16 @@ public class Unit {
 	 * 		 | if (validInitialToughness(tougness))
 	 * 		 |   then new.getToughness() == toughness
 	 * 		 |   else new.getToughness() == getMaxToughness()
-	 * @param enableDefaultBehavior
-	 * 		  Whether the Unit starts with default behaviour on.
+	 * @param  enableDefaultBehavior
+	 *         The default behavior for this new Unit.
+	 * @post   The default behavior of this new Unit is equal to the given
+	 *         default behavior.
+	 *       | new.getDefaultBehaviourEnabled() == enabledDefaultBehavior
+	 * @throws ModelException
+	 *         This new Unit cannot have the given default behavior as its default behavior.
+	 *       | ! isValidDefaultBehaviorEnabled(this.getDefaultBehaviorEnabled())
 	 * @throws ModelException if either name or initialPosition are not valid 
-	 * 		|if (!isValidName(name) || !isValidPosition(position))
+	 * 		|if (!isValidName(name) || !isValidPosition(position) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior))
      *		|		throw ModelException
      *
 	 */
@@ -118,12 +126,13 @@ public class Unit {
 	public Unit (String name, double[] initialPosition, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws ModelException{
 			
-		if (!isValidName(name) || !isValidPosition(initialPosition)){
-			throw new ModelException("Name or position are not valid");
+		if (!isValidName(name) || !isValidPosition(initialPosition) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior)){
+			throw new ModelException("Name, position, or enableDefaultBehavior are not valid");
 		}
 
-		setName( name );
-		setPosition( initialPosition );
+		this.setName( name );
+		this.setPosition( initialPosition );
+		this.setDefaultBehaviorEnabled( enableDefaultBehavior);
 
 		if (!validInitialAgility(agility)){
 			setAgility( getMaxAgility() );
@@ -198,8 +207,30 @@ public class Unit {
 	
 	/* Methods */
 	
-	public void advanceTime(double dT) {
-		
+	/**
+	 * 
+	 * @param dt
+	 */
+	public void advanceTime(double dt) throws ModelException{
+		if(dt >= getMaxDT()){
+			throw new ModelException("dt went over its maximum of " + getMaxDT());
+		}
+		State state = this.getState();
+		if(state == State.NOTHING){
+			doBehaviorNothing(dt);
+		}else if(state == State.MOVING){
+			doBehaviorMoving(dt);
+		}else if(state == State.RESTING_INIT){
+			doBehaviorRestingInit(dt);
+		}else if(state == State.RESTING_HP){
+			doBehaviorRestingHP(dt);
+		}else if(state == State.RESTING_STAMINA){
+			doBehaviorRestingStamina(dt);
+		}else if(state == State.WORKING){
+			doBehaviorWorking(dt);
+		}else if(state == State.ATTACKING){
+			doBehaviorAttacking(dt);
+		}
 	}
 	
 	
@@ -961,6 +992,47 @@ public class Unit {
 	
 	
 	
+	/* Default behavior */
+
+	/**
+	 * Return the default behavior of this Unit.
+	 */
+	@Basic @Raw
+	public boolean getDefaultBehaviorEnabled() {
+		return this.defaultBehaviorEnabled;
+	}
+
+	/**
+	 * Set whether the default behavior is enabled
+	 * @param defaultBehaviorEnabled
+	 * 		Whether or not is should be enabled
+	 * @post
+	 * 		| new.getDefaultBehaviorEnabled() == defaultBehaviorEnabled;
+	 * @throws ModelException
+	 * 		If the given parameter is not valid
+	 * 		| !isValidDefaultBehaviorEnabled(defaultBehaviorEnabled)
+	 */
+	public void setDefaultBehaviorEnabled(boolean defaultBehaviorEnabled) throws ModelException {
+		if(!isValidDefaultBehaviorEnabled(defaultBehaviorEnabled)){
+			throw new ModelException("Invalid defaultBehaviorEnabled given.");
+		}
+		this.defaultBehaviorEnabled = defaultBehaviorEnabled;
+	}
+
+	/**
+	 * Check whether this Unit can have the given default behavior as its default behavior.
+	 *  
+	 * @param  defaultBehaviorEnabled
+	 *         The default behavior to check.
+	 * @return 
+	 *       | result == true
+	 */
+	@Raw
+	public static boolean isValidDefaultBehaviorEnabled(boolean defaultBehaviorEnabled) {
+		return true;
+	}
+	
+	
 	
 	/* State */
 	
@@ -1003,14 +1075,12 @@ public class Unit {
 	 * @return True iff the state is not null.
 	 *       | result == state != null
 	 */
+	@Raw
 	public static boolean isValidState(State state) {
 		return state != null;
 	}
 	
 	
-	
-	
-	/* Helper methods */
 	
 	/* Helper methods */
 	
@@ -1335,6 +1405,81 @@ public class Unit {
 	private static boolean areSameCube(int[] coord1, int[] coord2) {
 		return Arrays.equals(coord1, coord2);
 	}
+
+	/**
+	 * Execute the behavior when in the NOTHING state.
+	 * @param dt
+	 * 		The passed time since last update.
+	 */
+	private void doBehaviorNothing(double dt) {
+		if(immediateTarget != null){
+			this.setState(State.MOVING);
+			this.setFlagsLow();
+		}else if(!path.isEmpty()){
+			this.immediateTarget = path.remove(0);
+			this.setState(State.MOVING);
+			this.setFlagsLow();
+		}else if(this.shouldRest){
+			this.setState(State.RESTING);
+			this.setFlagsLow();
+		}else if(this.shouldWork){
+			this.setState(State.WORKING);
+			this.setFlagsLow();
+		}else if(this.shouldAttack){
+			this.setState(State.ATTACKING);
+			this.setFlagsLow();
+		}else if(this.getDefaultBehaviorEnabled()){
+			Random random = new Random();
+			int result = random.nextInt(3);
+			if(result == 0){
+				try{
+					this.moveTo(this.getRandomCoordinate());
+				}catch(ModelException e){}
+			}else if(result == 1){
+				this.shouldWork = true;
+			}else{
+				this.shouldRest = true;
+			}
+		}
+	}
+
+	/**
+	 * Execute the behavior when in the MOVING state.
+	 * @param dt
+	 * 		The passed time since last update.
+	 */
+	private void doBehaviorMoving(double dt) {
+		if(reachedImmediateTarget())
+			if(!path.isEmpty()){
+				try{this.setPosition(immediateTarget);}catch(ModelException e){}
+				immediateTarget = path.remove(0);
+			}else{
+				try{this.setPosition(immediateTarget);}catch(ModelException e){}
+				this.transitionToNothing();
+			}
+		}else{
+			double velocity = this.determineVelocity();
+			double[] position = 
+			this.setPosition(this.getPosition());
+			
+		}
+	}
+	
+	/**
+	 * Get a random coordinate within the game field.
+	 * @return
+	 * 		A random coordinate within the game field.
+	 */
+	private static int[] getRandomCoordinate() {
+		int[] result = new int[3];
+		Random random = new Random();
+		for(int i=0; i<result.length; i++){
+			int num = random.nextInt((int) (getMaxCoordinate() - getMinCoordinate()));
+			num += getMinCoordinate();
+			result[i] = num;
+		}
+		return result;
+	}
 	
 	
 	
@@ -1416,7 +1561,6 @@ public class Unit {
 	private int agility;
 	private int strength;
 	private int toughness;
-	private boolean enableDefaultBehavior;
 	private double orientation;
 	private int HP;
 	private int stamina;
@@ -1425,5 +1569,12 @@ public class Unit {
 	 * Variable registering the state of this unit.
 	 */
 	private State state;
+	
+
+	/**
+	 * Variable registering the default behavior of this Unit.
+	 */
+	private boolean defaultBehaviorEnabled;
+
 
 }
