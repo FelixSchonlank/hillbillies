@@ -198,6 +198,14 @@ public class Unit {
 	
 	/* Methods */
 	
+	public void advanceTime(double dT) {
+		
+	}
+	
+	
+	
+	/* Movement */
+	
 	/**
 	 * 
 	 * @param dx
@@ -241,8 +249,47 @@ public class Unit {
 		}
 	}
 	
-	public void moveTo() throws ModelException {
+	/**
+	 * Calculates a path for the Unit to follow towards the destination.
+	 * @param destination
+	 * 		The coordinate of the cube to go to
+	 * @throws ModelException
+	 * 		If the destination is not within the bounds.
+	 * 		| !withinBounds(destination)
+	 */
+	public void moveTo(int[] destination) throws ModelException {
+		if(!withinBounds(destination)){
+			throw new ModelException("destination out of bounds.");
+		}
 		
+		path.clear();
+		
+		int[] position = cubeCoordinates(this.getPosition());
+		int dx, dy, dz;
+		while(!areSameCube(position, destination)){
+			if(position[0] == destination[0]){
+				dx = 0;
+			}else if(position[0] < destination[0]){
+				dx = 1;
+			}else{
+				dx = -1;
+			}
+			if(position[1] == destination[1]){
+				dy = 0;
+			}else if(position[1] < destination[1]){
+				dy = 1;
+			}else{
+				dy = -1;
+			}
+			if(position[2] == destination[2]){
+				dz = 0;
+			}else if(position[2] < destination[2]){
+				dz = 1;
+			}else{
+				dz = -1;
+			}
+			path.add(cubeCenter(new int[] {dx, dy, dz}));
+		}
 	}
 	
 	/**
@@ -1257,6 +1304,36 @@ public class Unit {
 			throw new ModelException("position out of bounds.");
 		}
 		return new double[] {((double)position[0])+0.5, ((double)position[1])+0.5, ((double)position[2])+0.5};
+	}
+	
+	/**
+	 * Tells whether the given cube coordinate is within the game bounds
+	 * @param coordinates
+	 * 		The cube you want to check
+	 * @return
+	 * 		true iff the cube is within the game bounds
+	 * 		| result == (coordinates[0] < getMinCoordinate() || coordinates[0] >= getMaxCoordinate() ||
+	 * 		| coordinates[1] < getMinCoordinate() || coordinates[1] >= getMaxCoordinate() ||
+	 * 		| coordinates[2] < getMinCoordinate() || coordinates[2] >= getMaxCoordinate());
+	 */
+	private static boolean withinBounds(int[] coordinates) {
+		return (coordinates[0] < getMinCoordinate() || coordinates[0] >= getMaxCoordinate() ||
+				coordinates[1] < getMinCoordinate() || coordinates[1] >= getMaxCoordinate() ||
+				coordinates[2] < getMinCoordinate() || coordinates[2] >= getMaxCoordinate());
+	}
+	
+	/**
+	 * Tells whether the given cube coordinates represent the same cube
+	 * @param coord1
+	 * 		The first cube to check
+	 * @param coord2
+	 * 		The second cube to check
+	 * @return
+	 * 		true iff the cubes are the same
+	 * 		| result == Arrays.equals(coord1, coord2);
+	 */
+	private static boolean areSameCube(int[] coord1, int[] coord2) {
+		return Arrays.equals(coord1, coord2);
 	}
 	
 	
