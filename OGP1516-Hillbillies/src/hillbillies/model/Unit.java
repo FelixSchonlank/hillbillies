@@ -886,7 +886,7 @@ public class Unit {
 	 *                                                                                                                                                                                   
 	 * @param  HP                                                                                                                                                                        
 	 *         The new HP for this unit.                                                                                                                                                 
-	 * @pre    The given HP must be a valid HP for any                                                                                                                                   
+	 * @Pre    The given HP must be a valid HP for any                                                                                                                                   
 	 *         unit.                                                                                                                                                                     
 	 *       | isValidHP(HP)                                                                                                                                                             
 	 * @post   The HP of this unit is equal to the given                                                                                                                                 
@@ -1233,6 +1233,7 @@ public class Unit {
 		this.shouldWork = false;
 		this.shouldRest = false;
 		this.shouldAttack = false;
+		this.sprinting = false;
 	}
 	
 	
@@ -1449,7 +1450,7 @@ public class Unit {
 	 * 		The passed time since last update.
 	 */
 	private void doBehaviorMoving(double dt) {
-		if(reachedImmediateTarget())
+		if(reachedImmediateTarget()){
 			if(!path.isEmpty()){
 				try{this.setPosition(immediateTarget);}catch(ModelException e){}
 				immediateTarget = path.remove(0);
@@ -1459,8 +1460,29 @@ public class Unit {
 			}
 		}else{
 			double velocity = this.determineVelocity();
-			double[] position = 
-			this.setPosition(this.getPosition());
+			double[] position = this.getPosition();
+			double[] deltaPosition = new double[] {
+					immediateTarget[0] - position[0],
+					immediateTarget[1] - position[1],
+					immediateTarget[2] - position[2]
+							};
+			deltaPosition = normalize(deltaPosition) * velocity * dt;
+			this.setPosition(new double[] {
+					position[0] + deltaPosition[0],
+					position[1] + deltaPosition[1],
+					position[2] + deltaPosition[2]
+							});
+			
+			if(this.sprinting){
+				if(this.sprintingStaminaDecreaseCountdown <= 0){
+					this.sprintingStaminaDecrease();
+				}else{
+					this.sprintingStaminaDecreaseCountdown -= dt;
+					if(this.getStamina() == this.getMinStamina()){
+						this.sprinting = false;
+					}
+				}
+			}
 			
 		}
 	}
@@ -1481,6 +1503,38 @@ public class Unit {
 		return result;
 	}
 	
+	/**
+	 * Decrease the stamina of this Unit by the amount it should per time it decreases while sprinting.
+	 */
+	private void sprintingStaminaDecrease() {
+		this.setStamina(this.getStamina() - 1);
+	}
+	
+	/**
+	 * Determines the magnitude of the velocity ("speed" in English I think)
+	 * @return
+	 * 		The speed the Unit should be going at at this moment
+	 */
+	private double determineVelocity() {
+		double baseSpeed;
+		baseSpeed = 1.5 * (this.getStrength() + this.getAgility()) / 2 * this.getWeight();
+		double walkingSpeed;
+		double realSpeed;
+		double dz = this.immediateTarget[2] - this.getPosition()[2];
+		if(dz < 0){
+			walkingSpeed = 0.5 * baseSpeed;
+		}else if(dz > 0){
+			walkingSpeed = 1.2 * baseSpeed;
+		}else{
+			walkingSpeed = baseSpeed;
+		}
+		if(this.sprinting){
+			realSpeed = 2 * walkingSpeed;
+		}else{
+			realSpeed = walkingSpeed;
+		}
+		return realSpeed;
+	}
 	
 	
 	/* Constants */
@@ -1555,6 +1609,7 @@ public class Unit {
 	private boolean shouldRest;
 	private boolean shouldWork;
 	private boolean shouldAttack;
+	private boolean sprinting;
 	private String name;
 	private double[] position;
 	private int weight;
