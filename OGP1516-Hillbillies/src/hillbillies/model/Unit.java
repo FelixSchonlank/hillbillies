@@ -360,11 +360,7 @@ public class Unit {
 		pointAt(attacker);
 		
 		if(dodgeSucceeds(attacker)){
-			try{
-				dodge();
-			}catch(ModelException e){
-				throw e;
-			}
+			dodge();
 		}else if(!blockSucceeds(attacker)){
 			takeDamage(attacker.getStrength() / 10);
 		}
@@ -1092,6 +1088,17 @@ public class Unit {
 		this.state = state.NOTHING;
 		this.setFlagsLow();
 	}
+	
+	/**
+	 * Give the time between two decreases in stamina points due to sprinting.
+	 * @return
+	 * 		The time between two decreases in stamina points due to sprinting.
+	 * 		| result == 0.1d;
+	 */
+	@Basic @Immutable
+	private double getSprintingStaminaDecreaseTime() {
+		return 0.1d;
+	}
 
 	/**
 	 * Set the state of this unit to Resting_init
@@ -1100,6 +1107,17 @@ public class Unit {
 		this.state = state.RESTING_INIT;
 		this.restingInitialCountdown = this.getRestingHPTime();
 		this.setFlagsLow();
+	}
+	
+	/**
+	 * Gives the time it takes for a unit to go through the initial resting phase
+	 * @return
+	 * 		The time it takes for a unit to go through the initial resting phase
+	 * 		| result == this.getRestingHPTime();
+	 */
+	@Basic
+	private float getRestingInitTime(){
+		return getRestingHPTime();
 	}
 	
 	/**
@@ -1112,10 +1130,12 @@ public class Unit {
 	}
 	
 	/**
-	 * The time it takes for a unit to restore one HP
+	 * Gives the time it takes for a unit to restore one HP
 	 * @return
+	 * 		The time it takes for a unit to restore one HP
+	 * 		| result == 200/this.getStrength();
 	 */
-	@Basic  
+	@Basic
 	private float getRestingHPTime(){
 		return 200/this.getStrength();
 	}
@@ -1134,7 +1154,7 @@ public class Unit {
 	 * @return The time it takes for a unit to restore some amount of stamina
 	 * 		| result == 0.2f
 	 */
-	@Basic 
+	@Basic  @Immutable
 	private float getRestingStaminaTime() {
 		return 0.2f;
 	}
@@ -1157,7 +1177,7 @@ public class Unit {
 	 * 		| result == 500/this.getStrength()
 	 */
 	@Basic 
-	public float getWorkingTime(){
+	private double getWorkingTime(){
 		return 500/this.getStrength();
 	}
 	
@@ -1176,8 +1196,8 @@ public class Unit {
 	 * 		| result == 1f
 	 */
 	@Basic @Immutable
-	private float getAttackingTime() {
-		return 1f;
+	private double getAttackingTime() {
+		return 1d;
 	}
 	
 	/**
@@ -1207,7 +1227,7 @@ public class Unit {
 	 * @return true iff x is between y and z.
 	 *        | result == (y < x && x < z) || (z < x && x < y)
 	 */
-	private boolean between(double x, double y, double z){
+	private static boolean between(double x, double y, double z){
 		return (y < x && x < z) || (z < x && x < y);
 	}
 	
@@ -1283,7 +1303,7 @@ public class Unit {
 	/**
 	 * Moves the Unit to random position in the game world within dodging bounds.
 	 */
-	private void dodge() throws ModelException{
+	private void dodge(){
 		Random random = new Random();
 		double[] destination;
 		do{
@@ -1299,7 +1319,7 @@ public class Unit {
 		try {
 			this.setPosition(destination);
 		} catch (ModelException e) {
-			throw e;
+			
 		}
 	}
 	
@@ -1366,16 +1386,32 @@ public class Unit {
 		return new int[] {(int)position[0], (int)position[1], (int)position[2]};
 	}
 	
-	private static double[] cubeCenter(int[] position) throws ModelException {
-		if(position.length != 3){
-			throw new ModelException("position dimension should be 3.");
+	/**
+	 * Gives back the position of the center of the cube with given coordinates
+	 * @param coordinates
+	 * 		The coordinates of the cube to calculate the center of
+	 * @return
+	 * 		The position of the center of the cube with given coordinates
+	 * 		| result == new double[] {
+	 * 		| 	((double)coordinates[0])+0.5,
+	 * 		| 	((double)coordinates[1])+0.5,
+	 * 		| 	((double)coordinates[2])+0.5
+	 * 		| }
+	 * @throws ModelException
+	 * 		If the given coordinates are out of bounds
+	 * 		| !withinBounds(coordinates)
+	 * @throws ModelException
+	 * 		If the given coordinates are not of the right dimension
+	 * 		| coordinates.length != 3
+	 */
+	private static double[] cubeCenter(int[] coordinates) throws ModelException {
+		if(coordinates.length != 3){
+			throw new ModelException("coordinates dimension should be 3.");
 		}
-		if(position[0] < getMinCoordinate() || position[0] >= getMaxCoordinate() ||
-				position[1] < getMinCoordinate() || position[1] >= getMaxCoordinate() ||
-				position[2] < getMinCoordinate() || position[2] >= getMaxCoordinate()){
-			throw new ModelException("position out of bounds.");
+		if(!withinBounds(coordinates)){
+			throw new ModelException("coordinates out of bounds.");
 		}
-		return new double[] {((double)position[0])+0.5, ((double)position[1])+0.5, ((double)position[2])+0.5};
+		return new double[] {((double)coordinates[0])+0.5, ((double)coordinates[1])+0.5, ((double)coordinates[2])+0.5};
 	}
 	
 	/**
@@ -1467,16 +1503,22 @@ public class Unit {
 					immediateTarget[1] - position[1],
 					immediateTarget[2] - position[2]
 							};
-			deltaPosition = normalize(deltaPosition) * velocity * dt;
-			this.setPosition(new double[] {
-					position[0] + deltaPosition[0],
-					position[1] + deltaPosition[1],
-					position[2] + deltaPosition[2]
-							});
+			deltaPosition = new double[] {
+					normalize(deltaPosition)[0] * velocity * dt,
+					normalize(deltaPosition)[1] * velocity * dt,
+					normalize(deltaPosition)[2] * velocity * dt
+					};
+			try{
+				this.setPosition(new double[] {
+						position[0] + deltaPosition[0],
+						position[1] + deltaPosition[1],
+						position[2] + deltaPosition[2]
+				});
+			}catch(ModelException e){}
 			
 			if(this.sprinting){
 				if(this.sprintingStaminaDecreaseCountdown <= 0){
-					this.sprintingStaminaDecrease();
+					this.doSprintingStaminaDecrease(this.sprintingStaminaDecreaseCountdown);
 				}else{
 					this.sprintingStaminaDecreaseCountdown -= dt;
 					if(this.getStamina() == this.getMinStamina()){
@@ -1515,10 +1557,10 @@ public class Unit {
 		}else if (this.getHP() == getMaxHP()){
 			this.transitionToRestingStamina();
 		}else {
-			this.restingHPCountdown -= dt;
-			if (this.restingHPCountdown <= 0){
-				this.setHP(this.getHP() + 1);
-				this.restingHPCountdown = this.getRestingHPTime();
+			if(this.restingHPCountdown <= 0){
+				this.doRestingHP(this.restingHPCountdown);
+			}else{
+				this.restingHPCountdown -= dt;
 			}
 		}
 		
@@ -1538,6 +1580,12 @@ public class Unit {
 			this.transitionToRestingHP();
 		}else if (this.getStamina() == this.getMaxStamina()){
 			this.doBehaviorNothing(dt);
+		}else{
+			if(this.restingStaminaCountdown <= 0){
+				this.doRestingStamina(this.restingStaminaCountdown);
+			}else{
+				this.restingStaminaCountdown -= dt;
+			}
 		}
 	}
 
@@ -1553,7 +1601,7 @@ public class Unit {
 			this.transitionToAttacking();
 		}else if (this.workingCountdown <= 0){
 			this.transitionToNothing();
-		}else if (this.workingCountdown > 0){
+		}else{
 			this.workingCountdown -= dt;
 		}
 	}
@@ -1569,7 +1617,7 @@ public class Unit {
 		}else if (this.inRangeForAttack(victim)){
 			try{
 				this.victim.defend(this);
-			}catch (ModelException exc){
+			}catch (ModelException e){
 			}
 		}else{
 			this.transitionToNothing();
@@ -1595,9 +1643,96 @@ public class Unit {
 	
 	/**
 	 * Decrease the stamina of this Unit by the amount it should per time it decreases while sprinting.
+	 * Also resets the sprintingStaminaDecreaseCountdown to the maximum, minus the given negative overshoot.
+	 * @param overshoot
+	 * 		The time in seconds that the countdown has gone below 0.
 	 */
-	private void sprintingStaminaDecrease() {
-		this.setStamina(this.getStamina() - 1);
+	private void doSprintingStaminaDecrease(double overshoot) {
+		int newStamina = this.getStamina();
+		while(overshoot <= 0){
+			newStamina -= 1;
+			overshoot += this.getSprintingStaminaDecreaseTime();
+		}
+		if(this.isValidStamina(newStamina)){
+			this.setStamina(newStamina);
+		}else{
+			this.setStamina(this.getMinStamina());
+		}
+		this.sprintingStaminaDecreaseCountdown = overshoot;
+	}
+	
+	/**
+	 * Increase the HP of this Unit by the amount it should per time it increases while resting.
+	 * Also resets the restingHPCountdown to the maximum, minus the given negative overshoot.
+	 * @param overshoot
+	 * 		The time in seconds that the countdown has gone below 0.
+	 */
+	private void doRestingHP(double overshoot) {
+		int newHP = this.getHP();
+		while(overshoot <= 0){
+			newHP += 1;
+			overshoot += this.getRestingHPTime();
+		}
+		if(this.isValidHP(newHP)){
+			this.setHP(newHP);
+		}else{
+			this.setHP(this.getMaxHP());
+		}
+		this.restingHPCountdown = overshoot;
+	}
+	
+	/**
+	 * Increase the stamina of this Unit by the amount it should per time it increases while resting.
+	 * Also resets the restingStaminaCountdown to the maximum, minus the given negative overshoot.
+	 * @param overshoot
+	 * 		The time in seconds that the countdown has gone below 0.
+	 */
+	private void doRestingStamina(double overshoot) {
+		int newStamina = this.getStamina();
+		while(overshoot <= 0){
+			newStamina += 1;
+			overshoot += this.getRestingStaminaTime();
+		}
+		if(this.isValidStamina(newStamina)){
+			this.setStamina(newStamina);
+		}else{
+			this.setStamina(this.getMaxStamina());
+		}
+		this.restingStaminaCountdown = overshoot;
+	}
+	
+	/**
+	 * Gives the maximal time between two calls on advanceTime
+	 * @return
+	 * 		The maximal time between two calls on advanceTime
+	 * 		| result == 0.2d;
+	 */
+	@Basic
+	private static double getMaxDT() {
+		return maxDT;
+	}
+	
+	/**
+	 * Gives the given vector, but normalized to have magnitude 1.
+	 * @param vector
+	 * 		The vector to be normalized
+	 * @return
+	 * 		The normalized version of the vector
+	 */
+	private static double[] normalize(double[] vector) {
+		int length = vector.length;
+		
+		double magnitude = 0;
+		for(int i=0; i<length; i++){
+			magnitude += Math.pow(vector[i], 2);
+		}
+		magnitude = Math.sqrt(magnitude);
+		
+		double[] result = new double[length];
+		for(int i=0; i<length; i++){
+			result[i] = vector[i] / magnitude;
+		}
+		return result;
 	}
 	
 	/**
@@ -1643,6 +1778,7 @@ public class Unit {
 	private static final double maxOrientation = Math.PI * 2;
 	private static final int minHP = 0;
 	private static final int minStamina = 0;
+	private static final double maxDT = 0.2d;
 	
 	
 	
@@ -1666,32 +1802,32 @@ public class Unit {
 	/**
 	 * The time it will take before the next whole point of stamina is subtracted from the Unit's stamina gauge
 	 */
-	private float sprintingStaminaDecreaseCountdown;
+	private double sprintingStaminaDecreaseCountdown;
 	
 	/**
 	 * The time it will take before the attack is actually carried out
 	 */
-	private float restingInitialCountdown;
+	private double restingInitialCountdown;
 	
 	/**
 	 * The time it will take before the next whole point of HP is restored by resting.
 	 */
-	private float restingHPCountdown;
+	private double restingHPCountdown;
 	
 	/**
 	 * The time it will take before the next whole point of stamina is restored by resting
 	 */
-	private float restingStaminaCountdown;
+	private double restingStaminaCountdown;
 	
 	/**
 	 * The time it will take before the work is done
 	 */
-	private float workingCountdown;
+	private double workingCountdown;
 	
 	/**
 	 * The time it will take before the attack is actually carried out
 	 */
-	private float attackingCountdown;
+	private double attackingCountdown;
 	
 	/**
 	 * The unit that will be attacked once the attackingCountdown is done
