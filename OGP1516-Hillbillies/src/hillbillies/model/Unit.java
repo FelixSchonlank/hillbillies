@@ -10,7 +10,7 @@ import ogp.framework.util.*;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
-import ogp.framework.util.ModelException;
+import hillbillies.model.BadFSMStateException;
 
 /**
  * 
@@ -114,20 +114,18 @@ public class Unit {
 	 * @post   The default behavior of this new Unit is equal to the given
 	 *         default behavior.
 	 *       | new.getDefaultBehaviourEnabled() == enabledDefaultBehavior
-	 * @throws ModelException
+	 * @throws IllegalArgumentException
 	 *         This new Unit cannot have the given default behavior as its default behavior.
-	 *       | ! isValidDefaultBehaviorEnabled(this.getDefaultBehaviorEnabled())
-	 * @throws ModelException if either name or initialPosition are not valid 
-	 * 		|if (!isValidName(name) || !isValidPosition(position) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior))
-     *		|		throw ModelException
-     *
+	 *       | !isValidDefaultBehaviorEnabled(this.getDefaultBehaviorEnabled())
+	 * @throws IllegalArgumentException if either name or initialPosition are not valid 
+	 * 		| (!isValidName(name) || !isValidPosition(position) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior)
 	 */
 	@Raw
 	public Unit (String name, double[] initialPosition, int weight, int agility, int strength, int toughness,
-			boolean enableDefaultBehavior) throws ModelException{
+			boolean enableDefaultBehavior) throws IllegalArgumentException{
 			
 		if (!isValidName(name) || !isValidPosition(initialPosition) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior)){
-			throw new ModelException("Name, position, or enableDefaultBehavior are not valid");
+			throw new IllegalArgumentException("Name, position, or enableDefaultBehavior are not valid");
 		}
 
 		this.setName( name );
@@ -208,12 +206,14 @@ public class Unit {
 	/* Methods */
 	
 	/**
-	 * 
+	 * Advances the time for the Unit by the given time. This includes basically all the Unit's behavior,
+	 * except for defending against an attack, which is instantaneous and outside of the finite state
+	 * machine model, which is used for the Unit's behavior.
 	 * @param dt
 	 */
-	public void advanceTime(double dt) throws ModelException{
+	public void advanceTime(double dt) throws IllegalArgumentException{
 		if(dt >= getMaxDT()){
-			throw new ModelException("dt went over its maximum of " + getMaxDT());
+			throw new IllegalArgumentException("dt went over its maximum of " + getMaxDT());
 		}
 		State state = this.getState();
 		if(state == State.NOTHING){
@@ -234,9 +234,8 @@ public class Unit {
 	}
 	
 	
+	
 	/* Movement */
-
-
 
 	/**
 	 * 
@@ -252,30 +251,36 @@ public class Unit {
 	 * 		| 	this.getState() == State.RESTING_HP ||
 	 *		| 	this.getState() == State.RESTING_STAMINA ||
 	 *		| 	this.getState() == State.WORKING)
-	 * @throws ModelException
+	 * @throws IllegalArgumentException
 	 * 		If at least one of the parameters is not -1, 0, or 1
 	 * 		| !(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1)
-	 * @throws ModelException
+	 * @throws IllegalArgumentException
 	 * 		If the calculated destination is out of bounds
 	 * 		| destination[0] < getMinCoordinate() || destination[0] >= getMaxCoordinate() ||
 	 * 		| destination[1] < getMinCoordinate() || destination[1] >= getMaxCoordinate() ||
 	 * 		| destination[2] < getMinCoordinate() || destination[2] >= getMaxCoordinate()
+	 * @throws BadFSMStateException
+	 * 		If the current FSM state of this Unit is not right.
+	 * 		| !(this.getState() == State.NOTHING ||
+	 * 		| this.getState() == State.RESTING_HP ||
+	 * 		| this.getState() == State.RESTING_STAMINA ||
+	 * 		| this.getState() == State.WORKING)
 	 */
-	public void moveToAdjacent(int dx, int dy, int dz) throws ModelException {
+	public void moveToAdjacent(int dx, int dy, int dz) throws IllegalArgumentException, BadFSMStateException {
 		if (!(this.getState() == State.NOTHING ||
 				this.getState() == State.RESTING_HP ||
 				this.getState() == State.RESTING_STAMINA ||
 				this.getState() == State.WORKING)){
-			throw new ModelException("Cannot do moveToAdjacent from this state");
+			throw new BadFSMStateException("Cannot do moveToAdjacent from this state");
 		}else if(!(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1)){
-			throw new ModelException("One of the parameters not -1, 0, or 1.");
+			throw new IllegalArgumentException("One of the parameters not -1, 0, or 1.");
 		}else{
 			int[] currentCube = cubeCoordinates(this.getPosition());
 			int[] destination = new int[] {currentCube[0]+dx, currentCube[1]+dy, currentCube[2]+dz};
 			if(destination[0] < getMinCoordinate() || destination[0] >= getMaxCoordinate() ||
 					destination[1] < getMinCoordinate() || destination[1] >= getMaxCoordinate() ||
 					destination[2] < getMinCoordinate() || destination[2] >= getMaxCoordinate()){
-				throw new ModelException("One of the coordinates is out of bounds.");
+				throw new IllegalArgumentException("One of the coordinates is out of bounds.");
 			}
 			immediateTarget = cubeCenter(destination);
 		}
@@ -285,13 +290,13 @@ public class Unit {
 	 * Calculates a path for the Unit to follow towards the destination.
 	 * @param destination
 	 * 		The coordinate of the cube to go to
-	 * @throws ModelException
+	 * @throws IllegalArgumentException
 	 * 		If the destination is not within the bounds.
 	 * 		| !withinBounds(destination)
 	 */
-	public void moveTo(int[] destination) throws ModelException {
+	public void moveTo(int[] destination) throws IllegalArgumentException {
 		if(!withinBounds(destination)){
-			throw new ModelException("destination out of bounds.");
+			throw new IllegalArgumentException("destination out of bounds.");
 		}
 		
 		path.clear();
@@ -329,13 +334,12 @@ public class Unit {
 	 * @param victim 
 	 * @Post the shouldAttack flag is set high and this.victim is set to the given victim
 	 * 		|this.shouldAttack && this.victim == victim
-	 * @throws modelexception if state is not NOTHING, RESTING_HP, RESTING_STAMINA or WORKING or if the victim is null 
-	 * 		|if (victim == null || !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA || this.getState() ==WORKING))
-	 * 		|	throw modelException
+	 * @throws BadFSMStateException if state is not NOTHING, RESTING_HP, RESTING_STAMINA or WORKING or if the victim is null 
+	 * 		| (victim == null || !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA || this.getState() ==WORKING))
 	 */
-	public void attack(Unit victim) throws ModelException{
+	public void attack(Unit victim) throws BadFSMStateException{
 		if (victim == null || !(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA || this.getState() == state.WORKING)){
-			throw new ModelException("Can not attack in this state");
+			throw new BadFSMStateException("Can not attack in this state");
 		}else{
 			this.shouldAttack = true;
 			this.victim = victim;
@@ -352,7 +356,7 @@ public class Unit {
 	 * 		If attacker is null
 	 * 		| attacker == null
 	 */
-	public void defend(Unit attacker) throws IllegalArgumentException, ModelException {
+	public void defend(Unit attacker) throws IllegalArgumentException {
 		if(attacker == null){
 			throw new IllegalArgumentException("Attacker shouldn't be null.");
 		}
@@ -369,14 +373,13 @@ public class Unit {
 	/**
 	 * Set shouldRest flag to high
 	 * @Post The shouldRest flag is set to high
-	 * 		|new.shouldRest
-	 * @throws ModelException if the state is not NOTHING or WORKING
-	 * 		|if (!(state == state.NOTHING || state == state.WORKING))
-	 * 		|	throw ModelException
+	 * 		| new.shouldRest
+	 * @throws BadFSMStateException If the state is not NOTHING or WORKING
+	 * 		| !(state == state.NOTHING || state == state.WORKING)
 	 */
-	public void rest() throws ModelException{
+	public void rest() throws BadFSMStateException{
 		if (!(this.getState() == state.NOTHING || this.getState() == state.WORKING)){
-			throw new ModelException("Can not go to resting from this state");
+			throw new BadFSMStateException("Can not go to resting from this state");
 		}else{
 			this.shouldRest = true;
 		}
@@ -386,13 +389,12 @@ public class Unit {
 	 * Set the shouldWork flag  to high
 	 * @Post ShouldWork is set to true
 	 * 		|this.shouldWork
-	 * @throws ModelException if the state of the unit is not NOTHING, RESTING_HP or RESTING_STAMINA 
-	 * 		|if (!(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA))
-	 * 		|		throw ModelException
+	 * @throws BadFSMException if the state of the unit is not NOTHING, RESTING_HP or RESTING_STAMINA 
+	 * 		| !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA)
 	 */
-	public void work() throws ModelException{
+	public void work() throws BadFSMStateException{
 		if (!(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA))
-			throw new ModelException("Can not go to working from this state");
+			throw new BadFSMStateException("Can not go to working from this state");
 		else{
 			this.shouldWork = true;
 		}
@@ -417,15 +419,15 @@ public class Unit {
 	 * @post   The name of this unit is equal to                                                                                                             
 	 *         the given name.                                                                                                                                              
 	 *       | new.getName() == name                                                                                                                           
-	 * @throws ModelException                                                                                                                                                        
+	 * @throws IllegalArgumentException                                                                                                                                                        
 	 *         The given name is not a valid name for any                                                                                                      
 	 *         Unit.                                                                                                                                                          
 	 *       | !isValidName(getName())                                                                                                                        
 	 */
 	@Raw
-	public void setName(String name) throws ModelException {
+	public void setName(String name) throws IllegalArgumentException {
 		if (!isValidName(name))
-			throw new ModelException();
+			throw new IllegalArgumentException(name + " is not a valid name.");
 		this.name = name;
 	}
 	
@@ -440,7 +442,7 @@ public class Unit {
 	 */
 	@Raw
 	public static boolean isValidName(String name) {
-		return ((name != null) && (Character.isUpperCase(name.charAt(0)) && (name.length() >= 2)));
+		return (name != null) && (Character.isUpperCase(name.charAt(0)) && (name.length() >= 2));
 	}
 	
 	
@@ -463,15 +465,15 @@ public class Unit {
 	 * @post   The position of this new Unit is equal to                                                                                                             
 	 *         the given position.                                                                                                                                              
 	 *       | new.getPosition() == position                                                                                                                           
-	 * @throws ModelException                                                                                                                                                        
+	 * @throws IllegalArgumentException                                                                                                                                                        
 	 *         The given position is not a valid position for any                                                                                                      
 	 *         Unit.                                                                                                                                                          
 	 *       | ! isValidPosition(position)                                                                                                                        
 	 */
 	public void setPosition(double[] position)
-			throws ModelException {
+			throws IllegalArgumentException {
 		if (! isValidPosition(position))
-			throw new ModelException();
+			throw new IllegalArgumentException(position + " is not a valid position.");
 		this.position = position;
 	}
 	
@@ -1005,13 +1007,13 @@ public class Unit {
 	 * 		Whether or not is should be enabled
 	 * @post
 	 * 		| new.getDefaultBehaviorEnabled() == defaultBehaviorEnabled;
-	 * @throws ModelException
+	 * @throws IllegalArgumentException
 	 * 		If the given parameter is not valid
 	 * 		| !isValidDefaultBehaviorEnabled(defaultBehaviorEnabled)
 	 */
-	public void setDefaultBehaviorEnabled(boolean defaultBehaviorEnabled) throws ModelException {
+	public void setDefaultBehaviorEnabled(boolean defaultBehaviorEnabled) throws IllegalArgumentException {
 		if(!isValidDefaultBehaviorEnabled(defaultBehaviorEnabled)){
-			throw new ModelException("Invalid defaultBehaviorEnabled given.");
+			throw new IllegalArgumentException("Invalid defaultBehaviorEnabled given: " + defaultBehaviorEnabled);
 		}
 		this.defaultBehaviorEnabled = defaultBehaviorEnabled;
 	}
@@ -1318,7 +1320,7 @@ public class Unit {
 				destination[2] > getMaxCoordinate() || destination[2] <= getMinCoordinate());
 		try {
 			this.setPosition(destination);
-		} catch (ModelException e) {
+		} catch (IllegalArgumentException e) {
 			
 		}
 	}
@@ -1371,17 +1373,13 @@ public class Unit {
 	 * 		The given position
 	 * @return The integer coordinates of the cube that the given position is in.
 	 * 		| result == new int[] {(int)position[0], (int)position[1], (int)position[2]}
-	 * @throws ModelException
+	 * @throws IllegalArgumentException
 	 * 		If position is not inside any cube
-	 * 		| position[0] < getMinCoordinate() || position[0] >= getMaxCoordinate() ||
-	 * 		| position[1] < getMinCoordinate() || position[1] >= getMaxCoordinate() ||
-	 * 		| position[2] < getMinCoordinate() || position[2] >= getMaxCoordinate()
+	 * 		| !withinBounds(position)
 	 */
-	private static int[] cubeCoordinates(double[] position) throws ModelException {
-		if(position[0] < getMinCoordinate() || position[0] >= getMaxCoordinate() ||
-				position[1] < getMinCoordinate() || position[1] >= getMaxCoordinate() ||
-				position[2] < getMinCoordinate() || position[2] >= getMaxCoordinate()){
-			throw new ModelException("position out of bounds.");
+	private static int[] cubeCoordinates(double[] position) throws IllegalArgumentException {
+		if(!withinBounds(position)){
+			throw new IllegalArgumentException("position out of bounds: " + position);
 		}
 		return new int[] {(int)position[0], (int)position[1], (int)position[2]};
 	}
@@ -1397,19 +1395,19 @@ public class Unit {
 	 * 		| 	((double)coordinates[1])+0.5,
 	 * 		| 	((double)coordinates[2])+0.5
 	 * 		| }
-	 * @throws ModelException
+	 * @throws IllegalArgumentException
 	 * 		If the given coordinates are out of bounds
 	 * 		| !withinBounds(coordinates)
-	 * @throws ModelException
+	 * @throws IllegalArgumentException
 	 * 		If the given coordinates are not of the right dimension
 	 * 		| coordinates.length != 3
 	 */
-	private static double[] cubeCenter(int[] coordinates) throws ModelException {
+	private static double[] cubeCenter(int[] coordinates) throws IllegalArgumentException {
 		if(coordinates.length != 3){
-			throw new ModelException("coordinates dimension should be 3.");
+			throw new IllegalArgumentException("coordinates dimension should be 3.");
 		}
 		if(!withinBounds(coordinates)){
-			throw new ModelException("coordinates out of bounds.");
+			throw new IllegalArgumentException("coordinates out of bounds.");
 		}
 		return new double[] {((double)coordinates[0])+0.5, ((double)coordinates[1])+0.5, ((double)coordinates[2])+0.5};
 	}
@@ -1420,14 +1418,30 @@ public class Unit {
 	 * 		The cube you want to check
 	 * @return
 	 * 		true iff the cube is within the game bounds
-	 * 		| result == (coordinates[0] < getMinCoordinate() || coordinates[0] >= getMaxCoordinate() ||
-	 * 		| coordinates[1] < getMinCoordinate() || coordinates[1] >= getMaxCoordinate() ||
-	 * 		| coordinates[2] < getMinCoordinate() || coordinates[2] >= getMaxCoordinate());
+	 * 		| result == (coordinates[0] >= getMinCoordinate() && coordinates[0] < getMaxCoordinate() &&
+	 * 		| coordinates[1] >= getMinCoordinate() && coordinates[1] < getMaxCoordinate() &&
+	 * 		| coordinates[2] >= getMinCoordinate() && coordinates[2] < getMaxCoordinate());
 	 */
 	private static boolean withinBounds(int[] coordinates) {
-		return (coordinates[0] < getMinCoordinate() || coordinates[0] >= getMaxCoordinate() ||
-				coordinates[1] < getMinCoordinate() || coordinates[1] >= getMaxCoordinate() ||
-				coordinates[2] < getMinCoordinate() || coordinates[2] >= getMaxCoordinate());
+		return (coordinates[0] >= getMinCoordinate() && coordinates[0] < getMaxCoordinate() &&
+				coordinates[1] >= getMinCoordinate() && coordinates[1] < getMaxCoordinate() &&
+				coordinates[2] >= getMinCoordinate() && coordinates[2] < getMaxCoordinate());
+	}
+	
+	/**
+	 * Tells whether the given position is within the game bounds
+	 * @param position
+	 * 		The position you want to check
+	 * @return
+	 * 		true iff the position is within the game bounds
+	 * 		| result == (position[0] >= getMinCoordinate() && position[0] < getMaxCoordinate() &&
+	 * 		| position[1] >= getMinCoordinate() && position[1] < getMaxCoordinate() &&
+	 * 		| position[2] >= getMinCoordinate() && position[2] < getMaxCoordinate());
+	 */
+	private static boolean withinBounds(double[] position) {
+		return (position[0] >= getMinCoordinate() && position[0] < getMaxCoordinate() &&
+				position[1] >= getMinCoordinate() && position[1] < getMaxCoordinate() &&
+				position[2] >= getMinCoordinate() && position[2] < getMaxCoordinate());
 	}
 	
 	/**
@@ -1472,7 +1486,7 @@ public class Unit {
 			if(result == 0){
 				try{
 					this.moveTo(this.getRandomCoordinate());
-				}catch(ModelException e){}
+				}catch(IllegalArgumentException e){}
 			}else if(result == 1){
 				this.shouldWork = true;
 			}else{
@@ -1489,10 +1503,10 @@ public class Unit {
 	private void doBehaviorMoving(double dt) {
 		if(reachedImmediateTarget()){
 			if(!path.isEmpty()){
-				try{this.setPosition(immediateTarget);}catch(ModelException e){}
+				try{this.setPosition(immediateTarget);}catch(IllegalArgumentException e){}
 				immediateTarget = path.remove(0);
 			}else{
-				try{this.setPosition(immediateTarget);}catch(ModelException e){}
+				try{this.setPosition(immediateTarget);}catch(IllegalArgumentException e){}
 				this.transitionToNothing();
 			}
 		}else{
@@ -1514,7 +1528,7 @@ public class Unit {
 						position[1] + deltaPosition[1],
 						position[2] + deltaPosition[2]
 				});
-			}catch(ModelException e){}
+			}catch(IllegalArgumentException e){}
 			
 			if(this.sprinting){
 				if(this.sprintingStaminaDecreaseCountdown <= 0){
@@ -1617,7 +1631,7 @@ public class Unit {
 		}else if (this.inRangeForAttack(victim)){
 			try{
 				this.victim.defend(this);
-			}catch (ModelException e){
+			}catch (IllegalArgumentException e){
 			}
 		}else{
 			this.transitionToNothing();
