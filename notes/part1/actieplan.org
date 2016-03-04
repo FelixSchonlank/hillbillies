@@ -98,7 +98,7 @@ If shouldWork is high, do transitionToWorking.
 
 ElseIf shouldAttack is high, do transitionToAttacking.
 
-ElseIf HP is full, do transitionToRestingHP.
+ElseIf HP not is full, do transitionToRestingHP.
 
 ElseIf stamina is full, do transitionToNothing.
 

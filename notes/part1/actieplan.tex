@@ -1,0 +1,465 @@
+% Created 2016-03-03 do 20:38
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fixltx2e}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{marvosym}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\tolerance=1000
+\author{willem seynaeve}
+\date{\today}
+\title{actieplan}
+\hypersetup{
+  pdfkeywords={},
+  pdfsubject={},
+  pdfcreator={Emacs 24.5.1 (Org mode 8.2.10)}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Position, name, attributes, HP \& SP, orientation}
+\label{sec-1}
+
+Essentially just an exercise in getters, setters, and checkers in total,
+nominal, and defensive programming. It is doable (though still a lot of work, 
+don't get me wrong).
+
+
+\section{advanceTime\hfill{}\textsc{method}}
+\label{sec-2}
+
+\begin{verbatim}
+public void advanceTime(double deltaTime)
+\end{verbatim}
+
+Unit is a finite state machine.
+
+There are transition flags. In descending order of
+importance, they are:
+\begin{itemize}
+\item shouldRest
+\item shouldWork
+\item shouldAttack
+\end{itemize}
+Whether the Unit should move is determined by the non-emptiness of at least one
+of: immediateTarget and path.
+
+There is also the sprinting flag: sprinting.
+
+There are 7 states:
+\begin{itemize}
+\item NOTHING
+\item MOVING
+\item RESTING$_{\text{INIT}}$
+\item RESTING$_{\text{HP}}$
+\item RESTING$_{\text{STAMINA}}$
+\item WORKING
+\item ATTACKING
+\end{itemize}
+
+\textbf{Don't forget to check if deltaTime was maximally 0.2 seconds!}
+
+\subsection{When in NOTHING}
+\label{sec-2-1}
+
+If there is an immediateTarget, go to MOVING. Set all flags to low.
+
+ElseIf there is a path, put the first element in immediateTarget, remove that
+element from the path, and go to MOVING. Set all flags to low.
+
+ElseIf shouldRest is high, do transitionToRestingInit.
+
+ElseIf shouldWork is high, do transitionToWorking.
+
+ElseIf shouldAttack is high, do transitionToAttacking.
+
+ElseIf defaultBehaviour is high, choose a random option from
+\begin{itemize}
+\item Ordering yourself to move to a random position in the game
+\item Ordering yourself to work by setting the shouldWork flag high
+\item Ordering yourself to rest by setting the shouldRest flag high
+\end{itemize}
+
+(If defaultBehaviour is low, do nothing and remain in this state.)
+
+
+\subsection{When in MOVING}
+\label{sec-2-2}
+
+If reachedImmediateTarget() \&\& !path.isEmpty(), set Unit position to center of
+immediateTarget. Place next element of path in the immediateTarget.
+
+ElseIf reachedImmediateTarget() \&\& path.isEmpty(), set Unit position to center of
+immediateTarget. Do transitionToNothing.
+
+ElseIf !reachedImmediateTarget(), update position as explained in pdf. The x'
+from the pdf is the x value of immediateTarget; the x is the x value of
+position; the v can be calculated from the attributes, the sprinting flag, and
+the difference between the current position and the immediateTarget; the new
+position can be calculated from v and the given deltaTime. Don't forget to lower
+the stamina by 1 if sprintingStaminaDecreaseCountdown reaches 0. In that case,
+reset the countdown to its top value (0.1 s) minus the negative overshoot. Also,
+if the stamina itself reaches zero, set the sprinting flag to low.
+
+
+\subsection{When in RESTING$_{\text{INIT}}$}
+\label{sec-2-3}
+
+If restingInitialCountdown > 0, decrease it with deltaTime.
+
+Else, do transitionToRestingHP.
+
+
+\subsection{When in RESTING$_{\text{HP}}$}
+\label{sec-2-4}
+
+If shouldWork is high, do transitionToWorking.
+
+ElseIf shouldAttack is high, do transitionToAttacking.
+
+ElseIf HP is full, do transitionToRestingStamina.
+
+Else(If HP is not full), decrease restingHPCountdown by deltaTime. If it reaches
+0 this way, add 1 HP to the total and reset the countdown to its top value,
+minus the negative overshoot.
+
+
+\subsection{When in RESTING$_{\text{STAMINA}}$}
+\label{sec-2-5}
+
+If shouldWork is high, do transitionToWorking.
+
+ElseIf shouldAttack is high, do transitionToAttacking.
+
+ElseIf HP is full, do transitionToRestingHP.
+
+ElseIf stamina is full, do transitionToNothing.
+
+Else(If stamina is not full), decrease restingStaminaCountdown by deltaAtime. If
+it reaches 0 this way, add 1 stamina to the total and reset the countdown to its
+top value, minus the negative overshoot.
+
+
+\subsection{When in WORKING}
+\label{sec-2-6}
+
+If shouldRest is high, do transitionToRestingInit.
+
+ElseIf shouldAttack is high, do transitionToAttacking.
+
+ElseIf workingCountdown <= 0, do transitionToNothing.
+
+Else(If workingCountdown > 0), decrease workingCountdown by deltaTime.
+
+
+\subsection{When in ATTACKING}
+\label{sec-2-7}
+
+If attackingCountdown is > 0, decrease attackingCountdown by deltaTime.
+
+ElseIf inRangeForAttack(victim), call the defend method on the victim, and pass
+this Unit to give the needed information. Do transitionToNothing.
+
+Else(If !inRangeForAttack(victim)), do transitionToNothing.
+
+
+\section{Movement}
+\label{sec-3}
+
+\subsection{moveToAdjacent\hfill{}\textsc{method}}
+\label{sec-3-1}
+
+\begin{verbatim}
+public void moveToAdjacent(CubeLocation destination)
+\end{verbatim}
+
+Only if in allowing state: NOTHING, RESTING$_{\text{HP}}$, RESTING$_{\text{STAMINA}}$, WORKING:
+immediateTarget is set to destination.
+
+
+\subsection{moveTo\hfill{}\textsc{method}}
+\label{sec-3-2}
+
+\begin{verbatim}
+public void moveTo(CubeLocation destination)
+\end{verbatim}
+
+Only if in allowing state: NOTHING, RESTING$_{\text{HP}}$, RESTING$_{\text{STAMINA}}$, WORKING:
+path is set to an ArrayList of consecutive (opeenvolgende) CubeLocations to be
+followed cube by cube.
+
+
+\section{Combat}
+\label{sec-4}
+
+\subsection{attack\hfill{}\textsc{method}}
+\label{sec-4-1}
+
+\begin{verbatim}
+public void attack(Unit victim)
+\end{verbatim}
+
+Only if in allowing state: NOTHING, RESTING$_{\text{HP}}$, RESTING$_{\text{STAMINA}}$, WORKING:
+Set the shouldAttack flag high. There is an internal victim variable, which is
+used later on, when actually attacking. Set the victim variable to passed
+victim.
+
+
+\subsection{defend\hfill{}\textsc{method}}
+\label{sec-4-2}
+
+\begin{verbatim}
+public void defend(Unit attacker)
+\end{verbatim}
+
+An instantaneous response to the attack. Everything is handled immediately:
+dodging, blocking, damage taking, teleportation. The state of the defendant is
+set to NOTHING using transitionToNothing, and this method is the only one to
+break the FSM model. attacker is used to get information about damage done.
+
+
+\section{rest\hfill{}\textsc{method}}
+\label{sec-5}
+
+\begin{verbatim}
+public void rest()
+\end{verbatim}
+
+Only if in allowing state: NOTHING, WORKING:
+The shouldRest flag is set to high.
+
+
+\section{work\hfill{}\textsc{method}}
+\label{sec-6}
+
+\begin{verbatim}
+public void work()
+\end{verbatim}
+
+Only if in allowing state: NOTHING, RESTING$_{\text{HP}}$, RESTING$_{\text{STAMINA}}$:
+The shouldWork flag is set to high.
+
+
+\section{Extra stuff}
+\label{sec-7}
+
+\subsection{Helper classes}
+\label{sec-7-1}
+
+
+\subsection{Helper variables}
+\label{sec-7-2}
+
+\subsubsection{previousPosition}
+\label{sec-7-2-1}
+
+\begin{verbatim}
+private double[] previousPosition
+\end{verbatim}
+
+Holds the previous position of the Unit. Very important to determine whether it
+has reached its destination.
+
+
+\subsubsection{immediateTarget}
+\label{sec-7-2-2}
+
+\begin{verbatim}
+private double[] immediateTarget
+\end{verbatim}
+
+The place that the Unit is currently going. 
+
+
+\subsubsection{path}
+\label{sec-7-2-3}
+
+\begin{verbatim}
+private List<double[]> path
+\end{verbatim}
+
+A list of positions that the Unit should walk towards, in correct order.
+
+
+\subsubsection{sprintingStaminaDecreaseCountdown}
+\label{sec-7-2-4}
+
+\begin{verbatim}
+private float sprintingStaminaDecreaseCountdown
+\end{verbatim}
+
+The time it will take before the next whole point of stamina is subtracted from
+the Unit's stamina gauge.
+
+
+\subsubsection{restingInitialCountdown}
+\label{sec-7-2-5}
+
+\begin{verbatim}
+private float restingInitialCountdown
+\end{verbatim}
+
+The time it will take before the initial resting period is over, and the Unit
+transitions to a real RESTING\_\ldots{} state.
+
+
+\subsubsection{restingHPCountdown}
+\label{sec-7-2-6}
+
+\begin{verbatim}
+private float restingHPCountdown
+\end{verbatim}
+
+The time it will take before the next whole point of HP is restored by resting.
+
+
+\subsubsection{restingStaminaCountdown}
+\label{sec-7-2-7}
+
+\begin{verbatim}
+private float restingStaminaCountdown
+\end{verbatim}
+
+The time it will take before the next whole point of stamina is restored by
+resting.
+
+
+\subsubsection{workingCountdown}
+\label{sec-7-2-8}
+
+\begin{verbatim}
+private float workingCountdown
+\end{verbatim}
+
+The time it will take before the work is done.
+
+
+\subsubsection{attackingCountdown}
+\label{sec-7-2-9}
+
+\begin{verbatim}
+private float attackingCountdown
+\end{verbatim}
+
+The time it will take before the attack is actually carried out.
+
+
+\subsubsection{victim}
+\label{sec-7-2-10}
+
+\begin{verbatim}
+private Unit victim
+\end{verbatim}
+
+The unit that will be attacked once the attackingCountdown is done.
+
+
+\subsection{Helper methods}
+\label{sec-7-3}
+
+\subsubsection{transitionToNothing}
+\label{sec-7-3-1}
+
+\begin{verbatim}
+private void transitionToNothing()
+\end{verbatim}
+
+Set state to NOTHING. Set all flags to low.
+
+
+\subsubsection{transitionToRestingInit}
+\label{sec-7-3-2}
+
+\begin{verbatim}
+private void transitionToRestingInit()
+\end{verbatim}
+
+Set state to RESTING$_{\text{INIT}}$. Set restingInitialCountdown to the time it would take
+to restore 1 HP (see pdf or preliminary). Set all flags to low.
+
+
+\subsubsection{transitionToRestingHP}
+\label{sec-7-3-3}
+
+\begin{verbatim}
+private void transitionToRestingHP()
+\end{verbatim}
+
+Set state to RESTING$_{\text{HP}}$. Set restingHPCountdown to the time it will take to
+restore 1 HP (see pdf or preliminary). Set all flags to low.
+
+
+\subsubsection{transitionToRestingStamina}
+\label{sec-7-3-4}
+
+\begin{verbatim}
+private void transitionToRestingStamina()
+\end{verbatim}
+
+Set state to RESTING$_{\text{STAMINA}}$. Set restingStaminaCountdown to the time it will
+take to restore 1 stamina (see pdf or preliminary). Set all flags to low.
+
+
+\subsubsection{transitionToWorking}
+\label{sec-7-3-5}
+
+\begin{verbatim}
+private void transitionToWorking()
+\end{verbatim}
+
+Set state to WORKING. Set workingCountdown to the time it takes to complete the
+work (see pdf or preliminary.org). Set all flags to low.
+
+
+\subsubsection{transitionToAttacking}
+\label{sec-7-3-6}
+
+\begin{verbatim}
+private void transitionToAttacking()
+\end{verbatim}
+
+Set state to ATTACKING. Set attackingCountdown to the time it takes until you
+can attack (see pdf or preliminary.org). Set all flags to low.
+
+
+\subsubsection{reachedImmediateTarget}
+\label{sec-7-3-7}
+
+\begin{verbatim}
+private boolean reachedImmediateTarget()
+\end{verbatim}
+
+Checks whether the Unit has reached the immediateTarget, by overshooting it by
+some distance.
+
+\begin{verbatim}
+if (between(x_immediateTarget, x_prev, x_cur) ||
+    between(y_immediateTarget, y_prev, y_cur) ||
+    between(z_immediateTarget, z_prev, z_cur)
+    )
+    return true;
+\end{verbatim}
+
+
+\subsubsection{inRangeForAttack}
+\label{sec-7-3-8}
+
+\begin{verbatim}
+private boolean inRangeForAttack(Unit victim)
+\end{verbatim}
+
+Checks whether the victim is in range for the attack (in the same or an adjacent
+cube).
+% Emacs 24.5.1 (Org mode 8.2.10)
+\end{document}

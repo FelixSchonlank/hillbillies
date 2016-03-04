@@ -234,9 +234,10 @@ public class Unit {
 	}
 	
 	
-	
 	/* Movement */
-	
+
+
+
 	/**
 	 * 
 	 * @param dx
@@ -1536,9 +1537,100 @@ public class Unit {
 		return realSpeed;
 	}
 	
+
+	/**
+	 * Execute the behavior when in the RESTING_INIT state.
+	 * @param dt
+	 * 		The passed time 
+	 */
+	private void doBehaviorRestingInit(double dt) {
+		if (this.restingInitialCountdown > 0){
+			this.restingInitialCountdown -= dt;
+		}else{
+			this.transitionToRestingHP();
+		}
+		
+	}
 	
+	/**
+	 * Execute the behavior when in the RESTING_HP state.
+	 * @param dt
+	 * 		The passed time 
+	 */
+	private void doBehaviorRestingHP(double dt) {
+		if (this.shouldWork){
+			this.transitionToWorking( );
+		}else if (this.shouldAttack){
+			this.transitionToAttacking();
+		}else if (this.getHP() == getMaxHP()){
+			this.transitionToRestingStamina();
+		}else {
+			this.restingHPCountdown -= dt;
+			if (this.restingHPCountdown <= 0){
+				this.setHP(this.getHP() + 1);
+				this.restingHPCountdown = this.getRestingHPTime();
+			}
+		}
+		
+	}
+	
+	/**
+	 * Execute the behavior when in the RESTING_STAMINA state.
+	 * @param dt
+	 * 		The passed time 
+	 */
+	private void doBehaviorRestingStamina(double dt) {
+		if (this.shouldWork){
+			this.transitionToWorking();
+		}else if (this.shouldAttack){
+			this.transitionToAttacking();
+		}else if ( this.getHP() != this.getMaxHP()) {
+			this.transitionToRestingHP();
+		}else if (this.getStamina() == this.getMaxStamina()){
+			this.doBehaviorNothing(dt);
+		}
+	}
+
+	/**
+	 * Execute the behavior when in the WORKING state.
+	 * @param dt
+	 * 		The passed time 
+	 */
+	private void doBehaviorWorking(double dt) {
+		if (this.shouldRest){
+			this.transitionToRestingInit();
+		}else if (this.shouldAttack){
+			this.transitionToAttacking();
+		}else if (this.workingCountdown <= 0){
+			this.transitionToNothing();
+		}else if (this.workingCountdown > 0){
+			this.workingCountdown -= dt;
+		}
+	}
+	
+	/**
+	 * Execute the behavior when in the ATTACKING state.
+	 * @param dt
+	 * 		The passed time 
+	 */
+	private void doBehaviorAttacking(double dt) {
+		if (this.attackingCountdown > 0){
+			this.attackingCountdown -= dt;
+		}else if (this.inRangeForAttack(victim)){
+			try{
+				this.victim.defend(this);
+			}catch (ModelException exc){
+			}
+		}else{
+			this.transitionToNothing();
+		}
+		
+	}
+
+
 	/* Constants */
-	
+
+
 	private static final double maxCoordinate = 50;
 	private static final double minCoordinate = 0;
 	private static final int maxWeight = 200;
