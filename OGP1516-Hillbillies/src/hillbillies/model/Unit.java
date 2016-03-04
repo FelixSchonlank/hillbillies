@@ -62,7 +62,7 @@ public class Unit {
 	/* Constructor */
 	
 	/**
-	 * Create a new unit with a given name, Position, weight, agility, strength, toughness and behavior
+	 * Create a new unit with a given name, position, weight, agility, strength, toughness and behavior
 	 * 
 	 * @param  name                                                                                                                                                         
      *      The name for this new Unit.                                                                                                                       
@@ -71,7 +71,7 @@ public class Unit {
      *    | this.setName(name)
 	 * @param initialPosition
      *     The position for this new Unit.                                                                                                                       
-  	 * @effect The Position of this new Unit is set to                                                                                                               
+  	 * @effect The position of this new Unit is set to                                                                                                               
      *     the given initialPosition.                                                                                                                                              
      *   | this.setPosition(initialPosition) 
 	 * @param  weight                                                                                                                                                                    
@@ -455,19 +455,19 @@ public class Unit {
 	 */
 	@Basic
 	public double[] getPosition(){     
-	    return this.Position;
+	    return this.position;
 	}
 	
 	/**                                                                                                                                                                                  
-	 * Set the Position of this  unit to the given Position.                                                                                                 
+	 * Set the position of this  unit to the given position.                                                                                                 
 	 *                                                                                                                                                                                   
-	 * @param  Position
-	 *         The new Position for this Unit.                                                                                                                       
-	 * @post   The Position of this new Unit is equal to                                                                                                             
-	 *         the given Position.                                                                                                                                              
+	 * @param  position
+	 *         The new position for this Unit.                                                                                                                       
+	 * @post   The position of this new Unit is equal to                                                                                                             
+	 *         the given position.                                                                                                                                              
 	 *       | new.getPosition() == position                                                                                                                           
 	 * @throws ModelException                                                                                                                                                        
-	 *         The given Position is not a valid Position for any                                                                                                      
+	 *         The given position is not a valid position for any                                                                                                      
 	 *         Unit.                                                                                                                                                          
 	 *       | ! isValidPosition(position)                                                                                                                        
 	 */
@@ -475,7 +475,7 @@ public class Unit {
 			throws ModelException {
 		if (! isValidPosition(position))
 			throw new ModelException();
-		this.Position = position;
+		this.position = position;
 	}
 	
 	/**
@@ -1188,9 +1188,9 @@ public class Unit {
 	 *	|		|| between(immediateTarget[2], previousPosition[2], position[2])
 	 */
 	private boolean reachedImmediateTarget() {
-		return (between(immediateTarget[0], previousPosition[0], Position[0])
-				|| between(immediateTarget[1], previousPosition[1], Position[1])
-				|| between(immediateTarget[2], previousPosition[2], Position[2]));
+		return (between(immediateTarget[0], previousPosition[0], position[0])
+				|| between(immediateTarget[1], previousPosition[1], position[1])
+				|| between(immediateTarget[2], previousPosition[2], position[2]));
 	}
 	
 	/**
@@ -1556,7 +1556,7 @@ public class Unit {
 	private boolean shouldWork;
 	private boolean shouldAttack;
 	private String name;
-	private double[] Position;
+	private double[] position;
 	private int weight;
 	private int agility;
 	private int strength;
