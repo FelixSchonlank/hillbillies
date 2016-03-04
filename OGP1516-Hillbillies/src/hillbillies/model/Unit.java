@@ -1489,56 +1489,6 @@ public class Unit {
 	}
 	
 	/**
-	 * Get a random coordinate within the game field.
-	 * @return
-	 * 		A random coordinate within the game field.
-	 */
-	private static int[] getRandomCoordinate() {
-		int[] result = new int[3];
-		Random random = new Random();
-		for(int i=0; i<result.length; i++){
-			int num = random.nextInt((int) (getMaxCoordinate() - getMinCoordinate()));
-			num += getMinCoordinate();
-			result[i] = num;
-		}
-		return result;
-	}
-	
-	/**
-	 * Decrease the stamina of this Unit by the amount it should per time it decreases while sprinting.
-	 */
-	private void sprintingStaminaDecrease() {
-		this.setStamina(this.getStamina() - 1);
-	}
-	
-	/**
-	 * Determines the magnitude of the velocity ("speed" in English I think)
-	 * @return
-	 * 		The speed the Unit should be going at at this moment
-	 */
-	private double determineVelocity() {
-		double baseSpeed;
-		baseSpeed = 1.5 * (this.getStrength() + this.getAgility()) / 2 * this.getWeight();
-		double walkingSpeed;
-		double realSpeed;
-		double dz = this.immediateTarget[2] - this.getPosition()[2];
-		if(dz < 0){
-			walkingSpeed = 0.5 * baseSpeed;
-		}else if(dz > 0){
-			walkingSpeed = 1.2 * baseSpeed;
-		}else{
-			walkingSpeed = baseSpeed;
-		}
-		if(this.sprinting){
-			realSpeed = 2 * walkingSpeed;
-		}else{
-			realSpeed = walkingSpeed;
-		}
-		return realSpeed;
-	}
-	
-
-	/**
 	 * Execute the behavior when in the RESTING_INIT state.
 	 * @param dt
 	 * 		The passed time 
@@ -1626,8 +1576,58 @@ public class Unit {
 		}
 		
 	}
-
-
+	
+	/**
+	 * Get a random coordinate within the game field.
+	 * @return
+	 * 		A random coordinate within the game field.
+	 */
+	private static int[] getRandomCoordinate() {
+		int[] result = new int[3];
+		Random random = new Random();
+		for(int i=0; i<result.length; i++){
+			int num = random.nextInt((int) (getMaxCoordinate() - getMinCoordinate()));
+			num += getMinCoordinate();
+			result[i] = num;
+		}
+		return result;
+	}
+	
+	/**
+	 * Decrease the stamina of this Unit by the amount it should per time it decreases while sprinting.
+	 */
+	private void sprintingStaminaDecrease() {
+		this.setStamina(this.getStamina() - 1);
+	}
+	
+	/**
+	 * Determines the magnitude of the velocity ("speed" in English I think)
+	 * @return
+	 * 		The speed the Unit should be going at at this moment
+	 */
+	private double determineVelocity() {
+		double baseSpeed;
+		baseSpeed = 1.5 * (this.getStrength() + this.getAgility()) / 2 * this.getWeight();
+		double walkingSpeed;
+		double realSpeed;
+		double dz = this.immediateTarget[2] - this.getPosition()[2];
+		if(dz < 0){
+			walkingSpeed = 0.5 * baseSpeed;
+		}else if(dz > 0){
+			walkingSpeed = 1.2 * baseSpeed;
+		}else{
+			walkingSpeed = baseSpeed;
+		}
+		if(this.sprinting){
+			realSpeed = 2 * walkingSpeed;
+		}else{
+			realSpeed = walkingSpeed;
+		}
+		return realSpeed;
+	}
+	
+	
+	
 	/* Constants */
 
 
