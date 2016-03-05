@@ -13,6 +13,7 @@
 - First charactor is lower
 - Null as argument
 
+
 ** Position 							  :Defensive:
 
 *** legalCase
@@ -28,6 +29,7 @@
 -all getMaxCoordinate()
 -all negative 
 -all > getMaxCoordinate()
+
 
 ** Weight  (agility, strength and toughness are simular) 	      :Total:
 
@@ -57,12 +59,17 @@
   6) this.getState() == WORKING
   7) this.getState() == ATTACKING
 
+** illegal 					   :illegalArgumentException:
+
+- dt > getMaxDt()  
+
+
 * moveToAdjacent
 
 *** legalCase
 
 - Parameters are (-1, 0 or 1)
-- this.getState() in {NOTHING, RESTING_HP, RESTING_STAMINA, WORKING}
+- this.getState() in {NOTHING, RESTING_HP, RESTING_STAMINA , WORKING}
 - Destination whithin bounds
 
 *** illegalCase
@@ -88,11 +95,12 @@
 ** legal
 
 - state in {NOTHING, RESTINF_HP, RESTING_STATMINA, WORKING}
+- victim != null 
 
 ** illegal
 
 - state in {RESING_INIT, MOVING, ATTACKING}
-
+- victim == null
 
 * defend
 
@@ -125,3 +133,5 @@
 ** illegal
 
 - this.getState() in {RESTING_INIT, MOVING, WORKING, RESTING}
+
+* areAdjacentCubes
