@@ -308,12 +308,6 @@ public class Unit {
 	 * 		The difference in cubes to go in y direction 
 	 * @param dz
 	 * 		The difference in cubes to go in z direction
-	 * @throws ModelException
-	 * 		If not in the right state to perform this action
-	 * 		| !(this.getState() == State.NOTHING ||
-	 * 		| 	this.getState() == State.RESTING_HP ||
-	 *		| 	this.getState() == State.RESTING_STAMINA ||
-	 *		| 	this.getState() == State.WORKING)
 	 * @throws IllegalArgumentException
 	 * 		If at least one of the parameters is not -1, 0, or 1
 	 * 		| !(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1)
@@ -356,11 +350,25 @@ public class Unit {
 	 * @post
 	 * 		The given destination will be represented by the last element of the path
 	 * 		| new.path[new.path.length] == cubeCenter(destination)
+	 * @throws BadFSMStateException
+	 * 		If the current FSM state of the Unit is not right.
+	 * 		| this.getState() != State.NOTHING &&
+	 * 		| this.getState() != State.MOVING &&
+	 * 		| this.getState() != State.RESTING_HP &&
+	 * 		| this.getState() != State.RESTING_STAMINA &&
+	 * 		| this.getState() != State.WORKING
 	 * @throws IllegalArgumentException
 	 * 		If the destination is not within the bounds.
 	 * 		| !withinBounds(destination)
 	 */
-	public void moveTo(int[] destination) throws IllegalArgumentException {
+	public void moveTo(int[] destination) throws IllegalArgumentException, BadFSMStateException {
+		if(this.getState() != State.NOTHING &&
+				this.getState() != State.MOVING &&
+				this.getState() != State.RESTING_HP &&
+				this.getState() != State.RESTING_STAMINA &&
+				this.getState() != State.WORKING){
+			throw new BadFSMStateException("Can't execute moveTo from within state: " + this.getState().toString());
+		}
 		if(!withinBounds(destination)){
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
@@ -545,6 +553,9 @@ public class Unit {
 		}else if(!blockSucceeds(attacker)){
 			takeDamage(attacker.getStrength() / 10);
 		}
+		
+		this.immediateTarget = null;
+		this.path.clear();
 		
 		this.transitionToNothing();
 	}
@@ -1732,7 +1743,9 @@ public class Unit {
 			if(result == 0){
 				try{
 					this.moveTo(this.getRandomCoordinate());
-				}catch(IllegalArgumentException e){}
+				}catch(IllegalArgumentException e){
+				}catch(BadFSMStateException f){
+				}
 			}else if(result == 1){
 				this.shouldWork = true;
 			}else{
@@ -1757,6 +1770,13 @@ public class Unit {
 				this.transitionToNothing();
 			}
 		}else{
+			
+			if(this.defaultBehaviorEnabled){
+				if(random.nextDouble() <= getDefaultBehaviorSprintingThreshold() * dt){
+					this.startSprinting();
+				}
+			}
+			
 			double velocity = this.determineVelocity();
 			double[] position = this.getPosition();
 			double[] deltaPosition = new double[] {
@@ -1815,7 +1835,7 @@ public class Unit {
 			this.transitionToWorking( );
 		}else if (this.shouldAttack){
 			this.transitionToAttacking();
-		}else if (this.getHP() == getMaxHP()){
+		}else if (this.getHP() == this.getMaxHP()){
 			this.transitionToRestingStamina();
 		}else {
 			if(this.restingHPCountdown <= 0){
@@ -1840,7 +1860,7 @@ public class Unit {
 		}else if ( this.getHP() != this.getMaxHP()) {
 			this.transitionToRestingHP();
 		}else if (this.getStamina() == this.getMaxStamina()){
-			this.doBehaviorNothing(dt);
+			this.transitionToNothing();
 		}else{
 			if(this.restingStaminaCountdown <= 0){
 				this.doRestingStamina(this.restingStaminaCountdown);
@@ -1996,6 +2016,16 @@ public class Unit {
 		return result;
 	}
 	
+	/**
+	 * Gives back the defaultBehaviorSprintingThreshold
+	 * @return
+	 * 		The defaultBehaviorSprintingThreshold
+	 * 		| result == this.defaultBehaviorSprintingThreshold
+	 */
+	@Basic
+	private static double getDefaultBehaviorSprintingThreshold() {
+		return defaultBehaviorSprintingThreshold;
+	}
 	
 	
 	/* Constants */
@@ -2014,6 +2044,11 @@ public class Unit {
 	private static final int minHP = 0;
 	private static final int minStamina = 0;
 	private static final double maxDT = 0.2d;
+	
+	/**
+	 * A helper variable to hold the chance that a Unit starts.
+	 */
+	private static final double defaultBehaviorSprintingThreshold = 0.1d;
 	
 	
 	
@@ -2097,6 +2132,5 @@ public class Unit {
 	 * A random generator used by this Unit
 	 */
 	private static Random random;
-
 
 }

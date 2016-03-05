@@ -138,7 +138,11 @@ public class Facade implements IFacade {
 
 	@Override
 	public void moveTo(Unit unit, int[] cube) throws ModelException {
-		unit.moveTo(cube);
+		try{
+			unit.moveTo(cube);
+		}catch(BadFSMStateException e){
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
