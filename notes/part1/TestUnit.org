@@ -102,6 +102,7 @@
 - state in {RESING_INIT, MOVING, ATTACKING}
 - victim == null
 
+
 * defend
 
 ** legal
@@ -134,4 +135,3 @@
 
 - this.getState() in {RESTING_INIT, MOVING, WORKING, RESTING}
 
-* areAdjacentCubes

@@ -3,7 +3,6 @@ package hillbillies.model;
 import java.util.*;
 
 import java.lang.Math;
-import java.util.Random;
 
 import ogp.framework.util.*;
 
@@ -494,7 +493,7 @@ public class Unit {
 	 * Set the shouldAttack flag high and set this.victim to the given victim
 	 * @param victim 
 	 * @Post the shouldAttack flag is set high and this.victim is set to the given victim
-	 * 		|this.shouldAttack && this.victim == victim
+	 * 		|this.shouldAttack && this.getVictim() == victim
 	 * @throws BadFSMStateException if state is not NOTHING, RESTING_HP, RESTING_STAMINA or WORKING
 	 * 		| !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA || this.getState() == WORKING)
 	 * @throws IllegalArgumentException
@@ -519,7 +518,7 @@ public class Unit {
 		}else{
 			this.pointAt(victim);
 			this.shouldAttack = true;
-			this.victim = victim;
+			this.setVictim(victim);
 		}
 	}
 	
@@ -603,7 +602,7 @@ public class Unit {
 	 * 		| !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA)
 	 */
 	public void work() throws BadFSMStateException{
-		if (!(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA))
+		if (!(this.getState() == State.NOTHING || this.getState() == State.RESTING_HP || this.getState() == State.RESTING_STAMINA))
 			throw new BadFSMStateException("Can not go to working from this state");
 		else{
 			this.shouldWork = true;
@@ -1205,7 +1204,54 @@ public class Unit {
 		return minStamina;
 	}
 	
+	/* path */
+	/**
+	 * Return the path of this unit
+	 */
+	public List<double[]> getPath(){
+		return this.path;
+	}
 	
+	/* flags */
+	
+	/**
+	 * return the value of the shouldRest flag
+	 */
+	public boolean getShouldRestFlag(){
+		return this.shouldRest;
+	}
+	
+	/**
+	 * return the value of the shouldAttack flag
+	 */
+	public boolean getShouldAttackFlag(){
+		return this.shouldAttack;
+	}
+	
+	/**
+	 * return the value of the shouldWork flag
+	 */
+	public boolean getShouldWorkFlag(){
+		return this.shouldWork;
+	}
+	
+	/* victim */
+	
+	/**
+	 * return the victim
+	 */
+	public Unit getVictim(){
+		return this.victim;
+	}
+	
+	/**
+	 * Set the victim to a given victim
+	 * @Post the victim is set to the given victim
+	 * 		|new.getVictim() == victim
+	 */
+	public void setVictim(Unit victim){
+		this.victim = victim;
+	}
 	
 	/* Default behavior */
 
@@ -1213,6 +1259,7 @@ public class Unit {
 	 * Return the default behavior of this Unit.
 	 */
 	@Basic @Raw
+
 	public boolean getDefaultBehaviorEnabled() {
 		return this.defaultBehaviorEnabled;
 	}
@@ -1875,9 +1922,9 @@ public class Unit {
 	private void doBehaviorAttacking(double dt) {
 		if (this.attackingCountdown > 0){
 			this.attackingCountdown -= dt;
-		}else if (this.inRangeForAttack(victim)){
+		}else if (this.inRangeForAttack(this.getVictim())){
 			try{
-				this.victim.defend(this);
+				this.getVictim().defend(this);
 			}catch (IllegalArgumentException e){
 			}
 			this.transitionToNothing();
