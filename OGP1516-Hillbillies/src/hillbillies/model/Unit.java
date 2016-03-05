@@ -3,7 +3,6 @@ package hillbillies.model;
 import java.util.*;
 
 import java.lang.Math;
-import java.util.Random;
 
 import ogp.framework.util.*;
 
@@ -57,7 +56,12 @@ import hillbillies.model.BadFSMStateException;
  * @invar  The sprinting of each Unit must be a valid sprinting for any
  *         Unit.
  *       | isValidSprinting(getSprinting())
+ *       
+ * @invar  The path of each Unit must be a valid path for any
+ *         Unit.
+ *       | isValidPath(getPath())
  */
+
 public class Unit {
 	
 	
@@ -168,7 +172,7 @@ public class Unit {
 		
 		this.immediateTarget = null;
 		this.previousPosition = this.getPosition();
-		this.path = new ArrayList<double[]>();
+		this.setPath(new ArrayList<double[]>());
 		this.setState(State.NOTHING);
 		
 	}
@@ -373,7 +377,7 @@ public class Unit {
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
 		
-		path.clear();
+		this.clearPath();
 		
 		int[] position = cubeCoordinates(this.getPosition());
 		int dx, dy, dz;
@@ -402,7 +406,7 @@ public class Unit {
 				dz = -1;
 			}
 			position[2] += dz;
-			path.add(cubeCenter(position));
+			this.addToPath(cubeCenter(position));
 		}
 	}
 	
@@ -502,7 +506,7 @@ public class Unit {
 	 * Set the shouldAttack flag high and set this.victim to the given victim
 	 * @param victim 
 	 * @Post the shouldAttack flag is set high and this.victim is set to the given victim
-	 * 		|this.shouldAttack && this.victim == victim
+	 * 		|this.shouldAttack && this.getVictim() == victim
 	 * @throws BadFSMStateException if state is not NOTHING, RESTING_HP, RESTING_STAMINA or WORKING
 	 * 		| !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA || this.getState() == WORKING)
 	 * @throws IllegalArgumentException
@@ -527,7 +531,7 @@ public class Unit {
 		}else{
 			this.pointAt(victim);
 			this.shouldAttack = true;
-			this.victim = victim;
+			this.setVictim(victim);
 		}
 	}
 	
@@ -555,7 +559,7 @@ public class Unit {
 		}
 		
 		this.immediateTarget = null;
-		this.path.clear();
+		this.clearPath();
 		
 		this.transitionToNothing();
 	}
@@ -614,7 +618,7 @@ public class Unit {
 	 * 		| !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA)
 	 */
 	public void work() throws BadFSMStateException{
-		if (!(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA))
+		if (!(this.getState() == State.NOTHING || this.getState() == State.RESTING_HP || this.getState() == State.RESTING_STAMINA))
 			throw new BadFSMStateException("Can not go to working from this state");
 		else{
 			this.shouldWork = true;
@@ -1218,12 +1222,139 @@ public class Unit {
 	
 	
 	
+	/* Path */
+
+	/**
+	 * Return the path of this Unit.
+	 */
+	@Basic @Raw
+	public List<double[]> getPath() {
+		return this.path;
+	}
+
+	/**
+	 * Check whether the given path is a valid path for
+	 * any Unit.
+	 *  
+	 * @param  path
+	 *         The path to check.
+	 * @return 
+	 *       | result == (path != null)
+	 */
+	public static boolean isValidPath(List<double[]> path) {
+		return path != null;
+	}
+
+	/**
+	 * Set the path of this Unit to the given path.
+	 * 
+	 * @param  path
+	 *         The new path for this Unit.
+	 * @post   The path of this new Unit is equal to
+	 *         the given path.
+	 *       | new.getPath() == path
+	 * @throws IllegalArgumentException
+	 *         The given path is not a valid path for any
+	 *         Unit.
+	 *       | ! isValidPath(getPath())
+	 */
+	@Raw
+	private void setPath(List<double[]> path) 
+			throws IllegalArgumentException {
+		if (! isValidPath(path))
+			throw new IllegalArgumentException("Not a valid path: " + path);
+		this.path = path;
+	}
+	
+	/**
+	 * Clears all the elements out of path
+	 * @post
+	 * 		The path will be empty
+	 * 		| new.getPath().length == 0;
+	 */
+	private void clearPath() {
+		this.getPath().clear();
+	}
+	
+	/**
+	 * Adds given element to the end of the path
+	 * @param element
+	 * 		The element to add
+	 * @post
+	 * 		The last element will be equal to the given one
+	 * 		| new.getPath().get(new.getPath().length) == element; 
+	 */
+	private void addToPath(double[] element) {
+		this.getPath().add(element);
+	}
+	
+	/**
+	 * Removes first element from path, and returns it.
+	 * @return
+	 * 		The first element from the path
+	 * 		| result == this.getPath().get(0);
+	 */
+	private double[] extractFromPath() {
+		return this.getPath().remove(0);
+	}
+	
+	
+	/* flags */
+	
+	/**
+	 * return the value of the shouldRest flag
+	 */
+	@Basic
+	public boolean getShouldRestFlag(){
+		return this.shouldRest;
+	}
+	
+	/**
+	 * return the value of the shouldAttack flag
+	 */
+	@Basic
+	public boolean getShouldAttackFlag(){
+		return this.shouldAttack;
+	}
+	
+	/**
+	 * return the value of the shouldWork flag
+	 */
+	@Basic
+	public boolean getShouldWorkFlag(){
+		return this.shouldWork;
+	}
+	
+	
+	
+	/* victim */
+	
+	/**
+	 * return the victim
+	 */
+	@Basic
+	public Unit getVictim(){
+		return this.victim;
+	}
+	
+	/**
+	 * Set the victim to a given victim
+	 * @Post the victim is set to the given victim
+	 * 		|new.getVictim() == victim
+	 */
+	public void setVictim(Unit victim){
+		this.victim = victim;
+	}
+	
+	
+	
 	/* Default behavior */
 
 	/**
 	 * Return the default behavior of this Unit.
 	 */
 	@Basic @Raw
+
 	public boolean getDefaultBehaviorEnabled() {
 		return this.defaultBehaviorEnabled;
 	}
@@ -1728,8 +1859,8 @@ public class Unit {
 		if(immediateTarget != null){
 			this.setState(State.MOVING);
 			this.setFlagsLow();
-		}else if(!path.isEmpty()){
-			this.immediateTarget = path.remove(0);
+		}else if(!this.getPath().isEmpty()){
+			this.immediateTarget = this.extractFromPath();
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(this.shouldRest){
@@ -1761,9 +1892,9 @@ public class Unit {
 	 */
 	private void doBehaviorMoving(double dt) {
 		if(reachedImmediateTarget()){
-			if(!path.isEmpty()){
+			if(!this.getPath().isEmpty()){
 				try{this.setPosition(immediateTarget);}catch(IllegalArgumentException e){}
-				immediateTarget = path.remove(0);
+				immediateTarget = this.extractFromPath();
 			}else{
 				try{this.setPosition(immediateTarget);}catch(IllegalArgumentException e){}
 				immediateTarget = null;
@@ -1895,9 +2026,9 @@ public class Unit {
 	private void doBehaviorAttacking(double dt) {
 		if (this.attackingCountdown > 0){
 			this.attackingCountdown -= dt;
-		}else if (this.inRangeForAttack(victim)){
+		}else if (this.inRangeForAttack(this.getVictim())){
 			try{
-				this.victim.defend(this);
+				this.getVictim().defend(this);
 			}catch (IllegalArgumentException e){
 			}
 			this.transitionToNothing();
