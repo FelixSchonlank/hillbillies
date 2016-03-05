@@ -1,0 +1,127 @@
+* Constructor
+
+** Name 							  :Defensive: 
+
+*** legalCase
+
+- Name must be longer then 2
+- First charactor must be uppercase
+
+*** illegalCase 
+
+- Shorther then 2
+- First charactor is lower
+- Null as argument
+
+** Position 							  :Defensive:
+
+*** legalCase
+
+-length == 3
+-all getMinCoordinate()
+-Middle of the field
+
+*** illegalCase
+
+-length > 3
+-length < 3
+-all getMaxCoordinate()
+-all negative 
+-all > getMaxCoordinate()
+
+** Weight  (agility, strength and toughness are simular) 	      :Total:
+
+*** legalCase
+
+- getMaxWeight()
+- getMinWeight()
+
+*** IllegalCase
+
+- < getMinWeight()
+- > getMaxWeight()
+
+
+* advanceTime
+
+** legal 
+
+- dt < getMaxDt()
+  1) this.getState() == NOTHING
+     
+     
+  2) this.getState() == MOVING
+  3) this.getState() == RESTING_INIT
+  4) this.getState() == RESTING_HP
+  5) this.getState() == RETSING_STATMINA
+  6) this.getState() == WORKING
+  7) this.getState() == ATTACKING
+
+* moveToAdjacent
+
+*** legalCase
+
+- Parameters are (-1, 0 or 1)
+- this.getState() in {NOTHING, RESTING_HP, RESTING_STAMINA, WORKING}
+- Destination whithin bounds
+
+*** illegalCase
+
+- Parameters are not (-1, 0 or 1)  throws IllegalArgumentException
+- this.getState() in {MOVING, RESTING_INIT, , ATTACKING} throws BadFSMStateException
+- Destination out of bounds  throws IllegalArgumentException
+
+
+* moveTo
+
+*** legal 
+
+- Destination whithin bounds
+
+*** illegaleCase
+
+- destination not in bounds throws illegalArgumentException
+
+
+* attack
+
+** legal
+
+- state in {NOTHING, RESTINF_HP, RESTING_STATMINA, WORKING}
+
+** illegal
+
+- state in {RESING_INIT, MOVING, ATTACKING}
+
+
+* defend
+
+** legal
+
+- attacker is of cass unit 
+
+** illegal 
+
+- attacker == null
+
+
+* rest
+
+** legal
+
+- this.getState() in {NOTHING, WORKING}
+  
+** illegal 
+
+- this.getState() in {MOVING, RESTING_INIT, RESTING_HP, RESTING_STMINA, RESTING}
+
+
+* work
+
+** legal  
+
+- this.getState() in {NOTHING, RESTING_HP, RESTING_STAMINA}
+
+** illegal
+
+- this.getState() in {RESTING_INIT, MOVING, WORKING, RESTING}
