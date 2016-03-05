@@ -1,213 +1,198 @@
 package hillbillies.part1.facade;
 
+import hillbillies.model.BadFSMStateException;
 import hillbillies.model.Unit;
 import ogp.framework.util.ModelException;
 
 public class Facade implements IFacade {
 
 	@Override
-	public Unit createUnit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness,
+	public Unit createUnit(String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return new Unit(name, initialCoordinates, weight, agility, strength, toughness, enableDefaultBehavior);
 	}
 
 	@Override
 	public double[] getPosition(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return unit.getPosition();
 	}
 
 	@Override
 	public int[] getCubeCoordinate(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return unit.getCubeCoordinate();
 	}
 
 	@Override
 	public String getName(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return unit.getName();
 	}
 
 	@Override
 	public void setName(Unit unit, String newName) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setName(newName);
 	}
 
 	@Override
 	public int getWeight(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getWeight();
 	}
 
 	@Override
 	public void setWeight(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setWeight(newValue);
 	}
 
 	@Override
 	public int getStrength(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getStrength();
 	}
 
 	@Override
 	public void setStrength(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setStrength(newValue);
 	}
 
 	@Override
 	public int getAgility(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getAgility();
 	}
 
 	@Override
 	public void setAgility(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setAgility(newValue);
 	}
 
 	@Override
 	public int getToughness(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getToughness();
 	}
 
 	@Override
 	public void setToughness(Unit unit, int newValue) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setToughness(newValue);
 	}
 
 	@Override
 	public int getMaxHitPoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getMaxHP();
 	}
 
 	@Override
 	public int getCurrentHitPoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getHP();
 	}
 
 	@Override
 	public int getMaxStaminaPoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getMaxStamina();
 	}
 
 	@Override
 	public int getCurrentStaminaPoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getStamina();
 	}
 
 	@Override
 	public void advanceTime(Unit unit, double dt) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.advanceTime(dt);
 	}
 
 	@Override
 	public void moveToAdjacent(Unit unit, int dx, int dy, int dz) throws ModelException {
-		// TODO Auto-generated method stub
-
+		try{
+			unit.moveToAdjacent(dx, dy, dz);
+		}catch(BadFSMStateException e){
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
 	public double getCurrentSpeed(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.determineVelocity();
 	}
 
 	@Override
 	public boolean isMoving(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.isMoving();
 	}
 
 	@Override
 	public void startSprinting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.startSprinting();
 	}
 
 	@Override
 	public void stopSprinting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.stopSprinting();
 	}
 
 	@Override
 	public boolean isSprinting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.getSprinting();
 	}
 
 	@Override
 	public double getOrientation(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return unit.getOrientation();
 	}
 
 	@Override
 	public void moveTo(Unit unit, int[] cube) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.moveTo(cube);
 	}
 
 	@Override
 	public void work(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-
+		try{
+			unit.work();
+		}catch(BadFSMStateException e){
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
 	public boolean isWorking(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.isWorking();
 	}
 
 	@Override
 	public void fight(Unit attacker, Unit defender) throws ModelException {
-		// TODO Auto-generated method stub
-
+		try{
+			attacker.attack(defender);
+		}catch(BadFSMStateException e){
+			throw new ModelException(e);
+		}catch(IllegalArgumentException e){
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
 	public boolean isAttacking(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.isAttacking();
 	}
 
 	@Override
 	public void rest(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-
+		try{
+			unit.rest();
+		}catch(BadFSMStateException e){
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
 	public boolean isResting(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.isResting();
 	}
 
 	@Override
 	public void setDefaultBehaviorEnabled(Unit unit, boolean value) throws ModelException {
-		// TODO Auto-generated method stub
-
+		unit.setDefaultBehaviorEnabled(value);
 	}
 
 	@Override
 	public boolean isDefaultBehaviorEnabled(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.getDefaultBehaviorEnabled();
 	}
 
 }

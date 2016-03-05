@@ -53,7 +53,10 @@ import hillbillies.model.BadFSMStateException;
  *
  * @invar  Each Unit can have its default behavior as default behavior.
  *       | isValidDefaultBehaviorEnabled(this.getDefaultBehaviorEnabled())
- *       
+ *
+ * @invar  The sprinting of each Unit must be a valid sprinting for any
+ *         Unit.
+ *       | isValidSprinting(getSprinting())
  */
 public class Unit {
 	
@@ -69,8 +72,8 @@ public class Unit {
   	 * @effect The name of this new unit is set to                                                                                                               
      *      the given name.                                                                                                                                              
      *    | this.setName(name)
-	 * @param initialPosition
-     *     The position for this new Unit.                                                                                                                       
+	 * @param initialCoordinates
+     *     The coordinates for this new Unit.                                                                                                                       
   	 * @effect The position of this new Unit is set to                                                                                                               
      *     the given initialPosition.                                                                                                                                              
      *   | this.setPosition(initialPosition) 
@@ -121,13 +124,15 @@ public class Unit {
 	 * 		| (!isValidName(name) || !isValidPosition(position) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior)
 	 */
 	@Raw
-	public Unit (String name, double[] initialPosition, int weight, int agility, int strength, int toughness,
+	public Unit (String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws IllegalArgumentException{
-			
+		
+		double[] initialPosition = cubeCenter(initialCoordinates);
+		
 		if (!isValidName(name) || !isValidPosition(initialPosition) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior)){
 			throw new IllegalArgumentException("Name, position, or enableDefaultBehavior are not valid");
 		}
-
+		
 		this.setName( name );
 		this.setPosition( initialPosition );
 		this.setDefaultBehaviorEnabled( enableDefaultBehavior);
@@ -233,6 +238,52 @@ public class Unit {
 		}
 	}
 	
+	/**
+	 * Gives back the coordinates of the cube which the Unit is currently in.
+	 * @return
+	 * 		The coordinates of the cube which the Unit is currently in.
+	 * 		| result == cubeCoordinates(this.getPosition());
+	 */
+	public int[] getCubeCoordinate() {
+		return cubeCoordinates(this.getPosition());
+	}
+	
+	/**
+	 * Determines the magnitude of the velocity ("speed" in English I think)
+	 * @return
+	 * 		The speed the Unit should be going at at this moment
+	 */
+	public double determineVelocity() {
+		double baseSpeed;
+		baseSpeed = 1.5 * (this.getStrength() + this.getAgility()) / 2 * this.getWeight();
+		double walkingSpeed;
+		double realSpeed;
+		double dz = this.immediateTarget[2] - this.getPosition()[2];
+		if(dz < 0){
+			walkingSpeed = 0.5 * baseSpeed;
+		}else if(dz > 0){
+			walkingSpeed = 1.2 * baseSpeed;
+		}else{
+			walkingSpeed = baseSpeed;
+		}
+		if(this.sprinting){
+			realSpeed = 2 * walkingSpeed;
+		}else{
+			realSpeed = walkingSpeed;
+		}
+		return realSpeed;
+	}
+	
+	/**
+	 * Tells whether the Unit is currently moving.
+	 * @return
+	 * 		true iff the Unit is currently moving.
+	 * 		| result == (this.getState() == State.MOVING)
+	 */
+	public boolean isMoving() {
+		return this.getState() == State.MOVING;
+	}
+	
 	
 	
 	/* Movement */
@@ -329,17 +380,114 @@ public class Unit {
 		}
 	}
 	
+	
+	
+	/* Sprinting */
+
+	/**
+	 * Tells the Unit to start sprinting, if possible
+	 * @post
+	 * 		When the unit can start sprinting, it will.
+	 * 		| if this.canStartSprinting() then
+	 * 		| 	new.getSprinting()
+	 */
+	public void startSprinting() {
+		if(this.canStartSprinting()){
+			this.setSprinting(true);
+		}
+	}
+	
+	/**
+	 * Tells the Unit to stop sprinting, if possible
+	 * @post
+	 * 		When the unit can stop sprinting, it will.
+	 * 		| if this.canStopSprinting() then
+	 * 		| 	!new.getSprinting()
+	 */
+	public void stopSprinting() {
+		if(this.canStopSprinting()){
+			this.setSprinting(false);
+		}
+	}
+	
+	/**
+	 * Tells whether the Unit can start sprinting.
+	 * @return
+	 * 		true iff the Unit can start sprinting.
+	 * 		| result == (this.getState() == State.NOTHING && this.getStamina() != this.getMinStamina());
+	 */
+	private boolean canStartSprinting() {
+		return (this.getState() == State.NOTHING && this.getStamina() != this.getMinStamina());
+	}
+	
+	/**
+	 * Tells whether the Unit can stop sprinting.
+	 * @return
+	 * 		true iff the Unit can stop sprinting.
+	 * 		| result == true;
+	 */
+	private boolean canStopSprinting() {
+		return true;
+	}
+
+	/**
+	 * Return the sprinting of this Unit.
+	 */
+	@Basic @Raw
+	public boolean getSprinting() {
+		return this.sprinting;
+	}
+
+	/**
+	 * Check whether the given sprinting is a valid sprinting for
+	 * any Unit.
+	 *  
+	 * @param  sprinting
+	 *         The sprinting to check.
+	 * @return 
+	 *       | result == true;
+	 */
+	public static boolean isValidSprinting(boolean sprinting) {
+		return true;
+	}
+
+	/**
+	 * Set the sprinting of this Unit to the given sprinting.
+	 * 
+	 * @param  sprinting
+	 *         The new sprinting for this Unit.
+	 * @post   If the given sprinting is a valid sprinting for any Unit,
+	 *         the sprinting of this new Unit is equal to the given
+	 *         sprinting.
+	 *       | if (isValidSprinting(sprinting))
+	 *       |   then new.getSprinting() == sprinting
+	 */
+	@Raw
+	public void setSprinting(boolean sprinting) {
+		if (isValidSprinting(sprinting))
+			this.sprinting = sprinting;
+	}
+
+
+	
+	/* Combat */
+	
 	/**
 	 * Set the shouldAttack flag high and set this.victim to the given victim
 	 * @param victim 
 	 * @Post the shouldAttack flag is set high and this.victim is set to the given victim
 	 * 		|this.shouldAttack && this.victim == victim
-	 * @throws BadFSMStateException if state is not NOTHING, RESTING_HP, RESTING_STAMINA or WORKING or if the victim is null 
-	 * 		| (victim == null || !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA || this.getState() ==WORKING))
+	 * @throws BadFSMStateException if state is not NOTHING, RESTING_HP, RESTING_STAMINA or WORKING
+	 * 		| !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA || this.getState() == WORKING)
+	 * @throws IllegalArgumentException
+	 * 		If the given victim is null
+	 * 		| victim == null
 	 */
-	public void attack(Unit victim) throws BadFSMStateException{
-		if (victim == null || !(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA || this.getState() == state.WORKING)){
+	public void attack(Unit victim) throws BadFSMStateException, IllegalArgumentException {
+		if (!(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA || this.getState() == state.WORKING)){
 			throw new BadFSMStateException("Can not attack in this state");
+		}else if (victim == null){
+			throw new IllegalArgumentException("Cannot attack null.");
 		}else{
 			this.shouldAttack = true;
 			this.victim = victim;
@@ -371,6 +519,19 @@ public class Unit {
 	}
 	
 	/**
+	 * Tells whether the Unit is currently attacking.
+	 * @return
+	 * 		true iff the Unit is currently attacking.
+	 * 		| result == (this.getState() == State.ATTACKING);
+	 */
+	public boolean isAttacking() {
+		return this.getState() == State.ATTACKING;
+	}
+	
+	
+	/* Resting */
+	
+	/**
 	 * Set shouldRest flag to high
 	 * @Post The shouldRest flag is set to high
 	 * 		| new.shouldRest
@@ -386,6 +547,24 @@ public class Unit {
 	}
 	
 	/**
+	 * Tells whether the Unit is resting.
+	 * @return
+	 * 		true iff the Unit is resting.
+	 * 		| result == (
+	 * 		| 	this.getState() == State.RESTING_INIT || 
+	 * 		| 	this.getState() == State.RESTING_HP || 
+	 * 		| 	this.getState() == State.RESTING_STAMINA
+	 * 		| );
+	 */
+	public boolean isResting() {
+		return (this.getState() == State.RESTING_INIT || this.getState() == State.RESTING_HP || this.getState() == State.RESTING_STAMINA);
+	}
+	
+	
+	
+	/* Working */
+	
+	/**
 	 * Set the shouldWork flag  to high
 	 * @Post ShouldWork is set to true
 	 * 		|this.shouldWork
@@ -399,9 +578,19 @@ public class Unit {
 			this.shouldWork = true;
 		}
 	}
-        
-
-
+	
+	/**
+	 * Tells whether the Unit is currently working.
+	 * @return
+	 * 		true iff the Unit is currently working.
+	 * 		| result == (this.getState() == State.WORKING);
+	 */
+	public boolean isWorking() {
+		return this.getState() == State.WORKING;
+	}
+	
+	
+	
 	/* Name */
 	
 	/**
@@ -527,8 +716,6 @@ public class Unit {
 	
 	/* Weight */
 	
-	/* Weight */
-	
 	/**
 	 * Get the weight of this unit
 	 */
@@ -545,11 +732,11 @@ public class Unit {
 	 *         The new Weight for this unit.                                                                                                                                             
 	 * @post   If the given Weight is a valid Weight for any unit,                                                                                                                       
 	 *         the Weight of this new unit is equal to the given                                                                                                                         
-	 *         Weight.                                                                                                                                                                   
+	 *         Weight. Else, it is set to the maximum.
 	 *       | if (canHaveAsWeight(weight))                                                                                                                                                
-	 *       |   then new.getWeight() == weight 
-	 *       |else 
-	 *       |		new.getWeight() == getMaxWeight()                                                                                                                                         
+	 *       | 	then new.getWeight() == weight 
+	 *       | else 
+	 *       | 	new.getWeight() == getMaxWeight()                                                                                                                                         
 	 */
 	@Raw
 	public void setWeight(int weight) {
@@ -595,9 +782,6 @@ public class Unit {
 	}
 
 	
-	
-	
-	/* Agility */
 	
 	/* Agility */
 	
@@ -666,9 +850,6 @@ public class Unit {
 	
 	
 	
-	
-	/* Toughness */
-	
 	/* toughness */
 	
 	/**
@@ -733,9 +914,7 @@ public class Unit {
 	
 	
 	
-	
 	/* Strength */
-	
 	
 	/**                                                                                                                                                                                  
 	 * Return the Strength of this Unit.                                                                                                                                                 
@@ -744,7 +923,6 @@ public class Unit {
 	public int getStrength(){
 		return this.strength;
 	}
-	
 	
 	/**
 	 * Set the strength of this unit to a given strength 
@@ -759,14 +937,13 @@ public class Unit {
 	 * 		|	new.getStrength() == getMaxStrength() 
 	 */
 	@Raw
-	private void setStrength(int strength){
+	public void setStrength(int strength){
 		if (isValidStrength(strength))
 				this.strength = strength;
 		else{
 			this.strength = getMaxStrength();
 		}
 	}
-	
 	
 	/**
 	 * Checks if a given strength is valid
@@ -776,10 +953,9 @@ public class Unit {
 	 * 			| result == (strength >= getMinStrength() && strength <= getMaxStrength())
 	 */
 	@Raw
-	private static boolean isValidStrength(int strength ){
+	public static boolean isValidStrength(int strength ){
 		return strength >= getMinStrength() && strength <= getMaxStrength();
 	}
-	
 	
 	/**
 	 * Gives the minimal strength of a unit
@@ -798,9 +974,6 @@ public class Unit {
 	}
 	
 	
-	
-	
-	/* Orientation */
 	
 	/* Orientation */
 	
@@ -866,9 +1039,6 @@ public class Unit {
 	
 	
 	
-	
-	/* HP */
-	
 	/* HP */
 	
 	/**
@@ -914,7 +1084,7 @@ public class Unit {
 	 * @return The maximum HP a unit can have is 200 * weight/100 * toughness/100
 	 * 		| result == 200 * weight/100 * toughness/100
 	 */
-	private int getMaxHP() {
+	public int getMaxHP() {
 		return 2 * this.getWeight() * this.getToughness() / 100;
 	}
 	
@@ -929,9 +1099,7 @@ public class Unit {
 	
 	
 	
-	
 	/* Stamina */
-	
 	
 	/**
 	 * Gives the Stamina of this unit 
@@ -974,7 +1142,7 @@ public class Unit {
 	 * @return The maximum Stamina a unit can have is 2 * weight * toughness / 100
 	 * 		| result == 2 * weight * toughness / 100
 	 */
-	private int getMaxStamina() {
+	public int getMaxStamina() {
 		return 2 * weight * toughness /100;
 	}
 	
@@ -1259,7 +1427,6 @@ public class Unit {
 		this.sprinting = false;
 	}
 	
-	
 	/**
 	 * Makes this Unit point directly at the other Unit.
 	 * @param other
@@ -1472,7 +1639,7 @@ public class Unit {
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(this.shouldRest){
-			this.setState(State.RESTING);
+			this.setState(State.RESTING_INIT);
 			this.setFlagsLow();
 		}else if(this.shouldWork){
 			this.setState(State.WORKING);
@@ -1747,32 +1914,6 @@ public class Unit {
 			result[i] = vector[i] / magnitude;
 		}
 		return result;
-	}
-	
-	/**
-	 * Determines the magnitude of the velocity ("speed" in English I think)
-	 * @return
-	 * 		The speed the Unit should be going at at this moment
-	 */
-	private double determineVelocity() {
-		double baseSpeed;
-		baseSpeed = 1.5 * (this.getStrength() + this.getAgility()) / 2 * this.getWeight();
-		double walkingSpeed;
-		double realSpeed;
-		double dz = this.immediateTarget[2] - this.getPosition()[2];
-		if(dz < 0){
-			walkingSpeed = 0.5 * baseSpeed;
-		}else if(dz > 0){
-			walkingSpeed = 1.2 * baseSpeed;
-		}else{
-			walkingSpeed = baseSpeed;
-		}
-		if(this.sprinting){
-			realSpeed = 2 * walkingSpeed;
-		}else{
-			realSpeed = walkingSpeed;
-		}
-		return realSpeed;
 	}
 	
 	
