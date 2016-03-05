@@ -335,8 +335,8 @@ public class Unit {
 				this.getState() == State.RESTING_STAMINA ||
 				this.getState() == State.WORKING)){
 			throw new BadFSMStateException("Cannot do moveToAdjacent from state: " + this.getState());
-		}else if(!(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1)){
-			throw new IllegalArgumentException("One of the parameters not -1, 0, or 1.");
+		}else if(!(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1) || (dx==0 && dy==0 && dz==0)){
+			throw new IllegalArgumentException("One of the parameters not -1, 0, or 1. Or all parameters equal to 0. dx: " + dx + "; dy: " + dy + "; dz: " + dz);
 		}else{
 			int[] currentCube = cubeCoordinates(this.getPosition());
 			int[] destination = new int[] {currentCube[0]+dx, currentCube[1]+dy, currentCube[2]+dz};
@@ -353,6 +353,9 @@ public class Unit {
 	 * Calculates a path for the Unit to follow towards the destination.
 	 * @param destination
 	 * 		The coordinate of the cube to go to
+	 * @post
+	 * 		The given destination will be represented by the last element of the path
+	 * 		| new.path[new.path.length] == cubeCenter(destination)
 	 * @throws IllegalArgumentException
 	 * 		If the destination is not within the bounds.
 	 * 		| !withinBounds(destination)
@@ -497,12 +500,22 @@ public class Unit {
 	 * @throws IllegalArgumentException
 	 * 		If the given victim is null
 	 * 		| victim == null
+	 * @throws IllegalArgumentException
+	 * 		If the given victim is this Unit
+	 * 		| victim == this
+	 * @throws IllegalArgumentException
+	 * 		If the given victim is not in range
+	 * 		| !this.inRangeForAttack(victim)
 	 */
 	public void attack(Unit victim) throws BadFSMStateException, IllegalArgumentException {
 		if (!(this.getState() == State.NOTHING || this.getState() == State.RESTING_HP || this.getState() == State.RESTING_STAMINA || this.getState() == State.WORKING)){
 			throw new BadFSMStateException("Can not attack in this state");
 		}else if (victim == null){
 			throw new IllegalArgumentException("Cannot attack null.");
+		}else if (victim == this){
+			throw new IllegalArgumentException("Cannot attack self.");
+		}else if (!this.inRangeForAttack(victim)){
+			throw new IllegalArgumentException("Victim is not in range.");
 		}else{
 			this.pointAt(victim);
 			this.shouldAttack = true;
@@ -532,6 +545,8 @@ public class Unit {
 		}else if(!blockSucceeds(attacker)){
 			takeDamage(attacker.getStrength() / 10);
 		}
+		
+		this.transitionToNothing();
 	}
 	
 	/**
@@ -1444,10 +1459,7 @@ public class Unit {
 	 * 			|
 	 */
 	private boolean inRangeForAttack(Unit victim){
-		for ( int i = 0; i < this.getPosition().length; i++){
-			if (this.getPosition()[i] == victim.getPosition()[i] + 1 || this.getPosition()[i] == victim.getPosition()[i] - 1)
-				return true;
-		}return false;
+		return areAdjacentCubes(cubeCoordinates(this.getPosition()), cubeCoordinates(victim.getPosition()));
 	}
 	
 	/**
@@ -1578,6 +1590,48 @@ public class Unit {
 			throw new IllegalArgumentException("position out of bounds: " + position);
 		}
 		return new int[] {(int)position[0], (int)position[1], (int)position[2]};
+	}
+	
+	/**
+	 * Tells whether the two cubes are adjacent.
+	 * @param cube1
+	 * 		The first cube to check
+	 * @param cube2
+	 * 		The second cube to check
+	 * @return
+	 * 		true iff the two cubes are adjacent.
+	 * 		| result == (cube2[0]-cube1[0] == -1 || cube2[0]-cube1[0] == 0 || cube2[0]-cube1[0] == 1) &&
+	 * 		| (cube2[1]-cube1[1] == -1 || cube2[1]-cube1[1] == 0 || cube2[1]-cube1[1] == 1) &&
+	 * 		| (cube2[2]-cube1[2] == -1 || cube2[2]-cube1[2] == 0 || cube2[2]-cube1[2] == 1);
+	 * @throws IllegalArgumentException
+	 * 		If the first cube is not within game bounds
+	 * 		| !withinBounds(cube1)
+	 * @throws IllegalArgumentException
+	 * 		If the second cube is not within game bounds
+	 * 		| !withinBounds(cube2)
+	 * @throws IllegalArgumentException
+	 * 		If the first cube doesn't have the right number of coordinates
+	 * 		| cube1.length != 3
+	 * @throws IllegalArgumentException
+	 * 		If the second cube doesn't have the right number of coordinates
+	 * 		| cube2.length != 3
+	 */
+	private static boolean areAdjacentCubes(int[] cube1, int[] cube2) throws IllegalArgumentException {
+		if(!withinBounds(cube1)){
+			throw new IllegalArgumentException("First cube is not within game bounds: " + cube1.toString());
+		}
+		if(!withinBounds(cube2)){
+			throw new IllegalArgumentException("Second cube is not within game bounds: " + cube2.toString());
+		}
+		if(cube1.length != 3){
+			throw new IllegalArgumentException("First cube has wrong dimension (" + cube1.length + "): " + cube1.toString());
+		}
+		if(cube2.length != 3){
+			throw new IllegalArgumentException("Second cube has wrong dimension (" + cube2.length + "): " + cube2.toString());
+		}
+		return (cube2[0]-cube1[0] == -1 || cube2[0]-cube1[0] == 0 || cube2[0]-cube1[0] == 1) &&
+				(cube2[1]-cube1[1] == -1 || cube2[1]-cube1[1] == 0 || cube2[1]-cube1[1] == 1) &&
+				(cube2[2]-cube1[2] == -1 || cube2[2]-cube1[2] == 0 || cube2[2]-cube1[2] == 1);
 	}
 	
 	/**
