@@ -163,7 +163,12 @@ public class Unit {
 		
 		setHP(getMaxHP());
 		setStamina(getMaxStamina());
-
+		
+		this.immediateTarget = null;
+		this.previousPosition = this.getPosition();
+		this.path = new ArrayList<double[]>();
+		this.setState(State.NOTHING);
+		
 	}
 	
 	
@@ -217,8 +222,8 @@ public class Unit {
 	 * @param dt
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException{
-		if(dt >= getMaxDT()){
-			throw new IllegalArgumentException("dt went over its maximum of " + getMaxDT());
+		if(dt > getMaxDT()){
+			throw new IllegalArgumentException("dt went over its maximum of " + getMaxDT() + ": dt = " + dt);
 		}
 		State state = this.getState();
 		if(state == State.NOTHING){
@@ -255,10 +260,15 @@ public class Unit {
 	 */
 	public double determineVelocity() {
 		double baseSpeed;
-		baseSpeed = 1.5 * (this.getStrength() + this.getAgility()) / 2 * this.getWeight();
+		baseSpeed = 1.5 * (this.getStrength() + this.getAgility()) / (2 * this.getWeight());
 		double walkingSpeed;
 		double realSpeed;
-		double dz = this.immediateTarget[2] - this.getPosition()[2];
+		double dz;
+		try{
+			dz = this.immediateTarget[2] - this.getPosition()[2];
+		}catch(NullPointerException e){
+			dz = 0;
+		}
 		if(dz < 0){
 			walkingSpeed = 0.5 * baseSpeed;
 		}else if(dz > 0){
@@ -289,7 +299,7 @@ public class Unit {
 	/* Movement */
 
 	/**
-	 * 
+	 * Tells the Unit to move to an adjacent cube.
 	 * @param dx
 	 * 		The difference in cubes to go in x direction
 	 * @param dy
@@ -322,7 +332,7 @@ public class Unit {
 				this.getState() == State.RESTING_HP ||
 				this.getState() == State.RESTING_STAMINA ||
 				this.getState() == State.WORKING)){
-			throw new BadFSMStateException("Cannot do moveToAdjacent from this state");
+			throw new BadFSMStateException("Cannot do moveToAdjacent from state: " + this.getState());
 		}else if(!(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1)){
 			throw new IllegalArgumentException("One of the parameters not -1, 0, or 1.");
 		}else{
@@ -362,6 +372,7 @@ public class Unit {
 			}else{
 				dx = -1;
 			}
+			position[0] += dx;
 			if(position[1] == destination[1]){
 				dy = 0;
 			}else if(position[1] < destination[1]){
@@ -369,6 +380,7 @@ public class Unit {
 			}else{
 				dy = -1;
 			}
+			position[1] += dy;
 			if(position[2] == destination[2]){
 				dz = 0;
 			}else if(position[2] < destination[2]){
@@ -376,7 +388,8 @@ public class Unit {
 			}else{
 				dz = -1;
 			}
-			path.add(cubeCenter(new int[] {dx, dy, dz}));
+			position[2] += dz;
+			path.add(cubeCenter(position));
 		}
 	}
 	
@@ -489,6 +502,7 @@ public class Unit {
 		}else if (victim == null){
 			throw new IllegalArgumentException("Cannot attack null.");
 		}else{
+			this.pointAt(victim);
 			this.shouldAttack = true;
 			this.victim = victim;
 		}
@@ -663,6 +677,7 @@ public class Unit {
 			throws IllegalArgumentException {
 		if (! isValidPosition(position))
 			throw new IllegalArgumentException(position + " is not a valid position.");
+		this.previousPosition = this.getPosition();
 		this.position = position;
 	}
 	
@@ -994,29 +1009,45 @@ public class Unit {
 		return defaultOrientation;
 	}
 	
+	/**
+	 * Tells whether the given orientation is valid
+	 * @param orientation
+	 * 		The orientation to check
+	 * @return
+	 * 		true iff the given orientation is valid
+	 * 		| result == (orientation > getMinOrientation() && orientation < getMaxOrientation());
+	 */
+	public static boolean isValidOrientation(double orientation) {
+		return orientation > getMinOrientation() && orientation < getMaxOrientation();
+	}
 	
 	/**
 	 * Set the orientation of the unit to a given orientation
 	 * 
 	 * @param orientation
-	 * @post if the orientation is larger then getMaxOrientation() the given orientation is decremented by getMaxOrientation() until it is smaller then getMaxOrientation()
-	 * 		|if (this.getOrientation() >= getMaxOrientation())
-	 * 		|	new.getOrientation() == orientation % getMaxOrientation()
-	 * @post If the orientation smaller then getMinOrientation()
-	 * 		|if (this.getOrientation() <= getMinOrientation())
-	 * 		|	new.getOrientation() == getMaxOrientation() - (Orientation % getMaxOrientation())
-	 * @post If the orientation is none of the previous the orientation is set to the given orientation   
-	 * 		|else 
-	 * 		|	new.getOrientation() == orientation 
+	 * @post
+	 * 		If the given orientation is valid, the orientation is set to it.
+	 * 		| If isValidOrientation(orientation) then
+	 * 		| 	new.getOrientation() == orientation;
+	 * @post
+	 * 		If the given orientation is not valid, the orientation is set to an angle that points the same
+	 * 		way, but lies within the valid range.
+	 * 		| If !isValidOrientation(orientation) then
+	 * 		| 	new.getOrientation() == orientation<0?
+	 * 		| 		getMaxOrientation()-(orientation%getMaxOrientation())
+	 * 		| 		:orientation%getMaxOrientation()
 	 */
 	public void setOrientation(double orientation){
-		orientation %=  orientation;
-		if (orientation < 0 ){
-			this.setOrientation(getMaxOrientation() - orientation);
+		if(isValidOrientation(orientation)){
+			this.orientation = orientation;
+		}else{
+			if(orientation < 0){
+				this.orientation = getMaxOrientation() - (orientation % getMaxOrientation());
+			}else{
+				this.orientation = orientation % getMaxOrientation();
+			}
 		}
-		else{
-			this.setOrientation(orientation);
-		}
+		
 	}
 	
 	
@@ -1024,7 +1055,7 @@ public class Unit {
 	 * Gives the maximum possible orientation 
 	 */
 	@Basic @Immutable
-	public double getMaxOrientation(){
+	public static double getMaxOrientation(){
 		return maxOrientation;
 	}
 	
@@ -1033,7 +1064,7 @@ public class Unit {
 	 * Gives the minimum possible orientation 
 	 */
 	@Basic @Immutable
-	public double getMinOrientation(){
+	public static double getMinOrientation(){
 		return minOrientation;
 	}
 	
@@ -1674,6 +1705,7 @@ public class Unit {
 				immediateTarget = path.remove(0);
 			}else{
 				try{this.setPosition(immediateTarget);}catch(IllegalArgumentException e){}
+				immediateTarget = null;
 				this.transitionToNothing();
 			}
 		}else{
