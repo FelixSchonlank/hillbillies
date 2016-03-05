@@ -109,7 +109,7 @@ public class Unit {
 	 * @post   If the given Toughness is a valid initial Toughness for any Unit,
 	 * 		   the Toughness of this new Unit is equal to the given Toughness.
 	 * 		   Otherwise, the Toughness of this new Unit is equal to getMaxToughness().
-	 * 		 | if (validInitialToughness(tougness))
+	 * 		 | if (validInitialToughness(toughness))
 	 * 		 |   then new.getToughness() == toughness
 	 * 		 |   else new.getToughness() == getMaxToughness()
 	 * @param  enableDefaultBehavior
@@ -126,6 +126,8 @@ public class Unit {
 	@Raw
 	public Unit (String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws IllegalArgumentException{
+		
+		random = new Random();
 		
 		double[] initialPosition = cubeCenter(initialCoordinates);
 		
@@ -333,8 +335,8 @@ public class Unit {
 				this.getState() == State.RESTING_STAMINA ||
 				this.getState() == State.WORKING)){
 			throw new BadFSMStateException("Cannot do moveToAdjacent from state: " + this.getState());
-		}else if(!(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1)){
-			throw new IllegalArgumentException("One of the parameters not -1, 0, or 1.");
+		}else if(!(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1) || (dx==0 && dy==0 && dz==0)){
+			throw new IllegalArgumentException("One of the parameters not -1, 0, or 1. Or all parameters equal to 0. dx: " + dx + "; dy: " + dy + "; dz: " + dz);
 		}else{
 			int[] currentCube = cubeCoordinates(this.getPosition());
 			int[] destination = new int[] {currentCube[0]+dx, currentCube[1]+dy, currentCube[2]+dz};
@@ -351,6 +353,9 @@ public class Unit {
 	 * Calculates a path for the Unit to follow towards the destination.
 	 * @param destination
 	 * 		The coordinate of the cube to go to
+	 * @post
+	 * 		The given destination will be represented by the last element of the path
+	 * 		| new.path[new.path.length] == cubeCenter(destination)
 	 * @throws IllegalArgumentException
 	 * 		If the destination is not within the bounds.
 	 * 		| !withinBounds(destination)
@@ -430,7 +435,7 @@ public class Unit {
 	 * 		| result == (this.getState() == State.NOTHING && this.getStamina() != this.getMinStamina());
 	 */
 	private boolean canStartSprinting() {
-		return (this.getState() == State.NOTHING && this.getStamina() != this.getMinStamina());
+		return (this.getState() == State.MOVING && this.getStamina() != this.getMinStamina());
 	}
 	
 	/**
@@ -495,12 +500,22 @@ public class Unit {
 	 * @throws IllegalArgumentException
 	 * 		If the given victim is null
 	 * 		| victim == null
+	 * @throws IllegalArgumentException
+	 * 		If the given victim is this Unit
+	 * 		| victim == this
+	 * @throws IllegalArgumentException
+	 * 		If the given victim is not in range
+	 * 		| !this.inRangeForAttack(victim)
 	 */
 	public void attack(Unit victim) throws BadFSMStateException, IllegalArgumentException {
-		if (!(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA || this.getState() == state.WORKING)){
+		if (!(this.getState() == State.NOTHING || this.getState() == State.RESTING_HP || this.getState() == State.RESTING_STAMINA || this.getState() == State.WORKING)){
 			throw new BadFSMStateException("Can not attack in this state");
 		}else if (victim == null){
 			throw new IllegalArgumentException("Cannot attack null.");
+		}else if (victim == this){
+			throw new IllegalArgumentException("Cannot attack self.");
+		}else if (!this.inRangeForAttack(victim)){
+			throw new IllegalArgumentException("Victim is not in range.");
 		}else{
 			this.pointAt(victim);
 			this.shouldAttack = true;
@@ -530,6 +545,8 @@ public class Unit {
 		}else if(!blockSucceeds(attacker)){
 			takeDamage(attacker.getStrength() / 10);
 		}
+		
+		this.transitionToNothing();
 	}
 	
 	/**
@@ -781,7 +798,7 @@ public class Unit {
 	 * The maximum weight this unit can have
 	 */
 	@Basic @Immutable
-	private static int getMaxWeight() {
+	public static int getMaxWeight() {
 		return maxWeight;
 	}
 	
@@ -792,7 +809,7 @@ public class Unit {
 	 * 		|result ==  ((this.getStrength() + this.getAgility()) / 2)
 	 */
 	@Basic
-	private int getMinWeight(){
+	public int getMinWeight(){
 		return ((this.getStrength() + this.getAgility()) / 2);
 	}
 
@@ -1442,10 +1459,7 @@ public class Unit {
 	 * 			|
 	 */
 	private boolean inRangeForAttack(Unit victim){
-		for ( int i = 0; i < this.getPosition().length; i++){
-			if (this.getPosition()[i] == victim.getPosition()[i] + 1 || this.getPosition()[i] == victim.getPosition()[i] - 1)
-				return true;
-		}return false;
+		return areAdjacentCubes(cubeCoordinates(this.getPosition()), cubeCoordinates(victim.getPosition()));
 	}
 	
 	/**
@@ -1492,8 +1506,9 @@ public class Unit {
 			throw new IllegalArgumentException();
 		}
 		double chance = 0.20 * this.getAgility() / attacker.getAgility();
-		Random random = new Random();
-		if(random.nextDouble() > chance){
+		double result = random.nextDouble();
+		System.out.println(result);
+		if(result <= chance){
 			return true;
 		}else{
 			return false;
@@ -1504,18 +1519,14 @@ public class Unit {
 	 * Moves the Unit to random position in the game world within dodging bounds.
 	 */
 	private void dodge(){
-		Random random = new Random();
 		double[] destination;
 		do{
 			destination = new double[] {
-					(random.nextBoolean()?1:-1) * random.nextDouble(),
-					(random.nextBoolean()?1:-1) * random.nextDouble(),
-					(random.nextBoolean()?1:-1) * random.nextDouble()
+					this.getPosition()[0] + (random.nextBoolean()?1:-1) * random.nextDouble(),
+					this.getPosition()[1] + (random.nextBoolean()?1:-1) * random.nextDouble(),
+					this.getPosition()[2] + (random.nextBoolean()?1:-1) * random.nextDouble()
 					};
-		}while((destination[0]==0 && destination[1]==0 && destination[2]==0) || 
-				destination[0] > getMaxCoordinate() || destination[0] <= getMinCoordinate() || 
-				destination[1] > getMaxCoordinate() || destination[1] <= getMinCoordinate() ||
-				destination[2] > getMaxCoordinate() || destination[2] <= getMinCoordinate());
+		}while((destination[0]==0 && destination[1]==0 && destination[2]==0) || !withinBounds(destination));
 		try {
 			this.setPosition(destination);
 		} catch (IllegalArgumentException e) {
@@ -1538,8 +1549,7 @@ public class Unit {
 			throw new IllegalArgumentException();
 		}
 		double chance = 0.25 * (this.getAgility() + this.getStrength()) / (attacker.getAgility() + attacker.getStrength());
-		Random random = new Random();
-		if(random.nextDouble() > chance){
+		if(random.nextDouble() <= chance){
 			return true;
 		}else{
 			return false;
@@ -1580,6 +1590,48 @@ public class Unit {
 			throw new IllegalArgumentException("position out of bounds: " + position);
 		}
 		return new int[] {(int)position[0], (int)position[1], (int)position[2]};
+	}
+	
+	/**
+	 * Tells whether the two cubes are adjacent.
+	 * @param cube1
+	 * 		The first cube to check
+	 * @param cube2
+	 * 		The second cube to check
+	 * @return
+	 * 		true iff the two cubes are adjacent.
+	 * 		| result == (cube2[0]-cube1[0] == -1 || cube2[0]-cube1[0] == 0 || cube2[0]-cube1[0] == 1) &&
+	 * 		| (cube2[1]-cube1[1] == -1 || cube2[1]-cube1[1] == 0 || cube2[1]-cube1[1] == 1) &&
+	 * 		| (cube2[2]-cube1[2] == -1 || cube2[2]-cube1[2] == 0 || cube2[2]-cube1[2] == 1);
+	 * @throws IllegalArgumentException
+	 * 		If the first cube is not within game bounds
+	 * 		| !withinBounds(cube1)
+	 * @throws IllegalArgumentException
+	 * 		If the second cube is not within game bounds
+	 * 		| !withinBounds(cube2)
+	 * @throws IllegalArgumentException
+	 * 		If the first cube doesn't have the right number of coordinates
+	 * 		| cube1.length != 3
+	 * @throws IllegalArgumentException
+	 * 		If the second cube doesn't have the right number of coordinates
+	 * 		| cube2.length != 3
+	 */
+	private static boolean areAdjacentCubes(int[] cube1, int[] cube2) throws IllegalArgumentException {
+		if(!withinBounds(cube1)){
+			throw new IllegalArgumentException("First cube is not within game bounds: " + cube1.toString());
+		}
+		if(!withinBounds(cube2)){
+			throw new IllegalArgumentException("Second cube is not within game bounds: " + cube2.toString());
+		}
+		if(cube1.length != 3){
+			throw new IllegalArgumentException("First cube has wrong dimension (" + cube1.length + "): " + cube1.toString());
+		}
+		if(cube2.length != 3){
+			throw new IllegalArgumentException("Second cube has wrong dimension (" + cube2.length + "): " + cube2.toString());
+		}
+		return (cube2[0]-cube1[0] == -1 || cube2[0]-cube1[0] == 0 || cube2[0]-cube1[0] == 1) &&
+				(cube2[1]-cube1[1] == -1 || cube2[1]-cube1[1] == 0 || cube2[1]-cube1[1] == 1) &&
+				(cube2[2]-cube1[2] == -1 || cube2[2]-cube1[2] == 0 || cube2[2]-cube1[2] == 1);
 	}
 	
 	/**
@@ -1670,16 +1722,12 @@ public class Unit {
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(this.shouldRest){
-			this.setState(State.RESTING_INIT);
-			this.setFlagsLow();
+			this.transitionToRestingInit();
 		}else if(this.shouldWork){
-			this.setState(State.WORKING);
-			this.setFlagsLow();
+			this.transitionToWorking();
 		}else if(this.shouldAttack){
-			this.setState(State.ATTACKING);
-			this.setFlagsLow();
+			this.transitionToAttacking();
 		}else if(this.getDefaultBehaviorEnabled()){
-			Random random = new Random();
 			int result = random.nextInt(3);
 			if(result == 0){
 				try{
@@ -1832,6 +1880,7 @@ public class Unit {
 				this.victim.defend(this);
 			}catch (IllegalArgumentException e){
 			}
+			this.transitionToNothing();
 		}else{
 			this.transitionToNothing();
 		}
@@ -1845,7 +1894,6 @@ public class Unit {
 	 */
 	private static int[] getRandomCoordinate() {
 		int[] result = new int[3];
-		Random random = new Random();
 		for(int i=0; i<result.length; i++){
 			int num = random.nextInt((int) (getMaxCoordinate() - getMinCoordinate()));
 			num += getMinCoordinate();
@@ -2040,11 +2088,15 @@ public class Unit {
 	 */
 	private State state;
 	
-
 	/**
 	 * Variable registering the default behavior of this Unit.
 	 */
 	private boolean defaultBehaviorEnabled;
+	
+	/**
+	 * A random generator used by this Unit
+	 */
+	private static Random random;
 
 
 }
