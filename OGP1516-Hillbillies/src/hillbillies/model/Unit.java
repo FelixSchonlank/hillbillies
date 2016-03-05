@@ -109,7 +109,7 @@ public class Unit {
 	 * @post   If the given Toughness is a valid initial Toughness for any Unit,
 	 * 		   the Toughness of this new Unit is equal to the given Toughness.
 	 * 		   Otherwise, the Toughness of this new Unit is equal to getMaxToughness().
-	 * 		 | if (validInitialToughness(tougness))
+	 * 		 | if (validInitialToughness(toughness))
 	 * 		 |   then new.getToughness() == toughness
 	 * 		 |   else new.getToughness() == getMaxToughness()
 	 * @param  enableDefaultBehavior
@@ -126,6 +126,8 @@ public class Unit {
 	@Raw
 	public Unit (String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws IllegalArgumentException{
+		
+		random = new Random();
 		
 		double[] initialPosition = cubeCenter(initialCoordinates);
 		
@@ -430,7 +432,7 @@ public class Unit {
 	 * 		| result == (this.getState() == State.NOTHING && this.getStamina() != this.getMinStamina());
 	 */
 	private boolean canStartSprinting() {
-		return (this.getState() == State.NOTHING && this.getStamina() != this.getMinStamina());
+		return (this.getState() == State.MOVING && this.getStamina() != this.getMinStamina());
 	}
 	
 	/**
@@ -497,7 +499,7 @@ public class Unit {
 	 * 		| victim == null
 	 */
 	public void attack(Unit victim) throws BadFSMStateException, IllegalArgumentException {
-		if (!(this.getState() == state.NOTHING || this.getState() == state.RESTING_HP || this.getState() == state.RESTING_STAMINA || this.getState() == state.WORKING)){
+		if (!(this.getState() == State.NOTHING || this.getState() == State.RESTING_HP || this.getState() == State.RESTING_STAMINA || this.getState() == State.WORKING)){
 			throw new BadFSMStateException("Can not attack in this state");
 		}else if (victim == null){
 			throw new IllegalArgumentException("Cannot attack null.");
@@ -781,7 +783,7 @@ public class Unit {
 	 * The maximum weight this unit can have
 	 */
 	@Basic @Immutable
-	private static int getMaxWeight() {
+	public static int getMaxWeight() {
 		return maxWeight;
 	}
 	
@@ -792,7 +794,7 @@ public class Unit {
 	 * 		|result ==  ((this.getStrength() + this.getAgility()) / 2)
 	 */
 	@Basic
-	private int getMinWeight(){
+	public int getMinWeight(){
 		return ((this.getStrength() + this.getAgility()) / 2);
 	}
 
@@ -1492,8 +1494,9 @@ public class Unit {
 			throw new IllegalArgumentException();
 		}
 		double chance = 0.20 * this.getAgility() / attacker.getAgility();
-		Random random = new Random();
-		if(random.nextDouble() > chance){
+		double result = random.nextDouble();
+		System.out.println(result);
+		if(result <= chance){
 			return true;
 		}else{
 			return false;
@@ -1504,18 +1507,14 @@ public class Unit {
 	 * Moves the Unit to random position in the game world within dodging bounds.
 	 */
 	private void dodge(){
-		Random random = new Random();
 		double[] destination;
 		do{
 			destination = new double[] {
-					(random.nextBoolean()?1:-1) * random.nextDouble(),
-					(random.nextBoolean()?1:-1) * random.nextDouble(),
-					(random.nextBoolean()?1:-1) * random.nextDouble()
+					this.getPosition()[0] + (random.nextBoolean()?1:-1) * random.nextDouble(),
+					this.getPosition()[1] + (random.nextBoolean()?1:-1) * random.nextDouble(),
+					this.getPosition()[2] + (random.nextBoolean()?1:-1) * random.nextDouble()
 					};
-		}while((destination[0]==0 && destination[1]==0 && destination[2]==0) || 
-				destination[0] > getMaxCoordinate() || destination[0] <= getMinCoordinate() || 
-				destination[1] > getMaxCoordinate() || destination[1] <= getMinCoordinate() ||
-				destination[2] > getMaxCoordinate() || destination[2] <= getMinCoordinate());
+		}while((destination[0]==0 && destination[1]==0 && destination[2]==0) || !withinBounds(destination));
 		try {
 			this.setPosition(destination);
 		} catch (IllegalArgumentException e) {
@@ -1538,8 +1537,7 @@ public class Unit {
 			throw new IllegalArgumentException();
 		}
 		double chance = 0.25 * (this.getAgility() + this.getStrength()) / (attacker.getAgility() + attacker.getStrength());
-		Random random = new Random();
-		if(random.nextDouble() > chance){
+		if(random.nextDouble() <= chance){
 			return true;
 		}else{
 			return false;
@@ -1670,16 +1668,12 @@ public class Unit {
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(this.shouldRest){
-			this.setState(State.RESTING_INIT);
-			this.setFlagsLow();
+			this.transitionToRestingInit();
 		}else if(this.shouldWork){
-			this.setState(State.WORKING);
-			this.setFlagsLow();
+			this.transitionToWorking();
 		}else if(this.shouldAttack){
-			this.setState(State.ATTACKING);
-			this.setFlagsLow();
+			this.transitionToAttacking();
 		}else if(this.getDefaultBehaviorEnabled()){
-			Random random = new Random();
 			int result = random.nextInt(3);
 			if(result == 0){
 				try{
@@ -1832,6 +1826,7 @@ public class Unit {
 				this.victim.defend(this);
 			}catch (IllegalArgumentException e){
 			}
+			this.transitionToNothing();
 		}else{
 			this.transitionToNothing();
 		}
@@ -1845,7 +1840,6 @@ public class Unit {
 	 */
 	private static int[] getRandomCoordinate() {
 		int[] result = new int[3];
-		Random random = new Random();
 		for(int i=0; i<result.length; i++){
 			int num = random.nextInt((int) (getMaxCoordinate() - getMinCoordinate()));
 			num += getMinCoordinate();
@@ -2040,11 +2034,15 @@ public class Unit {
 	 */
 	private State state;
 	
-
 	/**
 	 * Variable registering the default behavior of this Unit.
 	 */
 	private boolean defaultBehaviorEnabled;
+	
+	/**
+	 * A random generator used by this Unit
+	 */
+	private static Random random;
 
 
 }
