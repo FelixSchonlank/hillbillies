@@ -1583,6 +1583,8 @@ public class Unit {
 	private static double getRestingStaminaTime() {
 		return restingStaminaTime;
 	}
+
+	
 	
 	/**
 	 * Gives back the amount of stamina to restore every time this Unit does.
