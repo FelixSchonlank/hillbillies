@@ -682,12 +682,14 @@ public class Unit {
 	 *   
 	 * @param name
 	 * 			The name to check
-	 * @return True if and only if the name is longer then 2 and the first character is upper case
-	 * 			| result == (!(name == null) && isUpperCase(name.charAt(0) && name.length() >= 2)
+	 * @return
+	 * 		True iff the name is not null, at least two characters long, contains only letters,
+	 * 		single and double quotes, and spaces, and starts with an Uppercase letter.
+	 * 		| result == (name!=null && name.matches("[A-Z][A-Za-z'\" ]+"));
 	 */
 	@Raw
 	public static boolean isValidName(String name) {
-		return (name != null) && (Character.isUpperCase(name.charAt(0)) && (name.length() >= 2));
+		return name != null && name.matches("[A-Z][A-Za-z'\" ]+");
 	}
 	
 	
