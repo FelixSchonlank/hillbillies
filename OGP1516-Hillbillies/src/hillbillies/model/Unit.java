@@ -4,8 +4,6 @@ import java.util.*;
 
 import java.lang.Math;
 
-import ogp.framework.util.*;
-
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
@@ -195,7 +193,7 @@ public class Unit {
 	 * @return true if and only if the given toughness is not larger than 100 or smaller than 25
 	 * 		| result == (toughness <= 100 && toughness >= 25)
 	 */
-	private boolean validInitialToughness(int toughness ){
+	private static boolean validInitialToughness(int toughness ){
 		return (toughness <= 100 && toughness >= 25);
 	}
 	
@@ -204,7 +202,7 @@ public class Unit {
 	 * @return true if and only if the given strength is not larger then 100 or smaller then 25
 	 * 		| result (strength <= 100 && strength >= 25)
 	 */
-	private boolean validInitialStrength(int strength ){
+	private static boolean validInitialStrength(int strength ){
 		return (strength <= 100 && strength >= 25);
 	}
 	
@@ -213,7 +211,7 @@ public class Unit {
 	 * @return true if and only if the given agility is not larger then 100 or smaller then 25
 	 * 		| result == (agility <= 100 && agility >= 25)
 	 */
-	private boolean validInitialAgility(int agility ){
+	private static boolean validInitialAgility(int agility ){
 		return (agility <= 100 && agility >= 25);
 	}
 	
@@ -222,7 +220,7 @@ public class Unit {
 	 * @return true if and only if the given weight is not larger then 100 or smaller then 25
 	 * 		| result == (weight <= 100 && weight >= 25)
 	 */
-	private boolean validInitialWeight(int weight ){
+	private static boolean validInitialWeight(int weight ){
 		return (weight <= 100 && weight >= 25);
 	}
 	
@@ -462,7 +460,7 @@ public class Unit {
 	 * 		| result == (this.getState() == State.NOTHING && this.getStamina() != this.getMinStamina());
 	 */
 	private boolean canStartSprinting() {
-		return (this.getState() == State.MOVING && this.getStamina() != this.getMinStamina());
+		return (this.getState() == State.MOVING && this.getStamina() != getMinStamina());
 	}
 	
 	/**
@@ -600,7 +598,7 @@ public class Unit {
 	 * 		| !(state == state.NOTHING || state == state.WORKING)
 	 */
 	public void rest() throws BadFSMStateException{
-		if (!(this.getState() == state.NOTHING || this.getState() == state.WORKING)){
+		if (!(this.getState() == State.NOTHING || this.getState() == State.WORKING)){
 			throw new BadFSMStateException("Can not go to resting from this state");
 		}else{
 			this.shouldRest = true;
@@ -687,12 +685,14 @@ public class Unit {
 	 *   
 	 * @param name
 	 * 			The name to check
-	 * @return True if and only if the name is longer then 2 and the first character is upper case
-	 * 			| result == (!(name == null) && isUpperCase(name.charAt(0) && name.length() >= 2)
+	 * @return
+	 * 		True iff the name is not null, at least two characters long, contains only letters,
+	 * 		single and double quotes, and spaces, and starts with an Uppercase letter.
+	 * 		| result == (name!=null && name.matches("[A-Z][A-Za-z'\" ]+"));
 	 */
 	@Raw
 	public static boolean isValidName(String name) {
-		return (name != null) && (Character.isUpperCase(name.charAt(0)) && (name.length() >= 2));
+		return name != null && name.matches("[A-Z][A-Za-z'\" ]+");
 	}
 	
 	
@@ -857,7 +857,6 @@ public class Unit {
 		return this.agility;
 	}
 	
-	
 	/**
 	 * Set the agility of this unit to the given agility
 	 * 
@@ -879,7 +878,6 @@ public class Unit {
 		}
 	}
 	
-	
 	/**
 	 * Checks whether a given agility is valid.
 	 * @param agility
@@ -888,10 +886,9 @@ public class Unit {
 	 * 		| result == (agility >= getMinAgility() && agility <= getMaxAgility())
 	 */
 	@Raw
-	public boolean isValidAgility(int agility ){
+	public static boolean isValidAgility(int agility ){
 		return agility >= getMinAgility() && agility <= getMaxAgility();
 	}
-	
 	
 	/**
 	 * The minimum agility for a unit
@@ -900,7 +897,6 @@ public class Unit {
 	public static int getMinAgility(){
 		return minAgility;
 	}
-	
 	
 	/**
 	 * Gives the highest agility a unit can have
@@ -950,28 +946,28 @@ public class Unit {
 	 * @return true if and only if the toughness is larger then the minimum toughness and smaller then the maximum toughness
 	 * 			|result == if toughness >= getMinToughness() && toughness <= getMaxToughness() 
 	 */
-	public boolean isValidToughness(int toughness ){
+	public static boolean isValidToughness(int toughness ){
 		return toughness >= getMinToughness() && toughness <= getMaxToughness();
 	}
 	
 	/**
 	 * The minimum toughness a unit can have
 	 * @return the Minimum toughness a unit can have is 0
-	 * 		| result == 0 
+	 * 		| result == minToughness
 	 */
 	@Immutable
-	public int getMinToughness(){
-		return 0;
+	public static int getMinToughness(){
+		return minToughness;
 	}
 	
 	/**
 	 * The maximum toughness a unit can have
 	 * @return The maximum toughness is 200
-	 * 		| result == 200
+	 * 		| result == maxToughness
 	 */
 	@Immutable
-	public int getMaxToughness(){
-		return 200;
+	public static int getMaxToughness(){
+		return maxToughness;
 	}
 	
 	
@@ -1052,7 +1048,7 @@ public class Unit {
 	 * Give the default orientation of a Unit.
 	 */
 	@Basic @Immutable
-	public double getDefaultOrientation(){
+	public static double getDefaultOrientation(){
 		return defaultOrientation;
 	}
 	
@@ -1062,10 +1058,10 @@ public class Unit {
 	 * 		The orientation to check
 	 * @return
 	 * 		true iff the given orientation is valid
-	 * 		| result == (orientation > getMinOrientation() && orientation < getMaxOrientation());
+	 * 		| result == (orientation >= getMinOrientation() && orientation < getMaxOrientation());
 	 */
 	public static boolean isValidOrientation(double orientation) {
-		return orientation > getMinOrientation() && orientation < getMaxOrientation();
+		return orientation >= getMinOrientation() && orientation < getMaxOrientation();
 	}
 	
 	/**
@@ -1153,7 +1149,7 @@ public class Unit {
 	 * 		| result ==  HP >= getMinHP() && HP <= getMaxHP
 	 */
 	public boolean isValidHP(int HP){
-		return (HP >= getMinHP() && HP <= getMaxHP());
+		return (HP >= getMinHP() && HP <= this.getMaxHP());
 	}
 	
 	
@@ -1211,7 +1207,7 @@ public class Unit {
 	 * 		| result == stamina >= getMinStamina() && stamina <= getMaxStamina()
 	 */
 	public boolean isValidStamina(int stamina){
-		return (stamina >= getMinStamina() && stamina <= getMaxStamina());
+		return (stamina >= getMinStamina() && stamina <= this.getMaxStamina());
 	}
 	
 	
@@ -1231,7 +1227,7 @@ public class Unit {
 	 * 		|result == minStamina	 
 	 */
 	@Basic @Immutable
-	private int getMinStamina() {
+	private static int getMinStamina() {
 		return minStamina;
 	}
 	
@@ -1504,7 +1500,7 @@ public class Unit {
 	 * Set the state of this unit to Nothing 
 	 */
 	private void transitionToNothing(){
-		this.state = state.NOTHING;
+		this.state = State.NOTHING;
 		this.setFlagsLow();
 	}
 	
@@ -1523,8 +1519,8 @@ public class Unit {
 	 * Set the state of this unit to Resting_init
 	 */
 	private void transitionToRestingInit(){
-		this.state = state.RESTING_INIT;
-		this.restingInitialCountdown = this.getRestingHPTime();
+		this.state = State.RESTING_INIT;
+		this.restingInitialCountdown = getRestingHPTime();
 		this.setFlagsLow();
 	}
 	
@@ -1535,7 +1531,7 @@ public class Unit {
 	 * 		| result == this.getRestingHPTime();
 	 */
 	@Basic
-	private float getRestingInitTime(){
+	private double getRestingInitTime(){
 		return getRestingHPTime();
 	}
 	
@@ -1543,8 +1539,8 @@ public class Unit {
 	 * Set the state of this unit to RestingHP
 	 */
 	private void transitionToRestingHP(){
-		this.state = state.RESTING_HP;
-		this.restingHPCountdown = this.getRestingHPTime();
+		this.state = State.RESTING_HP;
+		this.restingHPCountdown = getRestingHPTime();
 		this.setFlagsLow();
 	}
 	
@@ -1555,8 +1551,18 @@ public class Unit {
 	 * 		| result == 200/this.getStrength();
 	 */
 	@Basic
-	private float getRestingHPTime(){
-		return 200/this.getStrength();
+	private static double getRestingHPTime(){
+		return restingHPTime;
+	}
+	
+	/**
+	 * Gives back the amount of HP to restore every time this Unit does.
+	 * @return
+	 * 		The amount of HP to restore every time this Unit does.
+	 * 		| result == this.getToughness() / 200;
+	 */
+	private double getRestingHPAmount() {
+		return this.getToughness() / 200;
 	}
 	
 	/**
@@ -1571,11 +1577,21 @@ public class Unit {
 	/**
 	 * Gives the time it takes for a unit to restore some amount of stamina
 	 * @return The time it takes for a unit to restore some amount of stamina
-	 * 		| result == 0.2f
+	 * 		| result == restingStaminaTime;
 	 */
-	@Basic  @Immutable
-	private float getRestingStaminaTime() {
-		return 0.2f;
+	@Basic @Immutable
+	private static double getRestingStaminaTime() {
+		return restingStaminaTime;
+	}
+	
+	/**
+	 * Gives back the amount of stamina to restore every time this Unit does.
+	 * @return
+	 * 		The amount of stamina to restore every time this Unit does.
+	 * 		| result == this.getToughness() / 100;
+	 */
+	private double getRestingStaminaAmount() {
+		return this.getToughness() / 200;
 	}
 
 	/**
@@ -1612,11 +1628,11 @@ public class Unit {
 	/**
 	 * Gives the time it takes for a unit to attack
 	 * @return The time it takes for a unit to attack
-	 * 		| result == 1f
+	 * 		| result == attackingTime;
 	 */
 	@Basic @Immutable
-	private double getAttackingTime() {
-		return 1d;
+	private static double getAttackingTime() {
+		return attackingTime;
 	}
 	
 	/**
@@ -1654,7 +1670,7 @@ public class Unit {
 	 * 
 	 * @param victim
 	 * 			|The unit you want to attack
-	 * @return True if and only if the position of victim is a neighbouring cube of the position of this unit 
+	 * @return True if and only if the position of victim is a neighboring cube of the position of this unit 
 	 * 			|for (i = 0; i < this.getPosition().length ; i++)
 	 * 			|	this.getPosition()[i] == victim.getPosition()[i] + 1 || this.getPositon()[i] == victim.getPosition()[i] - 1
 	 * 			|
@@ -1951,7 +1967,7 @@ public class Unit {
 			int result = random.nextInt(3);
 			if(result == 0){
 				try{
-					this.moveTo(this.getRandomCoordinate());
+					this.moveTo(getRandomCoordinate());
 				}catch(IllegalArgumentException e){
 				}catch(BadFSMStateException f){
 				}
@@ -2013,7 +2029,7 @@ public class Unit {
 					this.doSprintingStaminaDecrease(this.sprintingStaminaDecreaseCountdown);
 				}else{
 					this.sprintingStaminaDecreaseCountdown -= dt;
-					if(this.getStamina() == this.getMinStamina()){
+					if(this.getStamina() == getMinStamina()){
 						this.sprinting = false;
 					}
 				}
@@ -2148,7 +2164,7 @@ public class Unit {
 		if(this.isValidStamina(newStamina)){
 			this.setStamina(newStamina);
 		}else{
-			this.setStamina(this.getMinStamina());
+			this.setStamina(getMinStamina());
 		}
 		this.sprintingStaminaDecreaseCountdown = overshoot;
 	}
@@ -2162,8 +2178,8 @@ public class Unit {
 	private void doRestingHP(double overshoot) {
 		int newHP = this.getHP();
 		while(overshoot <= 0){
-			newHP += 1;
-			overshoot += this.getRestingHPTime();
+			newHP += getRestingHPAmount();
+			overshoot += getRestingHPTime();
 		}
 		if(this.isValidHP(newHP)){
 			this.setHP(newHP);
@@ -2182,8 +2198,8 @@ public class Unit {
 	private void doRestingStamina(double overshoot) {
 		int newStamina = this.getStamina();
 		while(overshoot <= 0){
-			newStamina += 1;
-			overshoot += this.getRestingStaminaTime();
+			newStamina += getRestingStaminaAmount();
+			overshoot += getRestingStaminaTime();
 		}
 		if(this.isValidStamina(newStamina)){
 			this.setStamina(newStamina);
@@ -2213,7 +2229,7 @@ public class Unit {
 	}
 	
 	@Basic @Immutable
-	private double getDefaultBehaviorRestingTime() {
+	private static double getDefaultBehaviorRestingTime() {
 		return defaultBehaviorRestingTime;
 	}
 	
@@ -2312,12 +2328,18 @@ public class Unit {
 	private static final int maxAgility = 200;
 	private static final int minStrength = 0;
 	private static final int maxStrength = 200;
+	private static final int minToughness = 0;
+	private static final int maxToughness = 200;
 	private static final double defaultOrientation = Math.PI / 2;
 	private static final double minOrientation = 0;
 	private static final double maxOrientation = Math.PI * 2;
 	private static final int minHP = 0;
 	private static final int minStamina = 0;
 	private static final double maxDT = 0.2d;
+	
+	private static final double restingHPTime = 0.2d;
+	private static final double restingStaminaTime = 0.2d;
+	private static final double attackingTime = 0.2d;
 	
 	/**
 	 * A helper variable to hold the chance that a Unit starts.
