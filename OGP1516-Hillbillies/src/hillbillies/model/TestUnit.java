@@ -207,16 +207,16 @@ public class TestUnit {
 		newPosition[2] = Baas.getPosition()[2] + 1.0;
 		Baas.setState(State.NOTHING);
 		Baas.moveToAdjacent(-1, 0, 1);
-		assertTrue(Arrays.equals(newPosition, Baas.getImmidiateTarget()));
+		assertTrue(Arrays.equals(newPosition, Baas.getImmediateTarget()));
 		Baas.setState(State.RESTING_HP);
 		Baas.moveToAdjacent(-1, 0, 1);
-		assertTrue(Arrays.equals(newPosition, Baas.getImmidiateTarget()));
+		assertTrue(Arrays.equals(newPosition, Baas.getImmediateTarget()));
 		Baas.setState(State.RESTING_STAMINA);
 		Baas.moveToAdjacent(-1, 0, 1);
-		assertTrue(Arrays.equals(newPosition, Baas.getImmidiateTarget()));
+		assertTrue(Arrays.equals(newPosition, Baas.getImmediateTarget()));
 		Baas.setState(State.WORKING);
 		Baas.moveToAdjacent(-1, 0, 1);
-		assertTrue(Arrays.equals(newPosition, Baas.getImmidiateTarget()));
+		assertTrue(Arrays.equals(newPosition, Baas.getImmediateTarget()));
 	}
 	
 	@Test (expected = IllegalArgumentException.class)

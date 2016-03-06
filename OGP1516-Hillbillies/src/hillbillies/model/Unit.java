@@ -1337,7 +1337,6 @@ public class Unit {
 	
 	/* Victim */
 	
-	
 	/**
 	 * return the victim
 	 */
@@ -1345,7 +1344,6 @@ public class Unit {
 	public Unit getVictim(){
 		return this.victim;
 	}
-	
 	
 	/**
 	 * Set the victim to a given victim
@@ -1356,13 +1354,15 @@ public class Unit {
 		this.victim = victim;
 	}
 	
+	
+	
 	/* ImmediateTarget */
 	
 	/**
 	 * Return the immediateTarget of this Unit.
 	 */
 	@Basic @Raw
-	public double[] getImmidiateTarget() {
+	public double[] getImmediateTarget() {
 		return this.immediateTarget;
 	}
 
@@ -1393,7 +1393,7 @@ public class Unit {
 	 *       | ! canHaveAsTarget(getImmidiateTarget())
 	 */
 	@Raw
-	public void setImmidiateTarget(double[] immediateTarget) 
+	public void setImmediateTarget(double[] immediateTarget) 
 			throws IllegalArgumentException {
 		if (! this.canHaveAsTarget(immediateTarget))
 			throw new IllegalArgumentException();
@@ -1517,7 +1517,7 @@ public class Unit {
 	 */
 	private void transitionToRestingInit(){
 		this.state = State.RESTING_INIT;
-		this.restingInitialCountdown = getRestingHPTime();
+		this.restingInitialCountdown = getRestingInitTime();
 		this.setFlagsLow();
 	}
 	
@@ -1542,24 +1542,23 @@ public class Unit {
 	}
 	
 	/**
-	 * Gives the time it takes for a unit to restore one HP
+	 * Gives the time it takes for a unit to restore some amount of HP
 	 * @return
-	 * 		The time it takes for a unit to restore one HP
-	 * 		| result == 200/this.getStrength();
+	 * 		The time it takes for a unit to restore some amount of HP
+	 * 		| result == 40 / (double) this.getToughness();
 	 */
-	@Basic
-	private static double getRestingHPTime(){
-		return restingHPTime;
+	private double getRestingHPTime(){
+		return 40 / (double) this.getToughness();
 	}
 	
 	/**
 	 * Gives back the amount of HP to restore every time this Unit does.
 	 * @return
 	 * 		The amount of HP to restore every time this Unit does.
-	 * 		| result == this.getToughness() / 200;
+	 * 		| result == restingHPAmount;
 	 */
-	private double getRestingHPAmount() {
-		return this.getToughness() / 200;
+	private static double getRestingHPAmount() {
+		return restingHPAmount;
 	}
 	
 	/**
@@ -1574,23 +1573,22 @@ public class Unit {
 	/**
 	 * Gives the time it takes for a unit to restore some amount of stamina
 	 * @return The time it takes for a unit to restore some amount of stamina
-	 * 		| result == restingStaminaTime;
+	 * 		| result == 20 / (double) this.getToughness();
 	 */
-	@Basic @Immutable
-	private static double getRestingStaminaTime() {
-		return restingStaminaTime;
+	private double getRestingStaminaTime() {
+		return 20 / (double) this.getToughness();
 	}
 
 	
 	
 	/**
-	 * Gives back the amount of stamina to restore every time this Unit does.
+	 * Gives back the amount of stamina to restore every time a Unit does.
 	 * @return
-	 * 		The amount of stamina to restore every time this Unit does.
-	 * 		| result == this.getToughness() / 100;
+	 * 		The amount of stamina to restore every time a Unit does.
+	 * 		| result == restingStaminaAmount;
 	 */
-	private double getRestingStaminaAmount() {
-		return this.getToughness() / 200;
+	private static double getRestingStaminaAmount() {
+		return restingStaminaAmount;
 	}
 
 	/**
@@ -2179,7 +2177,7 @@ public class Unit {
 		int newHP = this.getHP();
 		while(overshoot <= 0){
 			newHP += getRestingHPAmount();
-			overshoot += getRestingHPTime();
+			overshoot += this.getRestingHPTime();
 		}
 		if(this.isValidHP(newHP)){
 			this.setHP(newHP);
@@ -2199,7 +2197,7 @@ public class Unit {
 		int newStamina = this.getStamina();
 		while(overshoot <= 0){
 			newStamina += getRestingStaminaAmount();
-			overshoot += getRestingStaminaTime();
+			overshoot += this.getRestingStaminaTime();
 		}
 		if(this.isValidStamina(newStamina)){
 			this.setStamina(newStamina);
@@ -2337,8 +2335,9 @@ public class Unit {
 	private static final int minStamina = 0;
 	private static final double maxDT = 0.2d;
 	
-	private static final double restingHPTime = 0.2d;
-	private static final double restingStaminaTime = 0.2d;
+	private static final int restingHPAmount = 1;
+	private static final int restingStaminaAmount = 1;
+	
 	private static final double attackingTime = 1d;
 	
 	/**
