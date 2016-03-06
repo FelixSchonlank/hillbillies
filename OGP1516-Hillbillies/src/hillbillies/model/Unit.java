@@ -1998,8 +1998,6 @@ public class Unit {
 			}
 		}else{
 			
-			this.pointAt(immediateTarget);
-			
 			if(this.defaultBehaviorEnabled){
 				if(random.nextDouble() <= getDefaultBehaviorSprintingThreshold() * dt){
 					this.startSprinting();
@@ -2018,6 +2016,9 @@ public class Unit {
 					normalize(deltaPosition)[1] * velocity * dt,
 					normalize(deltaPosition)[2] * velocity * dt
 					};
+			
+			this.setOrientation(Math.atan2(deltaPosition[1], deltaPosition[0]));
+			
 			try{
 				this.setPosition(new double[] {
 						position[0] + deltaPosition[0],
