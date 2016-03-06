@@ -62,6 +62,11 @@ import hillbillies.model.BadFSMStateException;
  * @invar  The defaultBehaviorRestingCountdown of each Unit must be a valid defaultBehaviorRestingCountdown for any
  *         Unit.
  *       | isValidDefaultBehaviorRestingCountdown(getDefaultBehaviorRestingCountdown())
+ *      
+ * @invar  The immediateTarget of each Unit must be a valid immediateTarget for any
+ *         Unit.
+ *       | isValidImmidiateTarget(getImmidiateTarget())
+ *
  */
 
 public class Unit {
@@ -1354,8 +1359,50 @@ public class Unit {
 		this.victim = victim;
 	}
 	
+	/* ImmediateTarget */
 	
-	
+	/**
+	 * Return the immediateTarget of this Unit.
+	 */
+	@Basic @Raw
+	public double[] getImmidiateTarget() {
+		return this.immediateTarget;
+	}
+
+	/**
+	 * Check whether the given immediateTarget is a valid immediateTarget for
+	 * this Unit.
+	 *  
+	 * @param  immediateTarget
+	 *         The immediateTarget to check.
+	 * @return if and only if immediateTarget is a valid Position and ImmidiateTarget is adjacent to the current Position
+	 *       | result == isValidPosition( immediateTarget ) && areAdjacentCubes(cubeCoordinates( immediateTarget), cubeCoordinates(this.getPosition()))
+	 */
+	public boolean canHaveAsTarget(double[] immediateTarget) {
+		return isValidPosition( immediateTarget ) && areAdjacentCubes(cubeCoordinates( immediateTarget), cubeCoordinates(this.getPosition()));
+	}
+
+	/**
+	 * Set the immediateTarget of this Unit to the given immediateTarget.
+	 * 
+	 * @param  immediateTarget
+	 *         The new immediateTarget for this Unit.
+	 * @post   The immediateTarget of this new Unit is equal to
+	 *         the given immediateTarget.
+	 *       | new.getImmidiateTarget() == immediateTarget
+	 * @throws IllegalArgumentException
+	 *         The given immediateTarget is not a valid immediateTarget for this
+	 *         Unit.
+	 *       | ! canHaveAsTarget(getImmidiateTarget())
+	 */
+	@Raw
+	public void setImmidiateTarget(double[] immediateTarget) 
+			throws IllegalArgumentException {
+		if (! this.canHaveAsTarget(immediateTarget))
+			throw new IllegalArgumentException();
+		this.immediateTarget = immediateTarget;
+	}
+
 	/* Default behavior */
 
 	/**
@@ -1536,6 +1583,8 @@ public class Unit {
 	private static double getRestingStaminaTime() {
 		return restingStaminaTime;
 	}
+
+	
 	
 	/**
 	 * Gives back the amount of stamina to restore every time this Unit does.
