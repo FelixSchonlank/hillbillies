@@ -60,6 +60,10 @@ import hillbillies.model.BadFSMStateException;
  * @invar  The path of each Unit must be a valid path for any
  *         Unit.
  *       | isValidPath(getPath())
+ *       
+ * @invar  The defaultBehaviorRestingCountdown of each Unit must be a valid defaultBehaviorRestingCountdown for any
+ *         Unit.
+ *       | isValidDefaultBehaviorRestingCountdown(getDefaultBehaviorRestingCountdown())
  */
 
 public class Unit {
@@ -246,6 +250,12 @@ public class Unit {
 			doBehaviorWorking(dt);
 		}else if(state == State.ATTACKING){
 			doBehaviorAttacking(dt);
+		}
+
+		if(this.getDefaultBehaviorRestingCountdown() <= 0){
+			this.doDefaultBehaviorResting(this.getDefaultBehaviorRestingCountdown());
+		}else{
+			this.setDefaultBehaviorRestingCountdown(this.getDefaultBehaviorRestingCountdown() - dt);
 		}
 	}
 	
@@ -1327,7 +1337,8 @@ public class Unit {
 	
 	
 	
-	/* victim */
+	/* Victim */
+	
 	
 	/**
 	 * return the victim
@@ -1336,6 +1347,7 @@ public class Unit {
 	public Unit getVictim(){
 		return this.victim;
 	}
+	
 	
 	/**
 	 * Set the victim to a given victim
@@ -1618,18 +1630,37 @@ public class Unit {
 	 * Makes this Unit point directly at the other Unit.
 	 * @param other
 	 * 		The other Unit to look at.
-	 * @post Unit will be looking at other.
-	 * 		| new.getOrientation() == Math.atan2(other.getPosition()[1] - this.getPosition()[1],
-	 * 								  other.getPosition()[0] - this.getPosition()[0])
+	 * @effect
+	 * 		The Unit will execute pointAt on other's position
+	 * 		| pointAt(other.getPosition())
 	 * @throw IllegalArgumentException
 	 * 		If other is null
 	 * 		| other == null
 	 */
 	private void pointAt(Unit other) throws IllegalArgumentException {
-		if(other == null){
-			throw new IllegalArgumentException("other shouldn't be null.");
+		if(other == null) {
+			throw new IllegalArgumentException("Can't point at null Unit.");
 		}
-		this.setOrientation(Math.atan2(other.getPosition()[1] - this.getPosition()[1], other.getPosition()[0] - this.getPosition()[0]));
+		this.pointAt(other.getPosition());
+	}
+	
+	/**
+	 * Make this Unit point directly at a given target position.
+	 * @param target
+	 * 		The point to look at.
+	 * @post
+	 * 		Unit will be looking at target.
+	 * 		| new.getOrientation() == Math.atan2(target[1] - this.getPosition()[0],
+	 * 		| 	target[0] - this.getPosition()[0]);
+	 * @throw IllegalArgumentException
+	 * 		If target is null
+	 * 		| target == null 
+	 */
+	private void pointAt(double[] target) {
+		if(target == null){
+			throw new IllegalArgumentException("Can't point at null location");
+		}
+		this.setOrientation(Math.atan2(target[1] - this.getPosition()[1], target[0] - this.getPosition()[0]));
 	}
 	
 	/**
@@ -1902,6 +1933,8 @@ public class Unit {
 			}
 		}else{
 			
+			this.pointAt(immediateTarget);
+			
 			if(this.defaultBehaviorEnabled){
 				if(random.nextDouble() <= getDefaultBehaviorSprintingThreshold() * dt){
 					this.startSprinting();
@@ -2114,6 +2147,30 @@ public class Unit {
 	}
 	
 	/**
+	 * Order this Unit to rest, and reset the timer which will tell it to do so the next time.
+	 * @param overshoot
+	 * 		The overshoot by which the defaultBehaviorRestingCountdown has gone below zero.
+	 * @effect
+	 * 		The Unit will be ordered to rest.
+	 * 		| this.rest();
+	 * @post
+	 * 		The new defaultBehaviorRestingCountdown will be reset
+	 * 		| new.getDefaultBehaviorRestingCountdown() == getDefaultBehaviorRestingTime() + overshoot;
+	 */
+	private void doDefaultBehaviorResting(double overshoot) {
+		this.setDefaultBehaviorRestingCountdown(getDefaultBehaviorRestingTime() + overshoot);
+		try{
+			this.rest();
+		}catch(BadFSMStateException e){
+		}
+	}
+	
+	@Basic @Immutable
+	private double getDefaultBehaviorRestingTime() {
+		return defaultBehaviorRestingTime;
+	}
+	
+	/**
 	 * Gives the maximal time between two calls on advanceTime
 	 * @return
 	 * 		The maximal time between two calls on advanceTime
@@ -2157,6 +2214,45 @@ public class Unit {
 	private static double getDefaultBehaviorSprintingThreshold() {
 		return defaultBehaviorSprintingThreshold;
 	}
+
+	/**
+	 * Return the defaultBehaviorRestingCountdown of this Unit.
+	 */
+	@Basic @Raw
+	private double getDefaultBehaviorRestingCountdown() {
+		return this.defaultBehaviorRestingCountdown;
+	}
+
+	/**
+	 * Check whether the given defaultBehaviorRestingCountdown is a valid defaultBehaviorRestingCountdown for
+	 * any Unit.
+	 *  
+	 * @param  defaultBehaviorRestingCountdown
+	 *         The defaultBehaviorRestingCountdown to check.
+	 * @return 
+	 *       | result == Double.isFinite(defaultBehaviorRestingCountdown); 
+	 */
+	private static boolean isValidDefaultBehaviorRestingCountdown(double defaultBehaviorRestingCountdown) {
+		return Double.isFinite(defaultBehaviorRestingCountdown);
+	}
+
+	/**
+	 * Set the defaultBehaviorRestingCountdown of this Unit to the given defaultBehaviorRestingCountdown.
+	 * 
+	 * @param  defaultBehaviorRestingCountdown
+	 *         The new defaultBehaviorRestingCountdown for this Unit.
+	 * @post   If the given defaultBehaviorRestingCountdown is a valid defaultBehaviorRestingCountdown for any Unit,
+	 *         the defaultBehaviorRestingCountdown of this new Unit is equal to the given
+	 *         defaultBehaviorRestingCountdown.
+	 *       | if (isValidDefaultBehaviorRestingCountdown(defaultBehaviorRestingCountdown))
+	 *       |   then new.getDefaultBehaviorRestingCountdown() == defaultBehaviorRestingCountdown
+	 */
+	@Raw
+	private void setDefaultBehaviorRestingCountdown(double defaultBehaviorRestingCountdown) {
+		if (isValidDefaultBehaviorRestingCountdown(defaultBehaviorRestingCountdown))
+			this.defaultBehaviorRestingCountdown = defaultBehaviorRestingCountdown;
+	}
+	
 	
 	
 	/* Constants */
@@ -2180,6 +2276,11 @@ public class Unit {
 	 * A helper variable to hold the chance that a Unit starts.
 	 */
 	private static final double defaultBehaviorSprintingThreshold = 0.1d;
+	
+	/**
+	 * A variable to hold the time between two mandatory scheduled resting sessions
+	 */
+	private static final double defaultBehaviorRestingTime = 180d;
 	
 	
 	
@@ -2229,6 +2330,11 @@ public class Unit {
 	 * The time it will take before the attack is actually carried out
 	 */
 	private double attackingCountdown;
+	
+	/**
+	 * The time we have left until the next automatic, scheduled resting session
+	 */
+	private double defaultBehaviorRestingCountdown;
 	
 	/**
 	 * The unit that will be attacked once the attackingCountdown is done
