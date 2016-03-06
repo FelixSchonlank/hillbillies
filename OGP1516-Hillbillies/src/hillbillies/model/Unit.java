@@ -93,36 +93,36 @@ public class Unit {
 	 * @post   If the given Weight is a valid initial Weight for any unit,                                                                                                                       
 	 *         the Weight of this new unit is equal to the given                                                                                                                         
 	 *         Weight. Otherwise, the Weight of this new unit is equal                                                                                                                   
-	 *         to getMinWeight().                                                                                                                                                        
+	 *         to 50.                                                                                                                                                        
 	 *       | if (validInitalWeight(weight))                                                                                                                                                
 	 *       |   then new.getWeight() == weight                                                                                                                                          
-	 *       |   else new.getWeight() == getMinWeight()
+	 *       |   else new.getWeight() == 50
 	 * @param  agility
 	 *         The agility for this new unit.
 	 * @post   If the given agility is a valid initial agility for any unit,
 	 *         the agility of this new unit is equal to the given
 	 *         agility. Otherwise, the agility of this new unit is equal
-	 *         to getMinAgility().
+	 *         to 50.
 	 *       | if (validInitialAgility(agility))
 	 *       |   then new.getAgility() == agility
-	 *       |   else new.getAgility() == getMinAgility()
+	 *       |   else new.getAgility() == 50
 	 * @param  strength
 	 *         The Strength for this new Unit.
 	 * @post   If the given Strength is a valid initial Strength for any Unit,
 	 *         the Strength of this new Unit is equal to the given
 	 *         Strength. Otherwise, the Strength of this new Unit is equal
-	 *         to getMinStength().
+	 *         to 50.
 	 *       | if (validInitialSrength(strength))
 	 *       |   then new.getStrength() == strength
-	 *       |   else new.getStrength() == getMinStength()
+	 *       |   else new.getStrength() == 50
 	 * @param toughness
 	 *        The Toughness for this new Unit.
 	 * @post   If the given Toughness is a valid initial Toughness for any Unit,
 	 * 		   the Toughness of this new Unit is equal to the given Toughness.
-	 * 		   Otherwise, the Toughness of this new Unit is equal to getMinToughness().
+	 * 		   Otherwise, the Toughness of this new Unit is equal to 50.
 	 * 		 | if (validInitialToughness(toughness))
 	 * 		 |   then new.getToughness() == toughness
-	 * 		 |   else new.getToughness() == getMinToughness()
+	 * 		 |   else new.getToughness() == 50
 	 * @param  enableDefaultBehavior
 	 *         The default behavior for this new Unit.
 	 * @post   The default behavior of this new Unit is equal to the given
@@ -151,25 +151,25 @@ public class Unit {
 		this.setDefaultBehaviorEnabled( enableDefaultBehavior);
 
 		if (!validInitialAgility(agility)){
-			setAgility( getMinAgility() );
+			setAgility( 50 );
 		}else{
 			setAgility( agility );
 		}
 
 		if (!validInitialStrength( strength )){
-			setStrength( getMinStrength() );
+			setStrength( 50 );
 		}else{
 			setStrength( strength );
 		}
 
 		if (!validInitialToughness( toughness )){
-			setToughness( getMinToughness() );
+			setToughness( 50 );
 		}else{
 			setToughness( toughness );
 		}
 
 		if (!validInitialWeight( weight )){
-			setWeight( getMinWeight() ); 		/* Weight must be set after strength and agility */ 
+			setWeight( 50 ); 		/* Weight must be set after strength and agility */ 
 		}else{
 			setWeight( weight );
 		}
@@ -183,7 +183,7 @@ public class Unit {
 		this.setState(State.NOTHING);
 		
 	}
-	
+
 	
 	
 	/* Initial attribute checkers */
