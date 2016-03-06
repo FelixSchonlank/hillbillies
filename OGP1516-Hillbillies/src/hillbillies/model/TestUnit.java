@@ -3,12 +3,15 @@ package hillbillies.model;
 import static org.junit.Assert.*;
 
 
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import ogp.framework.util.Util;
 
+import java.util.*;
 public class TestUnit {
 
 	private Unit Baas;
@@ -78,112 +81,112 @@ public class TestUnit {
 	@Test 
 	public void testConstructor_maxWeight(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMaxWeight() , 50, 50, 50, false);
-		assert(Baas.getWeight() == Unit.getMaxWeight()); 
+		Unit Baas = new Unit ("WillieW" , position , 100 , 50, 50, 50, false);
+		assertEquals(100, Baas.getWeight()); 
 	}
 	
 	@Test 
 	public void testConstructor_minWeight(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , victim.getMinWeight() , 50, 50, 50, false);
-		assertEquals(Baas.getWeight(), Baas.getMinWeight()); 
+		Unit Baas = new Unit ("WillieW" , position , 38 , 25 , 25, 25, false);
+		assertEquals( 38, Baas.getWeight()); 
 	}
 	
 	@Test 
 	public void testConstructor_largeWeight(){
 		int[] position = {3, 4, 5};
 		Unit Baas = new Unit ("WillieW" , position , Unit.getMaxWeight() + 100 , 50, 50, 50, false);
-		assert(Baas.getWeight() == Unit.getMaxWeight()); 
+		assertEquals(Unit.getMaxWeight(), Baas.getWeight()); 
 	}
 	
 	@Test 
 	public void testConstructor_smallWeight() {
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMaxWeight() - 100 , 50, 50, 50, false);
-		assert(Baas.getWeight() == Unit.getMaxWeight()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, Unit.getMaxWeight() - 100, 50, 50, false);
+		assertEquals(Unit.getMaxWeight(), Baas.getWeight()); 
 	}
 	
 	@Test 
 	public void testConstructor_maxAgility(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMaxAgility() , 50, 50, 50, false);
-		assert(Baas.getAgility() == Unit.getMaxAgility()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, 100 , 50, 50, false);
+		assertEquals(100, Baas.getAgility()); 
 	}
 	
 	@Test 
 	public void testConstructor_minAgiglity(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMinAgility() , 50, 50, 50, false);
-		assertEquals(Baas.getAgility(), Unit.getMinAgility()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, 25 , 50, 50, false);
+		assertEquals( 25, Baas.getAgility()); 
 	}
 	
 	@Test 
 	public void testConstructor_largeAgility(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMaxAgility() + 100 , 50, 50, 50, false);
-		assert(Baas.getAgility() == Unit.getMaxAgility()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, Unit.getMaxAgility() + 100 , 50, 50, false);
+		assertEquals(Unit.getMaxAgility(), Baas.getAgility()); 
 	}
 	
 	@Test 
 	public void testConstructor_smallAgility(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMaxAgility() - 100 , 50, 50, 50, false);
-		assert(Baas.getAgility() == Unit.getMaxAgility()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, Unit.getMinAgility() - 100 , 50, 50, false);
+		assertEquals(Unit.getMaxAgility(), Baas.getAgility()); 
 	}
 	
 	@Test 
 	public void testConstructor_maxStrength(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMaxStrength() , 50, 50, 50, false);
-		assert(Baas.getStrength() == Unit.getMaxStrength()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, 50, 100 , 50, false);
+		assertEquals(100, Baas.getStrength()); 
 	}
 	
 	@Test 
 	public void testConstructor_minStrength(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMinStrength() , 50, 50, 50, false);
-		assertEquals(Baas.getStrength(), Unit.getMinStrength()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, 50, 25 , 50, false);
+		assertEquals(25, Baas.getStrength()); 
 	}
 	
 	@Test 
 	public void testConstructor_largeStrength(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMaxStrength() + 100 , 50, 50, 50, false);
+		Unit Baas = new Unit ("WillieW" , position , 50, 50, Unit.getMaxStrength() + 100 , 50, false);
 		assert(Baas.getStrength() == Unit.getMaxStrength()); 
 	}
 	
 	@Test 
 	public void testConstructor_smallStrength(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , Unit.getMaxStrength() - 100 , 50, 50, 50, false);
+		Unit Baas = new Unit ("WillieW" , position , 50, 50, Unit.getMaxStrength() - 100 ,  50, false);
 		assert(Baas.getStrength() == Unit.getMaxStrength()); 
 	}
 	
 	@Test 
 	public void testConstructor_maxToughness(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , victim.getMaxToughness() , 50, 50, 50, false);
-		assert(Baas.getToughness() == Baas.getMaxToughness()); 
+		Unit Baas = new Unit ("WillieW" , position ,  50, 50, 50, 100 , false);
+		assertEquals(100, Baas.getToughness()); 
 	}
 	
 	@Test 
 	public void testConstructor_minToughness(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , victim.getMinToughness() , 50, 50, 50, false);
-		assertEquals(Baas.getToughness(), Baas.getMinToughness()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, 50, 50, 25 , false);
+		assertEquals(25, Baas.getToughness()); 
 	}
 	
 	@Test 
 	public void testConstructor_largeToughness(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , victim.getMaxToughness() + 100 , 50, 50, 50, false);
+		Unit Baas = new Unit ("WillieW" , position , 50, 50, 50, victim.getMaxToughness() + 100, false);
 		assert(Baas.getToughness() == Baas.getMaxToughness()); 
 	}
 	
 	@Test 
 	public void testConstructor_smallToughness(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , victim.getMaxToughness() - 100 , 50, 50, 50, false);
+		Unit Baas = new Unit ("WillieW" , position , 50, 50, 50, victim.getMaxToughness() - 100 , false);
 		assert(Baas.getToughness() == Baas.getMaxToughness()); 
 	}
 	
@@ -198,22 +201,22 @@ public class TestUnit {
 
 	@Test
 	public void testMoveToAdjacent_LegalCase() throws IllegalArgumentException, BadFSMStateException {
-		int previousPosition[] = new int[3]; 
-		previousPosition[0] = (int)Baas.getPosition()[0] - 1;
-		previousPosition[1] = (int)Baas.getPosition()[1]; 
-		previousPosition[2] = (int)Baas.getPosition()[2]+1;
+		double newPosition[] = new double[3]; 
+		newPosition[0] = Baas.getPosition()[0] - 1.0;
+		newPosition[1] = Baas.getPosition()[1]; 
+		newPosition[2] = Baas.getPosition()[2] + 1.0;
 		Baas.setState(State.NOTHING);
 		Baas.moveToAdjacent(-1, 0, 1);
-		assertEquals(Baas.getPosition(), previousPosition);
+		assertTrue(Arrays.equals(newPosition, Baas.getImmidiateTarget()));
 		Baas.setState(State.RESTING_HP);
 		Baas.moveToAdjacent(-1, 0, 1);
-		assertEquals(Baas.getPosition(), previousPosition);
+		assertTrue(Arrays.equals(newPosition, Baas.getImmidiateTarget()));
 		Baas.setState(State.RESTING_STAMINA);
 		Baas.moveToAdjacent(-1, 0, 1);
-		assertEquals(Baas.getPosition(), previousPosition);
+		assertTrue(Arrays.equals(newPosition, Baas.getImmidiateTarget()));
 		Baas.setState(State.WORKING);
 		Baas.moveToAdjacent(-1, 0, 1);
-		assertEquals(Baas.getPosition(), previousPosition);
+		assertTrue(Arrays.equals(newPosition, Baas.getImmidiateTarget()));
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
@@ -230,14 +233,15 @@ public class TestUnit {
 	/* MoveTo */
 
 	@Test
-	public void testMoveTo_LegalCase() {
-		int[] destination = {25, 25, 25};
-		Baas.moveTo(destination);
-		assertEquals(Baas.getPath().toArray()[Baas.getPath().size() - 1], destination);
+	public void testMoveTo_LegalCase() throws IllegalArgumentException, BadFSMStateException {
+		double[] excpected = {25.5, 25.5, 25.5};
+		int[] destinationInt = {25, 25, 25};
+		Baas.moveTo(destinationInt);
+		assertArrayEquals( excpected, Baas.getPath().get(Baas.getPath().size() - 1), Util.DEFAULT_EPSILON);
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
-	public void testMoveTo_illegalDestination(){
+	public void testMoveTo_illegalDestination() throws IllegalArgumentException, BadFSMStateException{
 		int[] destination = {(int)Unit.getMaxCoordinate() + 1000, (int)Unit.getMinCoordinate() - 1000, (int)Unit.getMaxCoordinate() + 2};
 		Baas.moveTo(destination);
 	}
