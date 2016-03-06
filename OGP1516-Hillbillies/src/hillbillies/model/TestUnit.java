@@ -179,15 +179,15 @@ public class TestUnit {
 	@Test 
 	public void testConstructor_largeToughness(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , 50, 50, 50, victim.getMaxToughness() + 100, false);
-		assert(Baas.getToughness() == Baas.getMaxToughness()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, 50, 50, Unit.getMaxToughness() + 100, false);
+		assert(Baas.getToughness() == Unit.getMaxToughness()); 
 	}
 	
 	@Test 
 	public void testConstructor_smallToughness(){
 		int[] position = {3, 4, 5};
-		Unit Baas = new Unit ("WillieW" , position , 50, 50, 50, victim.getMaxToughness() - 100 , false);
-		assert(Baas.getToughness() == Baas.getMaxToughness()); 
+		Unit Baas = new Unit ("WillieW" , position , 50, 50, 50, Unit.getMaxToughness() - 100 , false);
+		assert(Baas.getToughness() == Unit.getMaxToughness()); 
 	}
 	
 	/* AdvanceTime */

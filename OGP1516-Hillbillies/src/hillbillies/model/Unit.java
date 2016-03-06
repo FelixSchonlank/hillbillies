@@ -93,36 +93,36 @@ public class Unit {
 	 * @post   If the given Weight is a valid initial Weight for any unit,                                                                                                                       
 	 *         the Weight of this new unit is equal to the given                                                                                                                         
 	 *         Weight. Otherwise, the Weight of this new unit is equal                                                                                                                   
-	 *         to getMaxWeight().                                                                                                                                                        
+	 *         to getMinWeight().                                                                                                                                                        
 	 *       | if (validInitalWeight(weight))                                                                                                                                                
 	 *       |   then new.getWeight() == weight                                                                                                                                          
-	 *       |   else new.getWeight() == getMaxWeight()
+	 *       |   else new.getWeight() == getMinWeight()
 	 * @param  agility
 	 *         The agility for this new unit.
 	 * @post   If the given agility is a valid initial agility for any unit,
 	 *         the agility of this new unit is equal to the given
 	 *         agility. Otherwise, the agility of this new unit is equal
-	 *         to getMaxAgility().
+	 *         to getMinAgility().
 	 *       | if (validInitialAgility(agility))
 	 *       |   then new.getAgility() == agility
-	 *       |   else new.getAgility() == getMaxAgility()
+	 *       |   else new.getAgility() == getMinAgility()
 	 * @param  strength
 	 *         The Strength for this new Unit.
 	 * @post   If the given Strength is a valid initial Strength for any Unit,
 	 *         the Strength of this new Unit is equal to the given
 	 *         Strength. Otherwise, the Strength of this new Unit is equal
-	 *         to getMaxStength().
+	 *         to getMinStength().
 	 *       | if (validInitialSrength(strength))
 	 *       |   then new.getStrength() == strength
-	 *       |   else new.getStrength() == getMaxStength()
+	 *       |   else new.getStrength() == getMinStength()
 	 * @param toughness
 	 *        The Toughness for this new Unit.
 	 * @post   If the given Toughness is a valid initial Toughness for any Unit,
 	 * 		   the Toughness of this new Unit is equal to the given Toughness.
-	 * 		   Otherwise, the Toughness of this new Unit is equal to getMaxToughness().
+	 * 		   Otherwise, the Toughness of this new Unit is equal to getMinToughness().
 	 * 		 | if (validInitialToughness(toughness))
 	 * 		 |   then new.getToughness() == toughness
-	 * 		 |   else new.getToughness() == getMaxToughness()
+	 * 		 |   else new.getToughness() == getMinToughness()
 	 * @param  enableDefaultBehavior
 	 *         The default behavior for this new Unit.
 	 * @post   The default behavior of this new Unit is equal to the given
@@ -151,25 +151,25 @@ public class Unit {
 		this.setDefaultBehaviorEnabled( enableDefaultBehavior);
 
 		if (!validInitialAgility(agility)){
-			setAgility( getMaxAgility() );
+			setAgility( getMinAgility() );
 		}else{
 			setAgility( agility );
 		}
 
 		if (!validInitialStrength( strength )){
-			setStrength( getMaxStrength() );
+			setStrength( getMinStrength() );
 		}else{
 			setStrength( strength );
 		}
 
 		if (!validInitialToughness( toughness )){
-			setToughness( getMaxToughness() );
+			setToughness( getMinToughness() );
 		}else{
 			setToughness( toughness );
 		}
 
 		if (!validInitialWeight( weight )){
-			setWeight( getMaxWeight() ); 		/* Weight must be set after strength and agility */ 
+			setWeight( getMinWeight() ); 		/* Weight must be set after strength and agility */ 
 		}else{
 			setWeight( weight );
 		}
