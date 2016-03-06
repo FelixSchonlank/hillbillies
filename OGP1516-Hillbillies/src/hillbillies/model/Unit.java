@@ -571,9 +571,6 @@ public class Unit {
 			takeDamage(attacker.getStrength() / 10);
 		}
 		
-		this.immediateTarget = null;
-		this.clearPath();
-		
 		this.transitionToNothing();
 	}
 	
