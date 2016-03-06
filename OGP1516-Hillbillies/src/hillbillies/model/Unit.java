@@ -815,7 +815,7 @@ public class Unit {
 	 * 			| result == weight <= getMaxWeight() && weight >= 0 && weight <= 200
 	 */
 	public boolean canHaveAsWeight(int weight) {
-		return weight <= getMaxWeight() && weight >= getMinWeight()  ;
+		return weight <= getMaxWeight() && weight >= this.getMinWeight();
 	}
 	
 	
@@ -1154,7 +1154,7 @@ public class Unit {
 	 * 		| result == 200 * weight/100 * toughness/100
 	 */
 	public int getMaxHP() {
-		return 2 * this.getWeight() * this.getToughness() / 100;
+		return (int) Math.ceil(this.getWeight() * this.getToughness() / 50);
 	}
 	
 	
@@ -1212,7 +1212,7 @@ public class Unit {
 	 * 		| result == 2 * weight * toughness / 100
 	 */
 	public int getMaxStamina() {
-		return 2 * weight * toughness /100;
+		return (int) Math.ceil(this.getWeight() * this.getToughness() / 50);
 	}
 	
 	
@@ -2292,7 +2292,7 @@ public class Unit {
 	
 	private static final double restingHPTime = 0.2d;
 	private static final double restingStaminaTime = 0.2d;
-	private static final double attackingTime = 0.2d;
+	private static final double attackingTime = 1d;
 	
 	/**
 	 * A helper variable to hold the chance that a Unit starts.
