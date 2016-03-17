@@ -1,7 +1,7 @@
 
 No formal documentation except for Unit.
 
-* World  						      :defensive:new: 
+* World  						      :defensive:new:
 
 ** Terrain
 
@@ -57,10 +57,10 @@ The game is never over! We gonna play till the break of dawn!
     - Of a given Faction only
   - List all Boulders
   - List all Logs
-  - Invoke advanceTime on all game objects
+  - Invoke advanceTime on all game obje
 
 
-* Unit
+* Unit 								    :altered:
 
 - A Unit must now always belong to 1 Faction
 - Must always occupy a cube of passable terrain type
