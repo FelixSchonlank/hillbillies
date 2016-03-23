@@ -645,9 +645,11 @@ public class Unit {
 		return this.getState() == State.WORKING;
 	}
 	
+	/* XP */
 	
 	
-	/* Name */
+	
+ 	/* Name */
 	
 	/**
 	 * Give the name of this unit
