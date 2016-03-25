@@ -66,6 +66,10 @@ import hillbillies.model.BadFSMStateException;
  * @invar  The immediateTarget of each Unit must be a valid immediateTarget for any
  *         Unit.
  *       | isValidImmidiateTarget(getImmidiateTarget())
+ * @invar  The XP of each Unit must be a valid XP for any
+ *         Unit.
+ *       | isValidXP(getXP())
+ *       
  *
  */
 
@@ -128,6 +132,8 @@ public class Unit {
 	 * @post   The default behavior of this new Unit is equal to the given
 	 *         default behavior.
 	 *       | new.getDefaultBehaviourEnabled() == enabledDefaultBehavior
+	 * @effect The XP of this new Unit is set to 0.
+	 *       | this.setXP(0)
 	 * @throws IllegalArgumentException
 	 *         This new Unit cannot have the given default behavior as its default behavior.
 	 *       | !isValidDefaultBehaviorEnabled(this.getDefaultBehaviorEnabled())
@@ -176,6 +182,8 @@ public class Unit {
 		
 		setHP(getMaxHP());
 		setStamina(getMaxStamina());
+		this.setXP(this.getMinXP());
+		
 		
 		this.immediateTarget = null;
 		this.previousPosition = this.getPosition();
@@ -646,8 +654,60 @@ public class Unit {
 	}
 	
 	/* XP */
+
+	/**
+	 * Return the XP of this Unit.
+	 */
+	@Basic @Raw
+	public long getXP() {
+		return this.XP;
+	}
+
+	/**
+	 * Check whether the given XP is a valid XP for
+	 * any Unit.
+	 *  
+	 * @param  XP
+	 *         The XP to check.
+	 * @return 
+	 *       | result == 
+	 */
+	public static boolean isValidXP(long XP) {
+		return false;
+	}
 	
-	
+	/**
+	 * The minimum XP for a unit
+	 */
+	public static long getMinXP(){
+		return 0;
+	}
+
+	/**
+	 * Set the XP of this Unit to the given XP.
+	 * 
+	 * @param  XP
+	 *         The new XP for this Unit.
+	 * @post   The XP of this new Unit is equal to
+	 *         the given XP.
+	 *       | new.getXP() == XP
+	 * @throws illegalargumentexception
+	 *         The given XP is not a valid XP for any
+	 *         Unit.
+	 *       | ! isValidXP(getXP())
+	 */
+	@Raw
+	public void setXP(long XP) 
+			throws IllegalArgumentException {
+		if (! isValidXP(XP))
+			throw new IllegalArgumentException();
+		this.XP = XP;
+	}
+
+	/**
+	 * Variable registering the XP of this Unit.
+	 */
+	private long XP;
 	
  	/* Name */
 	
