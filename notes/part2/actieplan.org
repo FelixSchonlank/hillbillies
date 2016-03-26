@@ -1,0 +1,39 @@
+
+* Reorganize part1
+
+Not even looking at the part 2 pdf yet, just the changes that should be made to
+get our project in a more workable state.
+
+** Path finding
+
+No longer store an immediateTarget and a path, but and immediateTarget and an
+ultimateTarget. Every time a Unit arrives at a cube, recalculate immediateTarget
+based on ultimateTarget.
+
+** @Value classes
+
+*** Position
+
+To hold <x, y, z> doubles.
+
+*** Coordinate
+
+To hold <x, y, z> as integer values.
+
+** Relocate methods
+
+- To World
+  - minCoordinate
+  - maxCoordinate
+  - cubeCoordinates
+  - areAdjacentCubes
+  - cubeCenter
+  - withinBounds
+  - areSameCube
+  - getRandomCoordinate
+- To VectorUtils
+  - between
+  - normalize
+- To IAdvanceable
+  - getMaxDT
+  - advanceTime
