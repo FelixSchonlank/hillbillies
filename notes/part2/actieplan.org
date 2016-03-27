@@ -1,8 +1,8 @@
 
-* Reorganize part1
+* Reorganize part 1
 
-Not even looking at the part 2 pdf yet, just the changes that should be made to
-get our project in a more workable state.
+Not even looking at the part 2 pdf too much yet, just the changes that should be
+made to get our project in a more workable state.
 
 ** Path finding
 
@@ -37,3 +37,19 @@ To hold <x, y, z> as integer values.
 - To IAdvanceable
   - getMaxDT
   - advanceTime
+
+
+* Part 2
+
+** Storing the cubes
+
+In World, there must be a threedimensional array holding the cubes of the World,
+of an enum type that represents
+- Air
+- Rock
+- Wood
+- Workshop
+The enum should also feature a way of converting itself to integers for the
+Facade class.
+
+Also implement function to check if a given cube is passable or not.
