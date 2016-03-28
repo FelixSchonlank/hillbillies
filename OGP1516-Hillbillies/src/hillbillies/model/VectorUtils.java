@@ -13,32 +13,9 @@ public class VectorUtils {
 	 * @param z
 	 *        The other end
 	 * @return true iff x is between y and z.
-	 *        | result == (y < x && x < z) || (z < x && x < y)
 	 */
-	private static boolean between(double x, double y, double z){
-		return (y < x && x < z) || (z < x && x < y);
-	}
-
-	/**
-	 * Gives the given vector, but normalized to have magnitude 1.
-	 * @param vector
-	 * 		The vector to be normalized
-	 * @return
-	 * 		The normalized version of the vector
-	 */
-	private static double[] normalize(double[] vector) {
-		int length = vector.length;
-		
-		double magnitude = 0;
-		for(int i=0; i<length; i++){
-			magnitude += Math.pow(vector[i], 2);
-		}
-		magnitude = Math.sqrt(magnitude);
-		
-		double[] result = new double[length];
-		for(int i=0; i<length; i++){
-			result[i] = vector[i] / magnitude;
-		}
-		return result;
+	public static boolean between(Comparable x, Comparable y, Comparable z){
+		return ((y.compareTo(x)<0 && x.compareTo(z)<0) || 
+				(z.compareTo(x)<0 && x.compareTo(y)<0));
 	}
 }
