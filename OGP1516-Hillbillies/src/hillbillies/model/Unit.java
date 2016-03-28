@@ -73,7 +73,7 @@ import hillbillies.model.BadFSMStateException;
  *
  */
 
-public class Unit {
+public class Unit implements IAdvanceable{
 	
 	
 	
