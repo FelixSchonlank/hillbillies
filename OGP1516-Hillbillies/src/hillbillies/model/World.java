@@ -1,13 +1,40 @@
 package hillbillies.model;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 
+/**
+ * @Invar Every element of the cubes map must be a valid cube.
+ * 		| this.hasProperCubes()
+ */
 public class World {
+	
+	/**
+	 * An enum to represent the different terrain types in the World
+	 */
+	private enum TerrainType {
+		AIR, ROCK, TREE, WORKSHOP;
+		
+		public int toInt() {
+			switch (this) {
+			case AIR:
+				return 0; break;
+			case ROCK:
+				return 1; break;
+			case TREE:
+				return 2; break;
+			case WORKSHOP:
+				return 3; break;
+			default:
+				return -1;
+			}
+		}
+	}
 	
 	/**
 	 * Return the maximum x coordinate of this World
@@ -207,6 +234,53 @@ public class World {
 	}
 	
 	
+	
+	/* THE GAME MAP */
+	
+	/**
+	 * @Invar cubes is effective
+	 * 		| cubes != null
+	 */
+	private Map<Coordinate, TerrainType> cubes;
+	
+	/**
+	 * Tells whether this World has proper cubes.
+	 * @return
+	 * 		True iff this World has proper cubes.
+	 */
+	public boolean hasProperCubes() {
+		for (Coordinate cube : cubes.keySet()) {
+			if (!isValidCube(cube)) {
+				return false;
+			}
+			if (!isValidTerrainType(cubes.get(cube))) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Tells whether the given cube coordinate is a valid one for the cube map.
+	 * @param cube
+	 * 		The coordinate to check.
+	 * @return
+	 * 		True iff the given cube coordinate is within the World bounds.
+	 */
+	public static boolean isValidCube(Coordinate cube) {
+		return withinBounds(cube);
+	}
+	
+	/**
+	 * Tells whether the given terrain type is a valid one for any given cube.
+	 * @param terrainType
+	 * 		The terrain type to check.
+	 * @return
+	 * 		True iff the given terrain type is not null.
+	 */
+	public static boolean isValidTerrainType(TerrainType terrainType) {
+		return terrainType != null;
+	}
 	
 	/**
 	 * Static fields
