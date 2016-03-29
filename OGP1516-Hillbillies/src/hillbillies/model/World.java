@@ -2,6 +2,7 @@ package hillbillies.model;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
@@ -9,23 +10,63 @@ import be.kuleuven.cs.som.annotate.Immutable;
 public class World {
 	
 	/**
-	 * Return the maximum coordinate in every direction of the Game World
-	 * @return the maximum coordinate of a unit
-	 * 		| result == maxCoordinate
+	 * Return the maximum x coordinate of this World
+	 * @return the maximum x coordinate anything can have
+	 * 		| result == maxXCoordinate
 	 */
 	@Basic @Immutable
-	public static double getMaxCoordinate(){
-		return maxCoordinate;
+	public static int getMaxXCoordinate(){
+		return maxXCoordinate;
 	}
 	
 	/**
-	 * Return the minimum coordinate in every direction of the board
-	 * @return The minimum coordinate of a unit
-	 * 		| result == minCoordinate
+	 * Return the minimum x coordinate of this World
+	 * @return the minimum x coordinate anything can have
+	 * 		| result == minXCoordinate
 	 */
 	@Basic @Immutable
-	public static double getMinCoordinate(){
-		return minCoordinate;
+	public static int getMinXCoordinate(){
+		return minXCoordinate;
+	}
+	
+	/**
+	 * Return the maximum y coordinate of this World
+	 * @return the maximum y coordinate anything can have
+	 * 		| result == maxYCoordinate
+	 */
+	@Basic @Immutable
+	public static int getMaxYCoordinate(){
+		return maxYCoordinate;
+	}
+	
+	/**
+	 * Return the minimum y coordinate of this World
+	 * @return the minimum y coordinate anything can have
+	 * 		| result == minYCoordinate
+	 */
+	@Basic @Immutable
+	public static int getMinYCoordinate(){
+		return minYCoordinate;
+	}
+	
+	/**
+	 * Return the maximum z coordinate of this World
+	 * @return the maximum z coordinate anything can have
+	 * 		| result == maxZCoordinate
+	 */
+	@Basic @Immutable
+	public static int getMaxZCoordinate(){
+		return maxZCoordinate;
+	}
+	
+	/**
+	 * Return the minimum z coordinate of this World
+	 * @return the minimum z coordinate anything can have
+	 * 		| result == minZCoordinate
+	 */
+	@Basic @Immutable
+	public static int getMinZCoordinate(){
+		return minZCoordinate;
 	}
 
 	/**
@@ -33,16 +74,15 @@ public class World {
 	 * @param position
 	 * 		The given position
 	 * @return The integer coordinates of the cube that the given position is in.
-	 * 		| result == new int[] {(int)position[0], (int)position[1], (int)position[2]}
 	 * @throws IllegalArgumentException
 	 * 		If position is not inside any cube
 	 * 		| !withinBounds(position)
 	 */
-	private static int[] cubeCoordinates(double[] position) throws IllegalArgumentException {
+	private static Coordinate cubeCoordinates(Position position) throws IllegalArgumentException {
 		if(!withinBounds(position)){
-			throw new IllegalArgumentException("position out of bounds: " + position);
+			throw new IllegalArgumentException("Position out of bounds: " + position.toString());
 		}
-		return new int[] {(int)position[0], (int)position[1], (int)position[2]};
+		return position.toCoordinate();
 	}
 	
 	/**
@@ -52,99 +92,63 @@ public class World {
 	 * @param cube2
 	 * 		The second cube to check
 	 * @return
-	 * 		true iff the two cubes are adjacent.
-	 * 		| result == (cube2[0]-cube1[0] == -1 || cube2[0]-cube1[0] == 0 || cube2[0]-cube1[0] == 1) &&
-	 * 		| (cube2[1]-cube1[1] == -1 || cube2[1]-cube1[1] == 0 || cube2[1]-cube1[1] == 1) &&
-	 * 		| (cube2[2]-cube1[2] == -1 || cube2[2]-cube1[2] == 0 || cube2[2]-cube1[2] == 1);
+	 * 		true iff the two cubes are within the World bounds and adjacent.
 	 * @throws IllegalArgumentException
-	 * 		If the first cube is not within game bounds
-	 * 		| !withinBounds(cube1)
-	 * @throws IllegalArgumentException
-	 * 		If the second cube is not within game bounds
-	 * 		| !withinBounds(cube2)
-	 * @throws IllegalArgumentException
-	 * 		If the first cube doesn't have the right number of coordinates
-	 * 		| cube1.length != 3
-	 * @throws IllegalArgumentException
-	 * 		If the second cube doesn't have the right number of coordinates
-	 * 		| cube2.length != 3
+	 * 		If at least one of the given Coordinates is out of bounds.
 	 */
-	private static boolean areAdjacentCubes(int[] cube1, int[] cube2) throws IllegalArgumentException {
+	private static boolean areAdjacentCubes(Coordinate cube1, Coordinate cube2) throws IllegalArgumentException {
 		if(!withinBounds(cube1)){
-			throw new IllegalArgumentException("First cube is not within game bounds: " + cube1.toString());
+			throw new IllegalArgumentException("First cube out of bounds: " + cube1.toString());
 		}
 		if(!withinBounds(cube2)){
-			throw new IllegalArgumentException("Second cube is not within game bounds: " + cube2.toString());
+			throw new IllegalArgumentException("Second cube out of bounds: " + cube2.toString());
 		}
-		if(cube1.length != 3){
-			throw new IllegalArgumentException("First cube has wrong dimension (" + cube1.length + "): " + cube1.toString());
-		}
-		if(cube2.length != 3){
-			throw new IllegalArgumentException("Second cube has wrong dimension (" + cube2.length + "): " + cube2.toString());
-		}
-		return (cube2[0]-cube1[0] == -1 || cube2[0]-cube1[0] == 0 || cube2[0]-cube1[0] == 1) &&
-				(cube2[1]-cube1[1] == -1 || cube2[1]-cube1[1] == 0 || cube2[1]-cube1[1] == 1) &&
-				(cube2[2]-cube1[2] == -1 || cube2[2]-cube1[2] == 0 || cube2[2]-cube1[2] == 1);
+		
+		return cube1.isAdjacentTo(cube2);
 	}
 	
 	/**
-	 * Gives back the position of the center of the cube with given coordinates
-	 * @param coordinates
-	 * 		The coordinates of the cube to calculate the center of
+	 * Gives back the position of the center of the cube with given coordinate
+	 * @param coordinate
+	 * 		The coordinate of the cube to calculate the center of
 	 * @return
-	 * 		The position of the center of the cube with given coordinates
-	 * 		| result == new double[] {
-	 * 		| 	((double)coordinates[0])+0.5,
-	 * 		| 	((double)coordinates[1])+0.5,
-	 * 		| 	((double)coordinates[2])+0.5
-	 * 		| }
+	 * 		The position of the center of the cube with given coordinate
 	 * @throws IllegalArgumentException
-	 * 		If the given coordinates are out of bounds
-	 * 		| !withinBounds(coordinates)
-	 * @throws IllegalArgumentException
-	 * 		If the given coordinates are not of the right dimension
-	 * 		| coordinates.length != 3
+	 * 		If the given coordinate is out of bounds
+	 * 		| !withinBounds(coordinate)
 	 */
-	private static double[] cubeCenter(int[] coordinates) throws IllegalArgumentException {
-		if(coordinates.length != 3){
-			throw new IllegalArgumentException("coordinates dimension should be 3.");
+	private static Position cubeCenter(Coordinate coordinate) throws IllegalArgumentException {
+		if(!withinBounds(coordinate)){
+			throw new IllegalArgumentException("Coordinate out of bounds: " + coordinate.toString());
 		}
-		if(!withinBounds(coordinates)){
-			throw new IllegalArgumentException("coordinates out of bounds.");
-		}
-		return new double[] {((double)coordinates[0])+0.5, ((double)coordinates[1])+0.5, ((double)coordinates[2])+0.5};
+		return coordinate.toPosition();
 	}
 	
 	/**
-	 * Tells whether the given cube coordinate is within the game bounds
+	 * Tells whether the given cube coordinate is within the World bounds
 	 * @param coordinates
 	 * 		The cube you want to check
 	 * @return
 	 * 		true iff the cube is within the game bounds
-	 * 		| result == (coordinates[0] >= getMinCoordinate() && coordinates[0] < getMaxCoordinate() &&
-	 * 		| coordinates[1] >= getMinCoordinate() && coordinates[1] < getMaxCoordinate() &&
-	 * 		| coordinates[2] >= getMinCoordinate() && coordinates[2] < getMaxCoordinate());
 	 */
-	private static boolean withinBounds(int[] coordinates) {
-		return (coordinates[0] >= getMinCoordinate() && coordinates[0] < getMaxCoordinate() &&
-				coordinates[1] >= getMinCoordinate() && coordinates[1] < getMaxCoordinate() &&
-				coordinates[2] >= getMinCoordinate() && coordinates[2] < getMaxCoordinate());
+	private static boolean withinBounds(Coordinate coordinate) {
+		return (((Comparable)coordinate.getX()).compareTo((Comparable)getMinXCoordinate()) >= 0 && 
+				((Comparable)coordinate.getX()).compareTo((Comparable)getMaxXCoordinate()) < 0 &&
+				((Comparable)coordinate.getY()).compareTo((Comparable)getMinYCoordinate()) >= 0 && 
+				((Comparable)coordinate.getY()).compareTo((Comparable)getMaxYCoordinate()) < 0 &&
+				((Comparable)coordinate.getZ()).compareTo((Comparable)getMinZCoordinate()) >= 0 && 
+				((Comparable)coordinate.getZ()).compareTo((Comparable)getMaxZCoordinate()) < 0);
 	}
 	
 	/**
-	 * Tells whether the given position is within the game bounds
+	 * Tells whether the given position is within the World bounds
 	 * @param position
-	 * 		The position you want to check
+	 * 		The position that should be checked
 	 * @return
-	 * 		true iff the position is within the game bounds
-	 * 		| result == (position[0] >= getMinCoordinate() && position[0] < getMaxCoordinate() &&
-	 * 		| position[1] >= getMinCoordinate() && position[1] < getMaxCoordinate() &&
-	 * 		| position[2] >= getMinCoordinate() && position[2] < getMaxCoordinate());
+	 * 		true iff the position occupies a cube that is within the game bounds
 	 */
-	private static boolean withinBounds(double[] position) {
-		return (position[0] >= getMinCoordinate() && position[0] < getMaxCoordinate() &&
-				position[1] >= getMinCoordinate() && position[1] < getMaxCoordinate() &&
-				position[2] >= getMinCoordinate() && position[2] < getMaxCoordinate());
+	private static boolean withinBounds(Position position) {
+		return withinBounds(position.toCoordinate());
 	}
 	
 	/**
@@ -154,11 +158,18 @@ public class World {
 	 * @param coord2
 	 * 		The second cube to check
 	 * @return
-	 * 		true iff the cubes are the same
-	 * 		| result == Arrays.equals(coord1, coord2);
+	 * 		true iff the coordinates represent the same cube
+	 * @throws IllegalArgumentException
+	 * 		If at least one of the given Coordinates is out of bounds.
 	 */
-	private static boolean areSameCube(int[] coord1, int[] coord2) {
-		return Arrays.equals(coord1, coord2);
+	private static boolean areSameCube(Coordinate coord1, Coordinate coord2) throws IllegalArgumentException {
+		if (!withinBounds(coord1)) {
+			throw new IllegalArgumentException("First Coordinate out of bounds: " + coord1.toString());
+		}
+		if (!withinBounds(coord2)) {
+			throw new IllegalArgumentException("Second Coordinate out of bounds: " + coord2.toString());
+		}
+		return coord1.equals(coord2);
 	}
 	
 	/**
@@ -166,21 +177,46 @@ public class World {
 	 * @return
 	 * 		A random coordinate within the game field.
 	 */
-	private static int[] getRandomCoordinate() {
-		int[] result = new int[3];
-		for(int i=0; i<result.length; i++){
-			int num = random.nextInt((int) (getMaxCoordinate() - getMinCoordinate()));
-			num += getMinCoordinate();
-			result[i] = num;
-		}
-		return result;
+	private static Coordinate getRandomCoordinate() {
+		
+		return new Coordinate(
+				random.nextInt((int)(getMaxXCoordinate() - getMinXCoordinate())) + getMinXCoordinate(),
+				random.nextInt((int)(getMaxYCoordinate() - getMinYCoordinate())) + getMinYCoordinate(),
+				random.nextInt((int)(getMaxZCoordinate() - getMinZCoordinate())) + getMinZCoordinate()
+				);
 	}
+	
+	/**
+	 * Gives back all the neighbors of the cube represented by the given coordinate.
+	 * Only existing cube coordinates (within bounds) are returned. 
+	 * @param coordinate
+	 * 		The coordinate of the cube you want to know the neighbors of.
+	 * @return
+	 * 		A Set of Coordinates which represent cubes that are neighbors of
+	 * 		the cube represented by the given coordinate.
+	 * @throws IllegalArgumentException
+	 * 		If the given Coordinate is out of bounds.
+	 */
+	public Set<Coordinate> getNeighbors(Coordinate coordinate) throws IllegalArgumentException {
+		if (!withinBounds(coordinate)) {
+			throw new IllegalArgumentException("Coordinate out of bounds: " + coordinate.toString());
+		}
+		Set<Coordinate> neighbors = coordinate.getNeighbors();
+		neighbors.removeIf(neighbor -> !withinBounds(neighbor));
+		return neighbors;
+	}
+	
+	
 	
 	/**
 	 * Static fields
 	 */
-	private static final double maxCoordinate = 50;
-	private static final double minCoordinate = 0;
+	private final int maxXCoordinate;
+	private final int minXCoordinate;
+	private final int maxYCoordinate;
+	private final int minYCoordinate;
+	private final int maxZCoordinate;
+	private final int minZCoordinate;
 
 	/**
 	 * A random generator used by this Unit
