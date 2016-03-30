@@ -527,6 +527,10 @@ public class World {
 	 */
 	private final Set<Item> items = new HashSet<Item>();
 	
+	
+	
+	/* FIELDS */
+	
 	/**
 	 * final fields
 	 */
