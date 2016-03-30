@@ -328,7 +328,7 @@ public class World {
 	 * @return
 	 * 		true iff the cube is within the game bounds
 	 */
-	private boolean withinBounds(Coordinate coordinate) {
+	public boolean withinBounds(Coordinate coordinate) {
 		return (((Comparable)coordinate.getX()).compareTo((Comparable)getMinXCoordinate()) >= 0 && 
 				((Comparable)coordinate.getX()).compareTo((Comparable)getMaxXCoordinate()) < 0 &&
 				((Comparable)coordinate.getY()).compareTo((Comparable)getMinYCoordinate()) >= 0 && 
@@ -344,7 +344,7 @@ public class World {
 	 * @return
 	 * 		true iff the position occupies a cube that is within the game bounds
 	 */
-	private boolean withinBounds(Position position) {
+	public boolean withinBounds(Position position) {
 		return withinBounds(position.toCoordinate());
 	}
 	

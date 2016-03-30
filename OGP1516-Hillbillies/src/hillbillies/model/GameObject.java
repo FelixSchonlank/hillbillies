@@ -62,12 +62,12 @@ public Position getPosition() {
  *             | result == (result && position.length == 3)
  */
 @Raw
-public static boolean isValidPosition(double[] position){     
+public boolean canHaveAsPosition(double[] position){     
     if (position.length != 3){
     	return false;
     }
     Position positionToCheck = new Position(position);
-    return isValidPosition(positionToCheck);                             
+    return canHaveAsPosition(positionToCheck);                             
 }
 
 /**
@@ -78,8 +78,8 @@ public static boolean isValidPosition(double[] position){
  * 			| this.getWorld().withinBouds(position) ???
  */
 @Raw
-public static boolean isValidPosition(Position position){
-	return false;
+public boolean canHaveAsPosition(Position position){
+	return this.getWorld().withinBounds(position) && this.getWorld().isPassableCube(position.toCoordinate());
 }
 
 /**
@@ -133,27 +133,6 @@ private Position position;
  * Holds the previous position of the Unit. Very important to determine whether it has reached its destination
  */
 protected Position previousPosition;
-
-/* World */
-
-/**
- * return the world this unit belongs to
- */
-public World getWorld(){
-	return this.world;
-}
-
-public void setWorld(World world){
-	this.world = world;
-}
-
-public boolean hasWorld(){
-	return this.getWorld() != null;
-}
-
-private World world;
-
-
 
 
 public void advanceTime(double dt) throws IllegalArgumentException{

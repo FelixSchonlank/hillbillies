@@ -14,7 +14,7 @@ public class Item extends GameObject{
 	 */
 	public Item(Position position){
 		super(position);
-		int weight = random.nextInt(this.getMaxWeight() - this.getMinWeight()) + getMinWeight();
+		int weight = random.nextInt(getMaxWeight() - getMinWeight()) + getMinWeight();
 		this.weight = weight;
 	}
 	
@@ -92,6 +92,16 @@ public class Item extends GameObject{
 	public void setUnit(Unit unit){
 		this.unit = unit;
 	}
+	
+	/**
+	 * This unit can have a given unit as its unit iff the unit does not already have an item and the item does not already 
+	 * have a Unit and the Unit and the Item belong to the same World 
+	 * @param unit
+	 * @return
+	 */
+	public boolean canHaveAsUnit(Unit unit){
+		return this.getWorld() == unit.getWorld() && ! unit.hasItem() && ! this.hasUnit();
+	}
 
 	/**
 	 * check whether the Item is being carried 
@@ -106,6 +116,42 @@ public class Item extends GameObject{
 	private Unit unit;
 
 
+	/* World */
+
+	/**
+	 * return the world this unit belongs to
+	 */
+	public World getWorld(){
+		return this.world;
+	}
+
+	/**
+	 * Set the world of this Item to the given world and add this items of the given world
+	 * @param world
+	 */
+	public void setWorld(World world){
+		if (this.canHaveAsWorld(world) && world.canHaveAsItem(this)){
+			this.world = world;
+			world.addItem(this);
+		}
+	}
+
+	/**
+	 * return true (iff the GameObject can have the given world as its world)
+	 */
+	public boolean canHaveAsWorld(World world){
+		return true;
+	}
+
+	/**
+	 * check whether this Item has a world
+	 */
+	public boolean hasWorld(){
+		return this.getWorld() != null;
+	}
+
+	private World world;
+	
 
 	/* Terminating */
 
