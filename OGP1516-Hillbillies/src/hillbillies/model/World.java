@@ -1,18 +1,33 @@
 package hillbillies.model;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Raw;
 
 /**
  * @Invar Every element of the cubes map must be a valid cube.
  * 		| this.hasProperCubes()
+ * @Invar Each World must have proper Items.
+ *      | hasProperItems()
+ *
  */
 public class World {
+	/**
+	 * Initialize this new World as a non-terminated World with 
+	 * no Items yet.
+	 * 
+	 * @post   This new World has no Items yet.
+	 *       | new.getNbItems() == 0
+	 */
+	public World(){
+		
+	}
 	
 	/**
 	 * An enum to represent the different terrain types in the World
@@ -281,6 +296,121 @@ public class World {
 	public static boolean isValidTerrainType(TerrainType terrainType) {
 		return terrainType != null;
 	}
+	
+	/* Items */
+
+	/**
+	 * Check whether this World has the given Item as one of its
+	 * Items.
+	 * 
+	 * @param  Item
+	 *         The Item to check.
+	 */
+	@Basic
+	@Raw
+	public boolean hasAsItem(@Raw Item Item) {
+		return Items.contains(Item);
+	}
+
+	/**
+	 * Check whether this World can have the given Item
+	 * as one of its Items.
+	 * 
+	 * @param  Item
+	 *         The Item to check.
+	 * @return True if and only if the given Item is effective
+	 *         and that Item is a valid Item for a World.
+	 *       | result ==
+	 *       |   (Item != null) &&
+	 *       |   Item.isValidWorld(this)
+	 */
+	@Raw
+	public boolean canHaveAsItem(Item Item) {
+		return (Item != null) && (Item.isValidWorld(this));
+	}
+
+	/**
+	 * Check whether this World has proper Items attached to it.
+	 * 
+	 * @return True if and only if this World can have each of the
+	 *         Items attached to it as one of its Items,
+	 *         and if each of these Items references this World as
+	 *         the World to which they are attached.
+	 *       | for each Item in Item:
+	 *       |   if (hasAsItem(Item))
+	 *       |     then canHaveAsItem(Item) &&
+	 *       |          (Item.getWorld() == this)
+	 */
+	public boolean hasProperItems() {
+		for (Item Item : Items) {
+			if (!canHaveAsItem(Item))
+				return false;
+			if (Item.getWorld() != this)
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Return the number of Items associated with this World.
+	 *
+	 * @return  The total number of Items collected in this World.
+	 *        | result ==
+	 *        |   card({Item:Item | hasAsItem({Item)})
+	 */
+	public int getNbItems() {
+		return Items.size();
+	}
+
+	/**
+	 * Add the given Item to the set of Items of this World.
+	 * 
+	 * @param  Item
+	 *         The Item to be added.
+	 * @pre    The given Item is effective and already references
+	 *         this World.
+	 *       | (Item != null) && (Item.getWorld() == this)
+	 * @post   This World has the given Item as one of its Items.
+	 *       | new.hasAsItem(Item)
+	 */
+	public void addItem(@Raw Item Item) {
+		assert (Item != null) && (Item.getWorld() == this);
+		Items.add(Item);
+	}
+
+	/**
+	 * Remove the given Item from the set of Items of this World.
+	 * 
+	 * @param  Item
+	 *         The Item to be removed.
+	 * @pre    This World has the given Item as one of
+	 *         its Items, and the given Item does not
+	 *         reference any World.
+	 *       | this.hasAsItem(Item) &&
+	 *       | (Item.getWorld() == null)
+	 * @post   This World no longer has the given Item as
+	 *         one of its Items.
+	 *       | ! new.hasAsItem(Item)
+	 */
+	@Raw
+	public void removeItem(Item Item) {
+		assert this.hasAsItem(Item) && (Item.getWorld() == null);
+		Items.remove(Item);
+	}
+
+	/**
+	 * Variable referencing a set collecting all the Items
+	 * of this World.
+	 * 
+	 * @Invar  The referenced set is effective.
+	 *       | Items != null
+	 * @Invar  Each Item registered in the referenced list is
+	 *         effective and not yet terminated.
+	 *       | for each Item in Items:
+	 *       |   ( (Item != null) &&
+	 *       |     (! Item.isTerminated()) )
+	 */
+	private final Set<Item> Items = new HashSet<Item>();
 	
 	/**
 	 * Static fields

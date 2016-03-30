@@ -134,6 +134,28 @@ private Position position;
  */
 protected Position previousPosition;
 
+/* World */
+
+/**
+ * return the world this unit belongs to
+ */
+public World getWorld(){
+	return this.world;
+}
+
+public void setWorld(World world){
+	// TODO make sure the association is always in both directions
+}
+
+public boolean hasWorld(){
+	return this.getWorld() != null;
+}
+
+private World world;
+
+
+
+
 public void advanceTime(double dt) throws IllegalArgumentException{
 	
 }
