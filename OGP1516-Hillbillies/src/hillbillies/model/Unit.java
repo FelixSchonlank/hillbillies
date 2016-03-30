@@ -73,7 +73,7 @@ import hillbillies.model.BadFSMStateException;
  *
  */
 
-public class Unit implements IAdvanceable{
+public class Unit extends GameObject{
 	
 	
 	
@@ -386,7 +386,7 @@ public class Unit implements IAdvanceable{
 	 * 		If the destination is not within the bounds.
 	 * 		| !withinBounds(destination)
 	 */
-	public void moveTo(int[] destination) throws IllegalArgumentException, BadFSMStateException {
+	public void moveTo(Coordinate destination) throws IllegalArgumentException, BadFSMStateException {
 		if(this.getState() != State.NOTHING &&
 				this.getState() != State.MOVING &&
 				this.getState() != State.RESTING_HP &&
@@ -398,36 +398,22 @@ public class Unit implements IAdvanceable{
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
 		
-		this.clearPath();
-		
-		int[] position = cubeCoordinates(this.getPosition());
-		int dx, dy, dz;
-		while(!areSameCube(position, destination)){
-			if(position[0] == destination[0]){
-				dx = 0;
-			}else if(position[0] < destination[0]){
-				dx = 1;
-			}else{
-				dx = -1;
+		Queue<Coordinate> Path = new LinkedList<Coordinate>();
+		List<Coordinate> AjacentCubes = addAll(World.getNeighbors( this.getPosition().toCoordinate()));
+		for(Coordinate neighbor: AjacentCubes){
+			Boolean hasSolidAjacent = False;
+			for(Coordinate ajacent: World.getNeighbors(neighbor) ){
+				if(Worls.isSolidTerrain(ajacent)) {
+					hasSolidAjacent = True;
+				}
 			}
-			position[0] += dx;
-			if(position[1] == destination[1]){
-				dy = 0;
-			}else if(position[1] < destination[1]){
-				dy = 1;
-			}else{
-				dy = -1;
+			Boolean constraint = False;
+			for(Coordinate element: Path){
+				if(element == (neighbor, n))// can a queue contaign tuples??
 			}
-			position[1] += dy;
-			if(position[2] == destination[2]){
-				dz = 0;
-			}else if(position[2] < destination[2]){
-				dz = 1;
-			}else{
-				dz = -1;
+			if(!(World.isPassableTerain(neighbor) && hasSolidAjacent)){
+				
 			}
-			position[2] += dz;
-			this.addToPath(cubeCenter(position));
 		}
 	}
 	
@@ -754,66 +740,7 @@ public class Unit implements IAdvanceable{
 		return name != null && name.matches("[A-Z][A-Za-z'\" ]+");
 	}
 	
-	
-	
-	/* Position */
-	
-	/**
-	 * return the position of the center of the unit
-	 */
-	@Basic
-	public double[] getPosition(){     
-	    return this.position;
-	}
-	
-	/**                                                                                                                                                                                  
-	 * Set the position of this  unit to the given position.                                                                                                 
-	 *                                                                                                                                                                                   
-	 * @param  position
-	 *         The new position for this Unit.                                                                                                                       
-	 * @post   The position of this new Unit is equal to                                                                                                             
-	 *         the given position.                                                                                                                                              
-	 *       | new.getPosition() == position                                                                                                                           
-	 * @throws IllegalArgumentException                                                                                                                                                        
-	 *         The given position is not a valid position for any                                                                                                      
-	 *         Unit.                                                                                                                                                          
-	 *       | ! isValidPosition(position)                                                                                                                        
-	 */
-	public void setPosition(double[] position)
-			throws IllegalArgumentException {
-		if (! isValidPosition(position))
-			throw new IllegalArgumentException(position + " is not a valid position.");
-		this.previousPosition = this.getPosition();
-		this.position = position;
-	}
-	
-	/**
-	 * Checks whether the given position is a valid position for any Unit.
-	 *
-	 *@param position 
-	 *		The position to check
-	 *@return True if and only if 
-	 *             position contains exactly 3 elements
-	 *             all tree coordinates are positive and smaller than or equal to getMaxCoordinate()
-	 *             |for each i in position.length:
-	 *             |    if (! (position[i] >= getMinCoordinate() and position < getMaxCoordinate()))
-	 *             |		result == false
-	 *             | result == (result && position.length == 3)
-	 */
-	@Raw
-	public static boolean isValidPosition(double[] position){     
-	    if (position.length != 3){
-	    	return false;
-	    }
-	    for (double coordinate : position){              
-	    	if (!(coordinate >= getMinCoordinate() && (coordinate < getMaxCoordinate()))){ 
-	    		return false;
-	    	}
-	    }
-	    return true;                             
-	}
-	
-	
+		
 	
 	/* Weight */
 	
@@ -2206,11 +2133,7 @@ public class Unit implements IAdvanceable{
 	
 	/* Variables */
 	
-	/**
-	 * Holds the previous position of the Unit. Very important to determine whether it has reached its destination
-	 */
-	private double[] previousPosition;
-	
+		
 	/**
 	 * The place that the Unit is currently going
 	 */
@@ -2266,7 +2189,6 @@ public class Unit implements IAdvanceable{
 	private boolean shouldAttack;
 	private boolean sprinting;
 	private String name;
-	private double[] position;
 	private int weight;
 	private int agility;
 	private int strength;

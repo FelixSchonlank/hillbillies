@@ -1,5 +1,10 @@
 package hillbillies.model;
 
-public class Boulder {
+public class Boulder extends Item{
 
+	public Boulder(Position position) {
+		super(position);
+	}
+	
+	
 }
