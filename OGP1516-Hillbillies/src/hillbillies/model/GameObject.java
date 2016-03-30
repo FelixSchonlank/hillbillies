@@ -144,7 +144,7 @@ public World getWorld(){
 }
 
 public void setWorld(World world){
-	// TODO make sure the association is always in both directions
+	this.world = world;
 }
 
 public boolean hasWorld(){
