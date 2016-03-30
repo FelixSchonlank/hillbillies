@@ -1,5 +1,6 @@
 package hillbillies.model;
 
+import java.util.HashMap;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
+import hillbillies.part2.listener.TerrainChangeListener;
 import be.kuleuven.cs.som.annotate.Raw;
 
 /**
@@ -38,17 +40,117 @@ public class World {
 		public int toInt() {
 			switch (this) {
 			case AIR:
-				return 0; break;
+				return 0;
 			case ROCK:
-				return 1; break;
+				return 1;
 			case TREE:
-				return 2; break;
+				return 2;
 			case WORKSHOP:
-				return 3; break;
+				return 3;
 			default:
 				return -1;
 			}
 		}
+		
+		public static TerrainType fromInt(int i) {
+			switch (i) {
+			case 0:
+				return TerrainType.AIR; 
+			case 1:
+				return TerrainType.ROCK;
+			case 2:
+				return TerrainType.TREE;
+			case 3:
+				return TerrainType.WORKSHOP;
+			default:
+				return null;
+			}
+		}
+	}
+	
+	/**
+	 * Initializes a World with given terrainTypes in threedimensional array,
+	 * and terrain change listener for notification purposes.
+	 * @param terrainTypes
+	 * 		A threedimensional array holding int values that represent the cube
+	 * 		types of the World that should be initialized.
+	 * @param terrainChangeListener
+	 * 		An object with a method to be called every time a cube in the World
+	 * 		changes its type.
+	 * @post
+	 * 		For every element of terrainTypes, this.cubes will hold exactly one
+	 * 		entry with a Coordinate corresponding with the location of the
+	 * 		element as key, and a TerrainType corresponding with the value of
+	 * 		the element as value.
+	 * @post
+	 * 		this.terrainChangeListener will be equal to the given one.
+	 * @post
+	 * 		this.min(X|Y|Z)Coordinate will be equal to 0.
+	 * @post
+	 * 		this.max(X|Y|Z)Coordinate will be equal to the length of the given
+	 * 		array in that specific direction.
+	 * @throws IllegalArgumentException
+	 * 		If the input array has any dimension of size 0 is jagged
+	 * @throws IllegalArgumentException
+	 * 		If the given TerrainChangeListener is null.
+	 */
+	public World(int[][][] terrainTypes, TerrainChangeListener terrainChangeListener)
+			throws IllegalArgumentException {
+		if (terrainChangeListener == null) {
+			throw new IllegalArgumentException("Terrain Change Listener is null");
+		}
+		this.terrainChangeListener = terrainChangeListener;
+		
+		this.cubes = intArrayToCubesMap(terrainTypes);
+		
+		this.minXCoordinate = 0;
+		this.maxXCoordinate = terrainTypes.length;
+		this.minYCoordinate = 0;
+		this.maxYCoordinate = terrainTypes[0].length;
+		this.minZCoordinate = 0;
+		this.maxZCoordinate = terrainTypes[0][0].length;
+		
+	}
+	
+	/**
+	 * Turns a threedimensional array of ints into a Map<Coordinate, TerrainType>.
+	 * @param array
+	 * 		The array to transform.
+	 * @return
+	 * 		The Map.
+	 */
+	private Map<Coordinate, TerrainType> intArrayToCubesMap(int[][][] array) 
+			throws IllegalArgumentException {
+		if (array.length == 0) {
+			throw new IllegalArgumentException("X size of input array is 0");
+		}
+		if (array[0].length == 0) {
+			throw new IllegalArgumentException("Y size of input array is 0");
+		}
+		if (array[0][0].length == 0) {
+			throw new IllegalArgumentException("Z size of input array is 0");
+		}
+		
+		Map<Coordinate, TerrainType> result = new HashMap<Coordinate, TerrainType>();
+		
+		// Within every deeper loop we check if the array has the same length
+		// there as before. If false somewhere, the array is jagged, and
+		// therefore invalid to us.
+		for (int x=0; x<array.length; x++) {
+			for (int y=0; y<array[x].length; y++) {
+				if (array[x].length != array[0].length) {
+					throw new IllegalArgumentException("Input array is jagged.");
+				}
+				for (int z=0; z<array[x][y].length; z++) {
+					if (array[x][y].length != array[0][0].length) {
+						throw new IllegalArgumentException("Input array is jagged");
+					}
+					result.put(new Coordinate(x, y, z), TerrainType.fromInt(array[x][y][z]));
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
@@ -57,8 +159,8 @@ public class World {
 	 * 		| result == maxXCoordinate
 	 */
 	@Basic @Immutable
-	public static int getMaxXCoordinate(){
-		return maxXCoordinate;
+	public int getMaxXCoordinate(){
+		return this.maxXCoordinate;
 	}
 	
 	/**
@@ -67,8 +169,8 @@ public class World {
 	 * 		| result == minXCoordinate
 	 */
 	@Basic @Immutable
-	public static int getMinXCoordinate(){
-		return minXCoordinate;
+	public int getMinXCoordinate(){
+		return this.minXCoordinate;
 	}
 	
 	/**
@@ -77,8 +179,8 @@ public class World {
 	 * 		| result == maxYCoordinate
 	 */
 	@Basic @Immutable
-	public static int getMaxYCoordinate(){
-		return maxYCoordinate;
+	public int getMaxYCoordinate(){
+		return this.maxYCoordinate;
 	}
 	
 	/**
@@ -87,8 +189,8 @@ public class World {
 	 * 		| result == minYCoordinate
 	 */
 	@Basic @Immutable
-	public static int getMinYCoordinate(){
-		return minYCoordinate;
+	public int getMinYCoordinate(){
+		return this.minYCoordinate;
 	}
 	
 	/**
@@ -97,8 +199,8 @@ public class World {
 	 * 		| result == maxZCoordinate
 	 */
 	@Basic @Immutable
-	public static int getMaxZCoordinate(){
-		return maxZCoordinate;
+	public int getMaxZCoordinate(){
+		return this.maxZCoordinate;
 	}
 	
 	/**
@@ -107,8 +209,8 @@ public class World {
 	 * 		| result == minZCoordinate
 	 */
 	@Basic @Immutable
-	public static int getMinZCoordinate(){
-		return minZCoordinate;
+	public int getMinZCoordinate(){
+		return this.minZCoordinate;
 	}
 
 	/**
@@ -120,9 +222,9 @@ public class World {
 	 * 		If position is not inside any cube
 	 * 		| !withinBounds(position)
 	 */
-	private static Coordinate cubeCoordinates(Position position) throws IllegalArgumentException {
-		if(!withinBounds(position)){
-			throw new IllegalArgumentException("Position out of bounds: " + position.toString());
+	public Coordinate cubeCoordinates(Position position) throws IllegalArgumentException {
+		if(!isValidPosition(position)){
+			throw new IllegalArgumentException("Position is not valid: " + position.toString());
 		}
 		return position.toCoordinate();
 	}
@@ -138,12 +240,12 @@ public class World {
 	 * @throws IllegalArgumentException
 	 * 		If at least one of the given Coordinates is out of bounds.
 	 */
-	private static boolean areAdjacentCubes(Coordinate cube1, Coordinate cube2) throws IllegalArgumentException {
-		if(!withinBounds(cube1)){
-			throw new IllegalArgumentException("First cube out of bounds: " + cube1.toString());
+	public boolean areAdjacentCubes(Coordinate cube1, Coordinate cube2) throws IllegalArgumentException {
+		if(!isValidCoordinate(cube1)){
+			throw new IllegalArgumentException("First cube is not valid: " + cube1.toString());
 		}
-		if(!withinBounds(cube2)){
-			throw new IllegalArgumentException("Second cube out of bounds: " + cube2.toString());
+		if(!isValidCoordinate(cube2)){
+			throw new IllegalArgumentException("Second cube is not valid: " + cube2.toString());
 		}
 		
 		return cube1.isAdjacentTo(cube2);
@@ -159,9 +261,9 @@ public class World {
 	 * 		If the given coordinate is out of bounds
 	 * 		| !withinBounds(coordinate)
 	 */
-	private static Position cubeCenter(Coordinate coordinate) throws IllegalArgumentException {
-		if(!withinBounds(coordinate)){
-			throw new IllegalArgumentException("Coordinate out of bounds: " + coordinate.toString());
+	public Position cubeCenter(Coordinate coordinate) throws IllegalArgumentException {
+		if(!isValidCoordinate(coordinate)){
+			throw new IllegalArgumentException("Coordinate is not valid: " + coordinate.toString());
 		}
 		return coordinate.toPosition();
 	}
@@ -173,7 +275,7 @@ public class World {
 	 * @return
 	 * 		true iff the cube is within the game bounds
 	 */
-	private static boolean withinBounds(Coordinate coordinate) {
+	private boolean withinBounds(Coordinate coordinate) {
 		return (((Comparable)coordinate.getX()).compareTo((Comparable)getMinXCoordinate()) >= 0 && 
 				((Comparable)coordinate.getX()).compareTo((Comparable)getMaxXCoordinate()) < 0 &&
 				((Comparable)coordinate.getY()).compareTo((Comparable)getMinYCoordinate()) >= 0 && 
@@ -189,7 +291,7 @@ public class World {
 	 * @return
 	 * 		true iff the position occupies a cube that is within the game bounds
 	 */
-	private static boolean withinBounds(Position position) {
+	private boolean withinBounds(Position position) {
 		return withinBounds(position.toCoordinate());
 	}
 	
@@ -204,12 +306,12 @@ public class World {
 	 * @throws IllegalArgumentException
 	 * 		If at least one of the given Coordinates is out of bounds.
 	 */
-	private static boolean areSameCube(Coordinate coord1, Coordinate coord2) throws IllegalArgumentException {
-		if (!withinBounds(coord1)) {
-			throw new IllegalArgumentException("First Coordinate out of bounds: " + coord1.toString());
+	public boolean areSameCube(Coordinate coord1, Coordinate coord2) throws IllegalArgumentException {
+		if (!isValidCoordinate(coord1)) {
+			throw new IllegalArgumentException("First Coordinate is not valid: " + coord1.toString());
 		}
-		if (!withinBounds(coord2)) {
-			throw new IllegalArgumentException("Second Coordinate out of bounds: " + coord2.toString());
+		if (!isValidCoordinate(coord2)) {
+			throw new IllegalArgumentException("Second Coordinate is not valid: " + coord2.toString());
 		}
 		return coord1.equals(coord2);
 	}
@@ -219,7 +321,7 @@ public class World {
 	 * @return
 	 * 		A random coordinate within the game field.
 	 */
-	private static Coordinate getRandomCoordinate() {
+	public Coordinate getRandomCoordinate() {
 		
 		return new Coordinate(
 				random.nextInt((int)(getMaxXCoordinate() - getMinXCoordinate())) + getMinXCoordinate(),
@@ -240,12 +342,19 @@ public class World {
 	 * 		If the given Coordinate is out of bounds.
 	 */
 	public Set<Coordinate> getNeighbors(Coordinate coordinate) throws IllegalArgumentException {
-		if (!withinBounds(coordinate)) {
-			throw new IllegalArgumentException("Coordinate out of bounds: " + coordinate.toString());
+		if (!isValidCoordinate(coordinate)) {
+			throw new IllegalArgumentException("Coordinate is not valid: " + coordinate.toString());
 		}
 		Set<Coordinate> neighbors = coordinate.getNeighbors();
 		neighbors.removeIf(neighbor -> !withinBounds(neighbor));
 		return neighbors;
+	}
+	
+	public boolean isPassableCube(Coordinate coordinate) throws IllegalArgumentException {
+		if (!isValidCoordinate(coordinate)) {
+			throw new IllegalArgumentException("Coordinate is not valid: " + coordinate.toString());
+		}
+		return isPassableTerrainType(cubes.get(coordinate));
 	}
 	
 	
@@ -265,7 +374,7 @@ public class World {
 	 */
 	public boolean hasProperCubes() {
 		for (Coordinate cube : cubes.keySet()) {
-			if (!isValidCube(cube)) {
+			if (!isValidCoordinate(cube)) {
 				return false;
 			}
 			if (!isValidTerrainType(cubes.get(cube))) {
@@ -276,14 +385,25 @@ public class World {
 	}
 	
 	/**
-	 * Tells whether the given cube coordinate is a valid one for the cube map.
-	 * @param cube
+	 * Tells whether the given coordinate is a valid one for the World, and
+	 * thus for the cube map.
+	 * @param coordinate
 	 * 		The coordinate to check.
 	 * @return
-	 * 		True iff the given cube coordinate is within the World bounds.
+	 * 		True iff the given coordinate is within the World bounds.
 	 */
-	public static boolean isValidCube(Coordinate cube) {
-		return withinBounds(cube);
+	public boolean isValidCoordinate(Coordinate coordinate) {
+		return withinBounds(coordinate);
+	}
+	
+	/**
+	 * Tells whether the given Position is a valid one for the World
+	 * @param position
+	 * @return
+	 * 		True iff the given position's coordinate is valid.
+	 */
+	public boolean isValidPosition(Position position) {
+		return isValidCoordinate(position.toCoordinate());
 	}
 	
 	/**
@@ -297,7 +417,9 @@ public class World {
 		return terrainType != null;
 	}
 	
-	/* Items */
+	
+	
+	/* ITEMS */
 
 	/**
 	 * Check whether this World has the given Item as one of its
@@ -413,7 +535,7 @@ public class World {
 	private final Set<Item> Items = new HashSet<Item>();
 	
 	/**
-	 * Static fields
+	 * final fields
 	 */
 	private final int maxXCoordinate;
 	private final int minXCoordinate;
@@ -421,6 +543,7 @@ public class World {
 	private final int minYCoordinate;
 	private final int maxZCoordinate;
 	private final int minZCoordinate;
+	private final TerrainChangeListener terrainChangeListener;
 
 	/**
 	 * A random generator used by this Unit
