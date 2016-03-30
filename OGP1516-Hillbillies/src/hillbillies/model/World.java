@@ -25,36 +25,67 @@ public class World {
 	 * An enum to represent the different terrain types in the World
 	 */
 	private enum TerrainType {
-		AIR, ROCK, TREE, WORKSHOP;
+		AIR(0, true),
+		ROCK(1, false),
+		TREE(2, false),
+		WORKSHOP(3, true);
 		
-		public int toInt() {
-			switch (this) {
-			case AIR:
-				return 0;
-			case ROCK:
-				return 1;
-			case TREE:
-				return 2;
-			case WORKSHOP:
-				return 3;
-			default:
-				return -1;
-			}
+		/**
+		 * An all-out constructor using all possible parameters
+		 * @param num
+		 * 		The artificially created ordinal for this type of terrain.
+		 * @param passable
+		 * 		Whether or not this type of terrain is passable.
+		 * @post
+		 * 		This TerrainType will have the given number and passability as
+		 * 		its num and passable fields, respectively.
+		 * 		| new.num = num;
+		 * 		| new.passable = passable;
+		 */
+		private TerrainType(int num, boolean passable) {
+			this.num = num;
+			this.passable = passable;
 		}
 		
+		private final int num;
+		private final boolean passable;
+		
+		/**
+		 * Returns the associated integer number of this type of terrain.
+		 * @return
+		 * 		| result == this.num
+		 */
+		@Basic @Immutable
+		public int toInt() {
+			return this.num;
+		}
+		
+		/**
+		 * Returns the TerrainType that has the given number as its number.
+		 * @param i
+		 * 		The given number to look for
+		 * @return
+		 * 		The TerrainType that has that number, if any. If no such
+		 * 		TerrainType exists, null is returned.
+		 */
 		public static TerrainType fromInt(int i) {
-			switch (i) {
-			case 0:
-				return TerrainType.AIR; 
-			case 1:
-				return TerrainType.ROCK;
-			case 2:
-				return TerrainType.TREE;
-			case 3:
-				return TerrainType.WORKSHOP;
-			default:
-				return null;
+			for (TerrainType terrainType : values()) {
+				if (terrainType.toInt() == i) {
+					return terrainType;
+				}
 			}
+			return null;
+		}
+		
+		/**
+		 * Tells whether this TerrainType is passable.
+		 * @return
+		 * 		True iff this TerrainType is passable.
+		 * 		| result == this.passable
+		 */
+		@Basic @Immutable
+		public boolean isPassable() {
+			return this.passable;
 		}
 	}
 	
@@ -407,7 +438,7 @@ public class World {
 		if (!isValidCoordinate(coordinate)) {
 			throw new IllegalArgumentException("Coordinate is not valid: " + coordinate.toString());
 		}
-		return isPassableTerrainType(cubes.get(coordinate));
+		return cubes.get(coordinate).isPassable();
 	}
 	
 	
