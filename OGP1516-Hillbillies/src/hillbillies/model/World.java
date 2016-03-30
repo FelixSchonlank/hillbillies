@@ -20,16 +20,6 @@ import be.kuleuven.cs.som.annotate.Raw;
  *
  */
 public class World {
-	/**
-	 * Initialize this new World as a non-terminated World with 
-	 * no Items yet.
-	 * 
-	 * @post   This new World has no Items yet.
-	 *       | new.getNbItems() == 0
-	 */
-	public World(){
-		
-	}
 	
 	/**
 	 * An enum to represent the different terrain types in the World
@@ -89,6 +79,9 @@ public class World {
 	 * @post
 	 * 		this.max(X|Y|Z)Coordinate will be equal to the length of the given
 	 * 		array in that specific direction.
+	 * @post
+	 * 		This World will have no Items to begin with
+	 * 		| this.getNbItems() == 0
 	 * @throws IllegalArgumentException
 	 * 		If the input array has any dimension of size 0 is jagged
 	 * @throws IllegalArgumentException
@@ -110,6 +103,66 @@ public class World {
 		this.minZCoordinate = 0;
 		this.maxZCoordinate = terrainTypes[0][0].length;
 		
+	}
+	
+	
+	
+	/* THE GAME MAP */
+	
+	/**
+	 * @Invar cubes is effective
+	 * 		| cubes != null
+	 */
+	private Map<Coordinate, TerrainType> cubes;
+	
+	/**
+	 * Tells whether this World has proper cubes.
+	 * @return
+	 * 		True iff this World has proper cubes.
+	 */
+	public boolean hasProperCubes() {
+		for (Coordinate cube : cubes.keySet()) {
+			if (!isValidCoordinate(cube)) {
+				return false;
+			}
+			if (!isValidTerrainType(cubes.get(cube))) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Tells whether the given coordinate is a valid one for the World, and
+	 * thus for the cube map.
+	 * @param coordinate
+	 * 		The coordinate to check.
+	 * @return
+	 * 		True iff the given coordinate is within the World bounds.
+	 */
+	public boolean isValidCoordinate(Coordinate coordinate) {
+		return withinBounds(coordinate);
+	}
+	
+	/**
+	 * Tells whether the given Position is a valid one for the World
+	 * @param position
+	 * @return
+	 * 		True iff the given position's coordinate is valid.
+	 */
+	public boolean isValidPosition(Position position) {
+		return isValidCoordinate(position.toCoordinate());
+	}
+	
+	/**
+	 * Tells whether the given terrain type is a valid one for any given cube.
+	 * @param terrainType
+	 * 		The terrain type to check.
+	 * @return
+	 * 		True iff the given terrain type is not null.
+	 */
+	public static boolean isValidTerrainType(TerrainType terrainType) {
+		return terrainType != null;
 	}
 	
 	/**
@@ -359,115 +412,55 @@ public class World {
 	
 	
 	
-	/* THE GAME MAP */
-	
-	/**
-	 * @Invar cubes is effective
-	 * 		| cubes != null
-	 */
-	private Map<Coordinate, TerrainType> cubes;
-	
-	/**
-	 * Tells whether this World has proper cubes.
-	 * @return
-	 * 		True iff this World has proper cubes.
-	 */
-	public boolean hasProperCubes() {
-		for (Coordinate cube : cubes.keySet()) {
-			if (!isValidCoordinate(cube)) {
-				return false;
-			}
-			if (!isValidTerrainType(cubes.get(cube))) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**
-	 * Tells whether the given coordinate is a valid one for the World, and
-	 * thus for the cube map.
-	 * @param coordinate
-	 * 		The coordinate to check.
-	 * @return
-	 * 		True iff the given coordinate is within the World bounds.
-	 */
-	public boolean isValidCoordinate(Coordinate coordinate) {
-		return withinBounds(coordinate);
-	}
-	
-	/**
-	 * Tells whether the given Position is a valid one for the World
-	 * @param position
-	 * @return
-	 * 		True iff the given position's coordinate is valid.
-	 */
-	public boolean isValidPosition(Position position) {
-		return isValidCoordinate(position.toCoordinate());
-	}
-	
-	/**
-	 * Tells whether the given terrain type is a valid one for any given cube.
-	 * @param terrainType
-	 * 		The terrain type to check.
-	 * @return
-	 * 		True iff the given terrain type is not null.
-	 */
-	public static boolean isValidTerrainType(TerrainType terrainType) {
-		return terrainType != null;
-	}
-	
-	
-	
 	/* ITEMS */
 
 	/**
 	 * Check whether this World has the given Item as one of its
 	 * Items.
 	 * 
-	 * @param  Item
+	 * @param  item
 	 *         The Item to check.
 	 */
 	@Basic
 	@Raw
-	public boolean hasAsItem(@Raw Item Item) {
-		return Items.contains(Item);
+	public boolean hasAsItem(@Raw Item item) {
+		return items.contains(item);
 	}
 
 	/**
 	 * Check whether this World can have the given Item
 	 * as one of its Items.
 	 * 
-	 * @param  Item
+	 * @param  item
 	 *         The Item to check.
 	 * @return True if and only if the given Item is effective
 	 *         and that Item is a valid Item for a World.
 	 *       | result ==
-	 *       |   (Item != null) &&
-	 *       |   Item.isValidWorld(this)
+	 *       |   (item != null) &&
+	 *       |   item.isValidWorld(this)
 	 */
 	@Raw
-	public boolean canHaveAsItem(Item Item) {
-		return (Item != null) && (Item.isValidWorld(this));
+	public boolean canHaveAsItem(Item item) {
+		return (item != null) && (item.isValidWorld(this));
 	}
 
 	/**
 	 * Check whether this World has proper Items attached to it.
 	 * 
 	 * @return True if and only if this World can have each of the
-	 *         Items attached to it as one of its Items,
+	 *         items attached to it as one of its Items,
 	 *         and if each of these Items references this World as
 	 *         the World to which they are attached.
-	 *       | for each Item in Item:
-	 *       |   if (hasAsItem(Item))
-	 *       |     then canHaveAsItem(Item) &&
-	 *       |          (Item.getWorld() == this)
+	 *       | for each item in items:
+	 *       |   if (hasAsItem(item))
+	 *       |     then canHaveAsItem(item) &&
+	 *       |          (item.getWorld() == this)
 	 */
 	public boolean hasProperItems() {
-		for (Item Item : Items) {
-			if (!canHaveAsItem(Item))
+		for (Item item : items) {
+			if (!canHaveAsItem(item))
 				return false;
-			if (Item.getWorld() != this)
+			if (item.getWorld() != this)
 				return false;
 		}
 		return true;
@@ -478,46 +471,46 @@ public class World {
 	 *
 	 * @return  The total number of Items collected in this World.
 	 *        | result ==
-	 *        |   card({Item:Item | hasAsItem({Item)})
+	 *        |   card({item:Item | hasAsItem(item)})
 	 */
 	public int getNbItems() {
-		return Items.size();
+		return items.size();
 	}
 
 	/**
 	 * Add the given Item to the set of Items of this World.
 	 * 
-	 * @param  Item
+	 * @param  item
 	 *         The Item to be added.
 	 * @pre    The given Item is effective and already references
 	 *         this World.
-	 *       | (Item != null) && (Item.getWorld() == this)
-	 * @post   This World has the given Item as one of its Items.
-	 *       | new.hasAsItem(Item)
+	 *       | (item != null) && (item.getWorld() == this)
+	 * @post   This World has the given Item as one of its items.
+	 *       | new.hasAsItem(item)
 	 */
-	public void addItem(@Raw Item Item) {
-		assert (Item != null) && (Item.getWorld() == this);
-		Items.add(Item);
+	public void addItem(@Raw Item item) {
+		assert (item != null) && (item.getWorld() == this);
+		items.add(item);
 	}
 
 	/**
 	 * Remove the given Item from the set of Items of this World.
 	 * 
-	 * @param  Item
+	 * @param  item
 	 *         The Item to be removed.
 	 * @pre    This World has the given Item as one of
-	 *         its Items, and the given Item does not
+	 *         its items, and the given Item does not
 	 *         reference any World.
-	 *       | this.hasAsItem(Item) &&
-	 *       | (Item.getWorld() == null)
+	 *       | this.hasAsItem(item) &&
+	 *       | (item.getWorld() == null)
 	 * @post   This World no longer has the given Item as
-	 *         one of its Items.
-	 *       | ! new.hasAsItem(Item)
+	 *         one of its items.
+	 *       | ! new.hasAsItem(item)
 	 */
 	@Raw
-	public void removeItem(Item Item) {
-		assert this.hasAsItem(Item) && (Item.getWorld() == null);
-		Items.remove(Item);
+	public void removeItem(Item item) {
+		assert this.hasAsItem(item) && (item.getWorld() == null);
+		items.remove(item);
 	}
 
 	/**
@@ -525,14 +518,14 @@ public class World {
 	 * of this World.
 	 * 
 	 * @Invar  The referenced set is effective.
-	 *       | Items != null
+	 *       | items != null
 	 * @Invar  Each Item registered in the referenced list is
 	 *         effective and not yet terminated.
-	 *       | for each Item in Items:
-	 *       |   ( (Item != null) &&
-	 *       |     (! Item.isTerminated()) )
+	 *       | for each item in items:
+	 *       |   ( (item != null) &&
+	 *       |     (! item.isTerminated()) )
 	 */
-	private final Set<Item> Items = new HashSet<Item>();
+	private final Set<Item> items = new HashSet<Item>();
 	
 	/**
 	 * final fields
