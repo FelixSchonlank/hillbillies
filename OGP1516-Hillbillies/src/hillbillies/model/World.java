@@ -485,12 +485,89 @@ public class World {
 		return neighbors;
 	}
 	
+	/**
+	 * Tells whether the cube at the given coordinate is of a passable terrain type.
+	 * @param coordinate
+	 * 		The coordinate to check at.
+	 * @return
+	 * 		True iff the cube at the given coordinate corresponds to an entry
+	 * 		in the cubes map with a TerrainType that isPassable().
+	 * @throws IllegalArgumentException
+	 * 		If the given coordinate is not valid.
+	 */
 	public boolean isPassableCube(Coordinate coordinate) throws IllegalArgumentException {
 		if (!isValidCoordinate(coordinate)) {
 			throw new IllegalArgumentException("Coordinate is not valid: " + coordinate.toString());
 		}
 		return cubes.get(coordinate).isPassable();
 	}
+	
+	/**
+	 * Gives back the terrain type of the cube at the given coordinate.
+	 * @param coordinate
+	 * 		The coordinate of the cube to check.
+	 * @throws IllegalArgumentException
+	 * 		If the given coordinate is not valid.
+	 */
+	public TerrainType getCubeAt(Coordinate coordinate) throws IllegalArgumentException {
+		if (!isValidCoordinate(coordinate)) {
+			throw new IllegalArgumentException("Given cube coordinate is not valid: " + coordinate.toString());
+		}
+		return this.cubes.get(coordinate);
+	}
+	
+	/**
+	 * Sets the value of an entry with given coordinate in the cubes map to
+	 * a given terrain type. 
+	 * @param coordinate
+	 * 		The coordinate of the cube to set
+	 * @param terrainType
+	 * 		The terrain type to set it to
+	 * @throws IllegalArgumentException
+	 * 		If the given cube coordinate is not valid
+	 * @throws IllegalArgumentException
+	 * 		If the given terrain type is not valid
+	 */
+	public void setCubeAt(Coordinate coordinate, TerrainType terrainType)
+			throws IllegalArgumentException {
+		if (!isValidCoordinate(coordinate)) {
+			throw new IllegalArgumentException("Given cube coordinate is not valid: " + coordinate.toString());
+		}
+		if (!isValidTerrainType(terrainType)) {
+			throw new IllegalArgumentException("Given terrain type is not valid: " + terrainType.toString());
+		}
+		this.cubes.remove(coordinate);
+		this.cubes.put(coordinate, terrainType);
+	}
+	
+	/**
+	 * Digs out the cube at the given coordinate, if it is diggable. Throws an
+	 * exception if it is not diggable.
+	 * @param coordinate
+	 * 		The coordinate of the cube to be dug out.
+	 * @throws IllegalArgumentException
+	 * 		If the cube at the given coordinate is not diggable.
+	 */
+	public void digOutCube(Coordinate coordinate) throws IllegalArgumentException {
+		if (isPassableCube(coordinate)) {
+			throw new IllegalArgumentException("Given cube is not diggable: " + coordinate.toString() + ": " + this.getCubeAt(coordinate));
+		}
+		TerrainType terrainType = this.getCubeAt(coordinate);
+		this.setCubeAt(coordinate, TerrainType.AIR);
+		switch (terrainType) {
+		case ROCK:
+			if (random.nextDouble() <= getBoulderDropChance()) {
+				createBoulder(cubeCenter(coordinate));
+			}
+			break;
+		case TREE:
+			if (random.nextDouble() <= getLogDropChance()) {
+				createLog(cubeCenter(coordinate));
+			}
+			break;
+		}
+	}
+	
 	
 	
 	/* UNITS */
@@ -565,7 +642,7 @@ public class World {
 	 *         The Unit to be added.
 	 * @pre    The given Unit is effective and already references
 	 *         this World.
-	 *       | (unit != null) && (unit.getWorld() == this) && this.getNbOfUnits() < this.getMaxUnits()
+	 *       | (unit != null) && (unit.getWorld() == this) && this.getNbUnits() < this.getMaxUnits()
 	 * @post   This World has the given Unit as one of its Units.
 	 *       | new.hasAsUnit(unit)
 	 */
@@ -619,6 +696,8 @@ public class World {
 	 * Variable referencing the maximum number of units a World can have
 	 */
 	private static final int maxUnits = 100;
+	
+	
 	
  	/* ITEMS */
 
