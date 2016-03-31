@@ -17,7 +17,8 @@ import be.kuleuven.cs.som.annotate.Raw;
  * 		| this.hasProperCubes()
  * @Invar Each World must have proper Items.
  *      | hasProperItems()
- *
+ *@Invar   Each World must have proper Units.
+ *        | hasProperUnits()
  */
 public class World {
 	
@@ -442,8 +443,134 @@ public class World {
 	}
 	
 	
+	/* UNITS */
+
+	/**
+	 * Check whether this World has the given Unit as one of its
+	 * Units.
+	 * 
+	 * @param  unit
+	 *         The Unit to check.
+	 */
+	@Basic
+	@Raw
+	public boolean hasAsUnit(@Raw Unit unit) {
+		return units.contains(unit);
+	}
+
+	/**
+	 * Check whether this World can have the given Unit
+	 * as one of its Units.
+	 * 
+	 * @param  unit
+	 *         The Unit to check.
+	 * @return True if and only if the given Unit is effective
+	 *         and that Unit is a valid Unit for this World.
+	 *       | result ==
+	 *       |   (unit != null) &&
+	 *       |   unit.canHaveAsWorld(this)
+	 */
+	@Raw
+	public boolean canHaveAsUnit(Unit unit) {
+		return (unit != null) && (unit.canHaveAsWorld(this));
+	}
+
+	/**
+	 * Check whether this World has proper Units attached to it.
+	 * 
+	 * @return True if and only if this World can have each of the
+	 *         Units attached to it as one of its Units,
+	 *         and if each of these Units references this World as
+	 *         the World to which they are attached.
+	 *       | for each unit in Unit:
+	 *       |   if (hasAsUnit(unit))
+	 *       |     then canHaveAsUnit(unit) &&
+	 *       |          (unit.getWorld() == this)
+	 */
+	public boolean hasProperUnits() {
+		for (Unit unit : units) {
+			if (!canHaveAsUnit(unit))
+				return false;
+			if (unit.getWorld() != this)
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Return the number of Units associated with this World.
+	 *
+	 * @return  The total number of Units collected in this World.
+	 *        | result ==
+	 *        |   card({unit:Unit | hasAsUnit({unit)})
+	 */
+	public int getNbUnits() {
+		return units.size();
+	}
+
+	/**
+	 * Add the given Unit to the set of Units of this World.
+	 * 
+	 * @param  unit
+	 *         The Unit to be added.
+	 * @pre    The given Unit is effective and already references
+	 *         this World.
+	 *       | (unit != null) && (unit.getWorld() == this) && this.getNbOfUnits() < this.getMaxUnits()
+	 * @post   This World has the given Unit as one of its Units.
+	 *       | new.hasAsUnit(unit)
+	 */
+	public void addUnit(@Raw Unit unit) {
+		assert (unit != null) && (unit.getWorld() == this) && (this.getNbUnits() < this.getMaxUnits());
+		units.add(unit);
+	}
+
+	/**
+	 * Remove the given Unit from the set of Units of this World.
+	 * 
+	 * @param  unit
+	 *         The Unit to be removed.
+	 * @pre    This World has the given Unit as one of
+	 *         its Units, and the given Unit does not
+	 *         reference any World.
+	 *       | this.hasAsUnit(unit) &&
+	 *       | (unit.getWorld() == null)
+	 * @post   This World no longer has the given Unit as
+	 *         one of its Units.
+	 *       | ! new.hasAsUnit(unit)
+	 */
+	@Raw
+	public void removeUnit(Unit unit) {
+		assert this.hasAsUnit(unit) && (unit.getWorld() == null);
+		units.remove(unit);
+	}
+
+	/**
+	 * Variable referencing a set collecting all the Units
+	 * of this World.
+	 * 
+	 * @Invar  The referenced set is effective.
+	 *       | units != null
+	 * @Invar  Each Unit registered in the referenced list is
+	 *         effective and not yet terminated.
+	 *       | for each unit in units:
+	 *       |   ( (unit != null) &&
+	 *       |     (! unit.isTerminated()) )
+	 */
+	private final Set<Unit> units = new HashSet<Unit>();
 	
-	/* ITEMS */
+	/**
+	 * return the maximum number of units a world can have 
+	 */
+	public int getMaxUnits(){
+		return this.MaxUnits;
+	}
+	
+	/**
+	 * Variable referencing the maximum number of units a World can have
+	 */
+	private final int MaxUnits = 100;
+	
+ 	/* ITEMS */
 
 	/**
 	 * Check whether this World has the given Item as one of its

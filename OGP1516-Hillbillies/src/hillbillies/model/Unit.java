@@ -13,63 +13,64 @@ import hillbillies.model.BadFSMStateException;
  * 
  * @author Willem Seynaeve and Felix Schönlank
  * 
- * @invar  The position of each Unit must be a valid position for any
+ * @Invar  The position of each Unit must be a valid position for any
  *         Unit.
  *       | isValidPosition(getPosition())
  *
- * @invar  The Name of each Unit must be a valid Name for any
+ * @Invar  The Name of each Unit must be a valid Name for any
  *         unit.
  *       | isValidName(getName())
  * 
- * @invar  The Weight of each unit must be a valid Weight for any
+ * @Invar  The Weight of each unit must be a valid Weight for any
  *         unit.
  *       | isValidWeight(getWeight())       
  *
- * @invar  The Strength of each Unit must be a valid Strength for any
+ * @Invar  The Strength of each Unit must be a valid Strength for any
  *         Unit.
  *       | isValidSrength(getSrength())
  *
- * @invar  The agility of each unit must be a valid agility for any
+ * @Invar  The agility of each unit must be a valid agility for any
  *         unit.
  *       | isValidAgility(getAgility())
  *       
- * @invar  The toughness of each unit must be a valid toughness for any unit.
+ * @Invar  The toughness of each unit must be a valid toughness for any unit.
  *       | isValidToughness(getToughness())
  * 
- * @invar  The HP of each unit must be a valid HP for any
+ * @Invar  The HP of each unit must be a valid HP for any
  *         unit.
  *       | isValidHP(getHP())
  *
- * @invar  The Stamina of each unit must be a valid Stamina for any
+ * @Invar  The Stamina of each unit must be a valid Stamina for any
  *         unit.
  *       | isValidStamina(getStamina())
  * 
- * @invar  The state of each unit must be a valid state for any
+ * @Invar  The state of each unit must be a valid state for any
  *         unit.
  *       | isValidState(getState())
  *
- * @invar  Each Unit can have its default behavior as default behavior.
+ * @Invar  Each Unit can have its default behavior as default behavior.
  *       | isValidDefaultBehaviorEnabled(this.getDefaultBehaviorEnabled())
  *
- * @invar  The sprinting of each Unit must be a valid sprinting for any
+ * @Invar  The sprinting of each Unit must be a valid sprinting for any
  *         Unit.
  *       | isValidSprinting(getSprinting())
  *       
- * @invar  The path of each Unit must be a valid path for any
+ * @Invar  The path of each Unit must be a valid path for any
  *         Unit.
  *       | isValidPath(getPath())
- *       
- * @invar  The defaultBehaviorRestingCountdown of each Unit must be a valid defaultBehaviorRestingCountdown for any
+ * @Invar  The defaultBehaviorRestingCountdown of each Unit must be a valid defaultBehaviorRestingCountdown for any
  *         Unit.
  *       | isValidDefaultBehaviorRestingCountdown(getDefaultBehaviorRestingCountdown())
  *      
- * @invar  The immediateTarget of each Unit must be a valid immediateTarget for any
+ * @Invar  The immediateTarget of each Unit must be a valid immediateTarget for any
  *         Unit.
  *       | isValidImmidiateTarget(getImmidiateTarget())
- * @invar  The XP of each Unit must be a valid XP for any
+ * @Invar  The XP of each Unit must be a valid XP for any
  *         Unit.
  *       | isValidXP(getXP())
- *       
+ * @Invar  If a unit has an item, the item of that Unit must be a valid item for this
+ *         Unit.
+ *       | ! this.hasItem() || canHaveAsItem(getItem())   
  *
  */
 
@@ -1199,6 +1200,131 @@ public class Unit extends GameObject{
 	
 	
 	
+	/* World */
+	
+	/**
+	 * Return the world this unit belongs to 
+	 * @return this.world
+	 */
+	@Basic @Raw
+	public World getWorld(){
+		return this.world;
+	}
+	
+	/**
+	 * Check whether this Unit can have a given World as its world 
+	 * @param world
+	 * 		the world to check
+	 * @return	if the unit is terminated the given world must be null
+	 * 		| if (this.isTerminated()) then result == (world == null)
+	 * 			if the unit is not terminated the World must also not be terminated
+	 * 		|else result == ! world == null && ! world.isTerminted() 
+	 */
+	public boolean canHaveAsWorld(World world){
+		if (this.isTerminted()){
+			return world == null;
+		}else{
+			return ! (world == null) && ! world.isTerminted();
+		}
+	}
+	
+	/**
+	 * Check whether the Unit belongs to a proper world
+	 * @return true iff the unit can have its world as its world 
+	 * 			and if the unit is terminated the world must be null
+	 * 			|result == canHaveAsWorld(this.getWorld()) && (! this.isTerminated() || (this.getWorld == null))
+	 */
+	@Raw
+	public boolean hasProperWorld(){
+		return canHaveAsWorld(this.getWorld()) && (! this.isTerminated() || (this.getWorld() == null));
+	}
+	
+	/**
+	 * Set the world this unit belongs to, to a given world
+	 * @param world
+	 * 		the world you want this unit to belong to
+	 * @post the world this unit belongs to is the given world and this unit is added to Units in world
+	 * 		|new.getWorld() == world && world.hasAsUnits(this)
+	 * @throws IllegalAgumentException 
+	 * 			if this Unit can not have the given world as its world
+	 * 		|! this.canHaveAsWorld(world)
+	 */
+	public void setWord(World world) throws IllegalArgumentException{
+		if (! this.canHaveAsWorld(world) || ! world.canHaveAsUnit(this)){
+			throw new IllegalArgumentException();
+		}
+		this.world = world;
+		world.addUnit(this);
+	}
+	
+	/**
+	 * Variable referencing the World this unit belongs to 
+	 */
+	private World world;
+	
+	
+	
+	/* Item */
+	
+	/**
+ 	* Return the item of this Unit.
+ 	*/
+	@Basic @Raw
+	public Item getItem() {
+		return this.item;
+}
+
+	/**
+ 	* Check whether the given item is a valid item for
+ 	* this Unit.
+ 	*  
+ 	* @param  item
+ 	*         The item to check.
+ 	* @return true if and only if the item has this unit as its unit
+ 	*       | result == (item.getUnit() == this)
+ 	*/
+	@Raw
+	public boolean canHaveAsItem(Item item) {
+		return item.getUnit() == this;
+	}
+
+	/**
+ 	* Set the item of this Unit to the given item.
+ 	* 
+ 	* @param  item
+ 	*         The new item for this Unit.
+ 	* @post   The item of this new Unit is equal to
+ 	*         the given item.
+ 	*       | new.getItem() == item
+ 	* @throws IllegalAgrumentException
+ 	*         The given item is not a valid item for this
+ 	*         Unit.
+ 	*       | ! canHaveAsItem(getItem())
+ 	*/
+	@Basic @Raw
+	public void setItem(Item item) 
+			throws IllegalArgumentException {
+		if (! canHaveAsItem(item)){
+			throw new IllegalArgumentException();
+		}this.item = item;
+	}
+
+	/**
+	 * check whether the unit is carrying an Item
+	 * @return this.getItem() != null
+	 */
+	public boolean hasItem(){
+		return this.getItem() != null;
+	}
+	
+	/**
+ 	* Variable registering the item of this Unit.
+ 	*/
+	private Item item;
+	
+	
+	
+	
 	/* Path */
 
 	/**
@@ -1274,6 +1400,8 @@ public class Unit extends GameObject{
 	private double[] extractFromPath() {
 		return this.getPath().remove(0);
 	}
+	
+	
 	
 	
 	/* flags */
