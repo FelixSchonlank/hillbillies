@@ -5,8 +5,11 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 
 /**	 
- * @invar  Each Item can have its weight as weight.
+ * @Invar  Each Item can have its weight as weight.
  *       | canHaveAsWeight(this.getWeight())
+ * @Invar
+ * 		
+ * 		| this.hasUnit() <==> ! this.hasWorld()
  */
 public class Item extends GameObject{
 	

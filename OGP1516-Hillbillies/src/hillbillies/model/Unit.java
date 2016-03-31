@@ -1374,6 +1374,15 @@ public class Unit extends GameObject{
 	 * If it is holding no item, nothing happens.
 	 * The dropped item appears at exactly the position the Unit has when it is
 	 * dropping it.
+	 * @post
+	 * 		If holding an item
+	 * 		| if this.hasItem() then
+	 * 		... the Item will be associated with this Unit's World
+	 * 		| (new (this.getItem()).getWorld()) == this.getWorld()
+	 * 		... and no longer with this Unit itself
+	 * 		| ! (new (this.getItem()).hasUnit())
+	 * 		... and this Unit will no longer hold an item
+	 * 		| (new this).getItem() == null
 	 */
 	public void dropItem() {
 		if (this.hasItem()) {
@@ -1386,6 +1395,33 @@ public class Unit extends GameObject{
 			world.addItem(item);
 			// Don't forget to set the Item's position
 			item.setPosition(this.getPosition());
+		}
+	}
+	
+	/**
+	 * Make the Unit pick up the given item, if not holding one already.
+	 * If it is holding an item already, nothing happens.
+	 * @param item
+	 * 		The Item to pick up
+	 * @post
+	 * 		If the Unit is not holding an Item, and the given Item is effective
+	 * 		| if !this.hasItem() then
+	 * 		... the Item will be associated with this Unit
+	 * 		| (new item).getUnit() == this
+	 * 		... and no longer with this Unit's (or any) World
+	 * 		| ! (new item).hasWorld()
+	 * 		... and this Unit will hold the given Item
+	 * 		| (new this).getItem() == item
+	 */
+	public void pickUpItem(Item item) {
+		if (!this.hasItem() && item != null) {
+			// Disconnect item from its (and this Unit's) World
+			item.setWorld(null);
+			this.getWorld().removeItem(item);
+			
+			// Connect item to this Unit
+			item.setUnit(this);
+			this.setItem(item);
 		}
 	}
 	
