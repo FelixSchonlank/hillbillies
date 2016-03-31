@@ -17,7 +17,8 @@ import be.kuleuven.cs.som.annotate.Raw;
  * 		| this.hasProperCubes()
  * @Invar Each World must have proper Items.
  *      | hasProperItems()
- *
+ * @Invar Each World must have a valid cubes (Map).
+ * 		| canHaveAsCubesMap(this.cubes)
  */
 public class World {
 	
@@ -186,6 +187,33 @@ public class World {
 	}
 	
 	/**
+	 * Tells whether the given Map<Coordinate, TerrainType> is a valid one to
+	 * hold the cubes map of this world. 
+	 * @param map
+	 * @return
+	 * 		True iff the size of the map is exactly the product of the sizes of
+	 * 		the game world in the three dimensions, AND if for every valid
+	 * 		coordinate in the game world an entry in the map can be found.
+	 * 		Through the pigeon hole principle, I think, this should mean every
+	 * 		valid coordinate has exactly one map entry. 
+	 */
+	public boolean canHaveAsCubesMap(Map<Coordinate, TerrainType> map) {
+		if (map.size() != (this.getMaxXCoordinate()+1)*(this.getMaxYCoordinate()+1)*(this.getMaxZCoordinate()+1)) {
+			return false;
+		}
+		for (int x=0; x<this.getMaxXCoordinate(); x++) {
+			for (int y=0; y<this.getMaxYCoordinate(); y++) {
+				for (int z=0; z<this.getMaxZCoordinate(); z++) {
+					if (map.get(new Coordinate(x, y, z)) == null) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	/**
 	 * Tells whether the given terrain type is a valid one for any given cube.
 	 * @param terrainType
 	 * 		The terrain type to check.
@@ -234,6 +262,27 @@ public class World {
 			}
 		}
 		
+		return result;
+	}
+	
+	/**
+	 * Turns a Map<Coordinate, TerrainType> into a threedimensional array of ints.
+	 * There is no need to make any checks whether the map is correctly filled,
+	 * since the map is initialized properly, and never loses its shape.
+	 * @param map
+	 * 		The Map to transform.
+	 * @return
+	 * 		The array.
+	 */
+	private int[][][] cubesMapToIntArray(Map<Coordinate, TerrainType> map) {
+		int[][][] result = new int[getMaxXCoordinate()][getMaxYCoordinate()][getMaxZCoordinate()];
+		for (int x=0; x<this.getMaxXCoordinate(); x++) {
+			for (int y=0; y<this.getMaxYCoordinate(); y++) {
+				for (int z=0; z<this.getMaxZCoordinate(); z++) {
+					result[x][y][z] = map.get(new Coordinate(x, y, z)).toInt();
+				}
+			}
+		}
 		return result;
 	}
 	
