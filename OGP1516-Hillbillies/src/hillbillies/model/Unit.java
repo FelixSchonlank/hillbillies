@@ -1292,22 +1292,66 @@ public class Unit extends GameObject{
 	
 	/* Faction */
 	
-	public boolean isValidFaction(Faction faction) {
-		
+	/**
+	 * Check whether this unit can have a given faction as its faction
+	 * @param faction
+	 * 		|the faction to check 
+	 * @return True if and only if the give faction is a faction of the world
+	 * 			this unit belongs to
+	 * 		| result == (this.getWorld().hasAsFaction(this)
+	 */
+	@Raw
+	public boolean canHaveAsFaction(Faction faction) {
+		return this.getWorld().hasAsFaction(this);
 	}
 	
+	/**
+	 * Check whether the faction of this unit if a valid faction for this unit 
+	 * @return true iff this unit can have this faction as its faction and the 
+	 * 			faction of this unit has this unit as one of its units
+	 * 			|result == (canHaveAsFaction(this.getFaction()) && this.getFaction().hasAsUnit(this))
+	 */
 	public boolean hasProperFaction() {
-		return isValidFaction(this.getFaction()) && this.getFaction().hasAsUnit(this);
+		return (canHaveAsFaction(this.getFaction()) && this.getFaction().hasAsUnit(this)) 
+				|| (this.isTerminated() && this.getFaction() == null);
 	}
 	
+	/**
+	 * return the faction this unit belongs to 	 
+	 */
 	public Faction getFaction() {
 		return this.faction;
 	}
-	
-	public void setFaction(Faction faction) {
-		this.faction = faction;
+
+	/**
+	 * Set the faction of this unit to a given faction
+	 * @param faction
+	 * 		the faction you want to set the units faction to
+	 * @Post if the given faction is not null the faction of this unit is set 
+	 * 		to the given faction and this unit is added to Units in Faction
+	 * 		| if (! faction == null) then 
+	 * 		| 	this.getfaction == null && faction.hasAsUnit(this)
+	 * @Post if the given faction is null the faction of this unit is set to 
+	 * 		null iff this unit is terminated  
+	 * 		| if (faction == null) then new.getFaction() == null
+	 * @throws IllegalArgumentException
+	 * 		if the unit is not terminated and the given argument is null
+	 * 		| faction == null && !this.isTerminted()		
+	 */
+	public void setFaction(Faction faction) throws IllegalArgumentException {
+		if (faction == null && !this.isTerminted()){
+			throw new IllegalArgumentException();
+		}else if (faction == null){
+			this.faction = null;
+		}else{
+			this.faction = faction;
+			faction.addUnit(this);
+		}
 	}
 	
+	/**
+	 * a variable referencing the faction this unit belongs to
+	 */
 	private Faction faction;
 	
 	
@@ -1688,9 +1732,10 @@ public class Unit extends GameObject{
 	public static boolean isValidState(State state) {
 		return state != null;
 	}
+
+
 	
-	
-	
+
 	/* Helper methods */
 	
 	/**
