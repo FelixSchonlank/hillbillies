@@ -90,7 +90,10 @@ public class Item extends GameObject{
 	 * Set the unit that is carrying this Item to a given Unit
 	 */
 	public void setUnit(Unit unit){
+		if (this.canHaveAsUnit(unit)){
 		this.unit = unit;
+		unit.setItem(this);
+		}
 	}
 	
 	/**
@@ -128,12 +131,15 @@ public class Item extends GameObject{
 	/**
 	 * Set the world of this Item to the given world and add this items of the given world
 	 * @param world
+	 * @throws IllegalArgumentException
+	 * 		If the unit can not have the given world as its world or if the world can not have this unit as one of its unit 
 	 */
-	public void setWorld(World world){
-		if (this.canHaveAsWorld(world) && world.canHaveAsItem(this)){
-			this.world = world;
-			world.addItem(this);
+	public void setWorld(World world) throws IllegalArgumentException{
+		if (!(this.canHaveAsWorld(world) && world.canHaveAsItem(this))){
+			throw new IllegalArgumentException();
 		}
+		this.world = world;
+		world.addItem(this);
 	}
 
 	/**

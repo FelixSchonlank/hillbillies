@@ -58,7 +58,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Wed Mar 30 12:40:25 CEST 2016'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Thu Mar 31 11:30:52 CEST 2016'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -85,7 +85,7 @@
                 </UML:Multiplicity>
               </UML:StructuralFeature.multiplicity>
               <UML:StructuralFeature.type>
-                <UML:Class xmi.idref = '-64--88-0--57--7733bfe6:153c35b4bf8:-8000:000000000000088E'/>
+                <UML:Class xmi.idref = '-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000BFE'/>
               </UML:StructuralFeature.type>
             </UML:Attribute>
             <UML:Attribute xmi.id = '-64--88-0--57--7733bfe6:153c35b4bf8:-8000:0000000000000892'
@@ -520,6 +520,37 @@
         <UML:Class xmi.id = '-64--88-0--56--4fe685dc:153c7029681:-8000:0000000000000BF9'
           name = 'Set&lt;Item&gt;' visibility = 'public' isSpecification = 'false'
           isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+        <UML:Class xmi.id = '-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000BFE'
+          name = 'Set&lt;Unit&gt;' visibility = 'public' isSpecification = 'false'
+          isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'/>
+        <UML:Association xmi.id = '-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C01'
+          name = 'Units' isSpecification = 'false' isRoot = 'false' isLeaf = 'false'
+          isAbstract = 'false'>
+          <UML:Association.connection>
+            <UML:AssociationEnd xmi.id = '-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C02'
+              visibility = 'public' isSpecification = 'false' isNavigable = 'false' ordering = 'unordered'
+              aggregation = 'none' targetScope = 'instance' changeability = 'changeable'>
+              <UML:AssociationEnd.participant>
+                <UML:Class xmi.idref = '-64--88-0--57--7733bfe6:153c35b4bf8:-8000:0000000000000868'/>
+              </UML:AssociationEnd.participant>
+            </UML:AssociationEnd>
+            <UML:AssociationEnd xmi.id = '-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C03'
+              visibility = 'public' isSpecification = 'false' isNavigable = 'true' ordering = 'unordered'
+              aggregation = 'none' targetScope = 'instance' changeability = 'changeable'>
+              <UML:AssociationEnd.multiplicity>
+                <UML:Multiplicity xmi.id = '-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C05'>
+                  <UML:Multiplicity.range>
+                    <UML:MultiplicityRange xmi.id = '-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C04'
+                      lower = '0' upper = '50'/>
+                  </UML:Multiplicity.range>
+                </UML:Multiplicity>
+              </UML:AssociationEnd.multiplicity>
+              <UML:AssociationEnd.participant>
+                <UML:Class xmi.idref = '-64--88-0--57--7733bfe6:153c35b4bf8:-8000:000000000000087C'/>
+              </UML:AssociationEnd.participant>
+            </UML:AssociationEnd>
+          </UML:Association.connection>
+        </UML:Association>
       </UML:Namespace.ownedElement>
     </UML:Model>
   </XMI.content>
@@ -633,7 +664,7 @@
         bold="false"
         textsize="13"
         justification="Left"
-      >Units : List&lt;Unit&gt;</text>
+      >Units : Set&lt;Unit&gt;</text>
       <text name="Fig0.4.2"
         x="353"
         y="162"
@@ -2420,8 +2451,8 @@
                         classname="org.argouml.uml.diagram.ui.PathItemPlacement"
                         figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
                         ownerhref="-64--88-0--57--7733bfe6:153c35b4bf8:-8000:000000000000089C"
-                        angle="216.0"
-                        offset="5" />
+                        angle="277.00000000000006"
+                        offset="24" />
       <argouml:pathitem figname="Fig20.2"
                         classname="org.argouml.uml.diagram.ui.PathItemPlacement"
                         figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
@@ -2454,12 +2485,12 @@
       stroke="1"
       strokecolor="black"
     >
-      <moveto x="392"
+      <moveto x="472"
               y="228" />
-      <lineto x="392"
-              y="336" />
+      <lineto x="472"
+              y="312" />
       <lineto x="560"
-              y="336" />
+              y="312" />
     </path>
   </group>
   <group name="Fig21"
@@ -2513,9 +2544,9 @@
       stroke="1"
       strokecolor="black"
     >
-      <moveto x="456"
+      <moveto x="400"
               y="228" />
-      <lineto x="456"
+      <lineto x="400"
               y="392" />
       <lineto x="624"
               y="392" />
@@ -2686,7 +2717,7 @@
                         offset="5" />
     </private>
     <path name="Fig24.0"
-      description="org.tigris.gef.presentation.FigPoly"
+      description="org.argouml.gefext.ArgoFigPoly"
       fill="0"
       fillcolor="white"
       stroke="1"
@@ -2700,6 +2731,65 @@
               y="264" />
       <lineto x="712"
               y="288" />
+    </path>
+  </group>
+  <group name="Fig25"
+       description="org.argouml.uml.diagram.ui.FigAssociation"
+       href="-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C01"
+       sourceConnector="-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C02"
+       destConnector="-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C03"
+       stroke="1"
+       strokecolor="black"
+  >
+    <private>
+      sourcePortFig="Fig2"
+      destPortFig="Fig12"
+      sourceFigNode="Fig2"
+      destFigNode="Fig12"
+      <argouml:pathitem figname="Fig25.1"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigTextGroup"
+                        ownerhref="-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C01"
+                        angle="270.0"
+                        offset="25" />
+      <argouml:pathitem figname="Fig25.2"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
+                        ownerhref="-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C02"
+                        angle="315.0"
+                        offset="5" />
+      <argouml:pathitem figname="Fig25.3"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigAssociationEndAnnotation"
+                        ownerhref="-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C02"
+                        angle="45.0"
+                        offset="5" />
+      <argouml:pathitem figname="Fig25.4"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigMultiplicity"
+                        ownerhref="-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C03"
+                        angle="199.0"
+                        offset="21" />
+      <argouml:pathitem figname="Fig25.5"
+                        classname="org.argouml.uml.diagram.ui.PathItemPlacement"
+                        figclassname="org.argouml.uml.diagram.ui.FigAssociationEndAnnotation"
+                        ownerhref="-64--88-0--57-3c7e9ed9:153cba4f4c0:-8000:0000000000000C03"
+                        angle="135.0"
+                        offset="5" />
+    </private>
+    <path name="Fig25.0"
+      description="org.tigris.gef.presentation.FigPoly"
+      fill="0"
+      fillcolor="white"
+      stroke="1"
+      strokecolor="black"
+    >
+      <moveto x="144"
+              y="194" />
+      <lineto x="144"
+              y="352" />
+      <lineto x="560"
+              y="352" />
     </path>
   </group>
 </pgml>
