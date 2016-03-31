@@ -21,6 +21,8 @@ import be.kuleuven.cs.som.annotate.Raw;
  * 		| canHaveAsCubesMap(this.cubes)
  * @Invar Each World must have proper Units.
  * 		| hasProperUnits()
+ * @invar   Each World must have proper Factions.
+ *        | hasProperFactions()
  */
 public class World {
 	
@@ -593,7 +595,7 @@ public class World {
 	 * 		True iff the given Unit is valid.
 	 */
 	@Raw
-	public boolean isValidUnit(Unit unit) {
+	public boolean canHaveAsUnit(Unit unit) {
 		return Unit.isValidWorld(this);
 	}
 
@@ -607,7 +609,7 @@ public class World {
 	 */
 	public boolean hasProperUnits() {
 		for (Unit unit : this.units) {
-			if (!isValidUnit(unit)) {
+			if (!canHaveAsUnit(unit)) {
 				return false;
 			}
 			if (unit.getWorld() != this) {
@@ -805,6 +807,78 @@ public class World {
 	 *       |     (! item.isTerminated()) )
 	 */
 	private final Set<Item> items = new HashSet<Item>();
+	
+	
+	
+	/* FACTIONS */
+
+	/**
+	 * Check whether this World has the given Faction as one of its
+	 * Factions.
+	 * 
+	 * @param  faction
+	 *         The Faction to check.
+	 */
+	@Basic
+	@Raw
+	public boolean hasAsFaction(@Raw Faction faction) {
+		return factions.contains(faction);
+	}
+
+	/**
+	 * Check whether the given Faction is valid.
+	 * 
+	 * @param  faction
+	 * 		The Faction to check.
+	 * @return
+	 * 		True iff the given Faction is not null
+	 */
+	@Raw
+	public boolean isValidFaction(Faction faction) {
+		return (faction != null);
+	}
+
+	/**
+	 * Check whether this World has proper Factions attached to it.
+	 * 
+	 * @return True if and only if this World can have each of the
+	 *         Factions attached to it as one of its Factions.
+	 *       | for each faction in Faction:
+	 *       |   if (hasAsFaction(faction))
+	 *       |     then isValidFaction(faction)
+	 */
+	public boolean hasProperFactions() {
+		for (Faction faction : this.factions) {
+			if (!isValidFaction(faction))
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Return the number of Factions associated with this World.
+	 *
+	 * @return  The total number of Factions collected in this World.
+	 *        | result ==
+	 *        |   card({faction:Faction | hasAsFaction({faction)})
+	 */
+	public int getNbFactions() {
+		return factions.size();
+	}
+
+	/**
+	 * Variable referencing a set collecting all the Factions
+	 * of this World.
+	 * 
+	 * @invar  The referenced set is effective.
+	 *       | factions != null
+	 * @invar  Each Faction registered in the referenced list is
+	 *         effective and not yet terminated.
+	 *       | for each faction in factions:
+	 *       |   ( (faction != null) &&
+	 *       |     (! faction.isTerminated()) )
+	 */
+	private final Set<Faction> factions = new HashSet<Faction>();
 	
 	
 	

@@ -1380,14 +1380,14 @@ public class Unit extends GameObject{
  	* Check whether the given item is a valid item for
  	* this Unit.
  	*  
- 	* @param  item
- 	*         The item to check.
- 	* @return true if and only if the item has this unit as its unit
- 	*       | result == (item.getUnit() == this)
+ 	* @param item
+ 	* 		The item to check.
+ 	* @return
+ 	* 		True iff this is a valid Unit for Item.
  	*/
 	@Raw
 	public boolean canHaveAsItem(Item item) {
-		return item.getUnit() == this;
+		return Item.isValidUnit(this);
 	}
 
 	/**
@@ -1395,20 +1395,33 @@ public class Unit extends GameObject{
  	* 
  	* @param  item
  	*         The new item for this Unit.
+ 	* @pre
+ 	* 		If item is null, this Unit's Item must not reference a Unit.
+ 	* 		| item != null || this.getItem().getUnit() == null;
+ 	* @pre
+ 	* 		If item is not null, it must already reference this Unit.
+ 	* 		| item == null || item.getUnit() == this;
  	* @post   The item of this new Unit is equal to
  	*         the given item.
- 	*       | new.getItem() == item
+ 	*       | (new this).getItem() == item
  	* @throws IllegalAgrumentException
  	*         The given item is not a valid item for this
  	*         Unit.
- 	*       | ! canHaveAsItem(getItem())
+ 	*       | ! canHaveAsItem(item)
  	*/
 	@Basic @Raw
 	public void setItem(Item item) 
 			throws IllegalArgumentException {
 		if (! canHaveAsItem(item)){
 			throw new IllegalArgumentException();
-		}this.item = item;
+		}
+		if (item == null) {
+			assert(this.getItem().getUnit() == null);
+			this.item = null;
+		} else {
+			assert(item.getUnit() == this);
+			this.item = item;
+		}
 	}
 
 	/**

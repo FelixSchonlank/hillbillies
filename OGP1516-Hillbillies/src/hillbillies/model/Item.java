@@ -93,21 +93,30 @@ public class Item extends GameObject{
 	/**
 	 * Set the unit that is carrying this Item to a given Unit
 	 */
-	public void setUnit(Unit unit){
-		if (this.canHaveAsUnit(unit)){
+	public void setUnit(Unit unit) {
+		if (! isValidUnit(unit)) {
+			throw new IllegalArgumentException("Given unit is invalid. " + unit.toString());
+		}
+		if (this.getUnit() != null) {
+			Unit oldUnit = this.getUnit();
+			this.unit = null;
+			oldUnit.setItem(null);
+			this.unit = unit;
+		} else {
 			this.unit = unit;
 			unit.setItem(this);
 		}
 	}
 	
 	/**
-	 * This unit can have a given unit as its unit iff the unit does not already have an item and the item does not already 
-	 * have a Unit and the Unit and the Item belong to the same World 
+	 * Tells whether the given unit is valid.
 	 * @param unit
+	 * 		The unit to check the validity of.
 	 * @return
+	 * 		True always.
 	 */
-	public boolean canHaveAsUnit(Unit unit){
-		return this.getWorld() == unit.getWorld() && ! unit.hasItem() && ! this.hasUnit();
+	public static boolean isValidUnit(Unit unit){
+		return true;
 	}
 
 	/**
