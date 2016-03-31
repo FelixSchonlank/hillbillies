@@ -83,12 +83,12 @@ public class Faction {
 	 *         The unit to be added.
 	 * @Pre    The given unit is effective and already references
 	 *         this faction.
-	 *       | (unit != null) && (unit.getFaction() == this)
+	 *       | (unit != null) && (unit.getFaction() == this) && this.getNbUnits() < this.MaxNbUnits()
 	 * @post   This faction has the given unit as one of its units.
 	 *       | new.hasAsUnit(unit)
 	 */
 	public void addUnit(@Raw Unit unit) {
-		assert (unit != null) && (unit.getFaction() == this);
+		assert (unit != null) && (unit.getFaction() == this) && this.getNbUnits() < this.getMaxUnits();
 		units.add(unit);
 	}
 
@@ -125,4 +125,13 @@ public class Faction {
 	 *       |     (! unit.isTerminated()) )
 	 */
 	private final Set<Unit> units = new HashSet<Unit>();
+	
+	public int getMaxUnits(){
+		return this.MaxUnits;
+	}
+	
+	/**
+	 * A variable referencing the maximum units a faction can have 
+	 */
+	private static final int MaxUnits = 50;
 }
