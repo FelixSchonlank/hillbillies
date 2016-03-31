@@ -192,7 +192,32 @@ public class Unit extends GameObject{
 		this.setState(State.NOTHING);
 		
 	}
-
+	
+	
+	
+	/* Destructor */
+	
+	/**
+	 * Terminates this Unit by dropping its Item (if any) at the location it is
+	 * currently standing, removing itself from its Faction, and removing
+	 * itself from the World. 
+	 */
+	public void terminate() {
+		this.dropItem();
+		
+		this.isTerminated = true;
+		
+		Faction faction = this.getFaction();
+		this.setFaction(null);
+		faction.removeAsUnit(this);
+		
+		World world = this.getWorld();
+		this.setWorld(null);
+		world.removeAsUnit(this);
+	}
+	
+	private boolean isTerminated;
+	
 	
 	
 	/* Initial attribute checkers */
@@ -1249,7 +1274,7 @@ public class Unit extends GameObject{
 	 * 			if this Unit can not have the given world as its world
 	 * 		|! this.canHaveAsWorld(world)
 	 */
-	public void setWord(World world) throws IllegalArgumentException{
+	public void setWorld(World world) throws IllegalArgumentException {
 		if (! this.canHaveAsWorld(world) || ! world.canHaveAsUnit(this)){
 			throw new IllegalArgumentException();
 		}
@@ -1264,6 +1289,28 @@ public class Unit extends GameObject{
 	
 	
 	
+	/* Faction */
+	
+	public boolean isValidFaction(Faction faction) {
+		
+	}
+	
+	public boolean hasProperFaction() {
+		return isValidFaction(this.getFaction()) && this.getFaction().hasAsUnit(this);
+	}
+	
+	public Faction getFaction() {
+		return this.faction;
+	}
+	
+	public void setFaction(Faction faction) {
+		this.faction = faction;
+	}
+	
+	private Faction faction;
+	
+	
+	
 	/* Item */
 	
 	/**
@@ -1272,7 +1319,7 @@ public class Unit extends GameObject{
 	@Basic @Raw
 	public Item getItem() {
 		return this.item;
-}
+	}
 
 	/**
  	* Check whether the given item is a valid item for
@@ -1322,6 +1369,25 @@ public class Unit extends GameObject{
  	*/
 	private Item item;
 	
+	/**
+	 * Makes the Unit drop the item it is holding, if any.
+	 * If it is holding no item, nothing happens.
+	 * The dropped item appears at exactly the position the Unit has when it is
+	 * dropping it.
+	 */
+	public void dropItem() {
+		if (this.hasItem()) {
+			// Disconnect item from this Unit
+			Item item = this.getItem();
+			this.getItem().setUnit(null);
+			
+			// Connect item to this Unit's World
+			item.setWorld(this.getWorld());
+			world.addItem(item);
+			// Don't forget to set the Item's position
+			item.setPosition(this.getPosition());
+		}
+	}
 	
 	
 	

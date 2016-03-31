@@ -9,6 +9,7 @@ import be.kuleuven.cs.som.annotate.Raw;
  *       | canHaveAsWeight(this.getWeight())
  */
 public class Item extends GameObject{
+	
 	/**
 	 * Initialize a new Item with a given position and a random weight
 	 */
