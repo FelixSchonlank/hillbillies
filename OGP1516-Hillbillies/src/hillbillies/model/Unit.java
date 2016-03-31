@@ -268,6 +268,7 @@ public class Unit extends GameObject{
 	 * machine model, which is used for the Unit's behavior.
 	 * @param dt
 	 */
+	@Override
 	public void advanceTime(double dt) throws IllegalArgumentException{
 		if(dt > getMaxDT()){
 			throw new IllegalArgumentException("dt went over its maximum of " + getMaxDT() + ": dt = " + dt);
