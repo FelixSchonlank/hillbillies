@@ -206,7 +206,6 @@ public interface IFacade extends hillbillies.part1.facade.IFacade {
 	 * @throws ModelException
 	 *             A precondition was violated or an exception was thrown.
 	 */
-
 	public void setCubeType(World world, int x, int y, int z, int value) throws ModelException;
 
 	/**
