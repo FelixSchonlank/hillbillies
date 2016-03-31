@@ -91,8 +91,8 @@ public class Item extends GameObject{
 	 */
 	public void setUnit(Unit unit){
 		if (this.canHaveAsUnit(unit)){
-		this.unit = unit;
-		unit.setItem(this);
+			this.unit = unit;
+			unit.setItem(this);
 		}
 	}
 	
@@ -161,14 +161,15 @@ public class Item extends GameObject{
 	 * @Post If the Item had a World or Unit the World no longer has this Item as its Item or the Unit no longer has an Item 
 	 */
 	public void terminate(){
-		if(! isTerminated()){
-			if (this.hasWorld()){
-				this.getWorld().removeItem(this);
-			}else if (this.hasUnit()){
-				//TODO the assotiation for unit
-			}
-			this.isTerminated = true;
-		}
+		if (this.hasWorld()){
+			World world = this.getWorld();
+			this.setWorld(null);
+			this.world.removeItem(this);
+		}else if (this.hasUnit()){
+			Unit unit = this.getUnit();
+			this.setUnit(unit);
+			unit.setItem(null);
+		}this.isTerminated = true;
 	}
 
 	/**
