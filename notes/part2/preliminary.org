@@ -1,156 +1,156 @@
 
 No formal documentation except for Unit.
 
-* World  						      :defensive:new:
+* World [/] 						      :defensive:new:
 
-** Terrain
+** Terrain [1/3]
 
-- Cubes can be different types of things. A cube's type can change over its
+- [X] Cubes can be different types of things. A cube's type can change over its
   lifetime.
-  - Impassable
-    - Rock
-    - Wood
-  - Passable
-    - Air (default)
-- When not (in)directly connected to the borders of the world, a cube will
+  - [X] Impassable
+    - [X] Rock
+    - [X] Wood
+  - [X] Passable
+    - [X] Air (default)
+- [ ] When not (in)directly connected to the borders of the world, a cube will
   disappear (cave-in) after at most 5 seconds.
-  - Algorithm for check connectedness to border is given.
-- When disappearing, a cube's type changes to ``air'', and with 0.25 chance a
+  - [ ] Algorithm for check connectedness to border is given.
+- [ ] When disappearing, a cube's type changes to ``air'', and with 0.25 chance a
   Boulder (rock cube) or Log (wood cube) spawns at the center.
+  
 
+** Game objects [2/3]
 
-** Game objects
-
-- World can contain unlimited number of Bolders and Logs
-- World can contain <= 100 Units
-- Factions
-  - == 1 Faction per Unit
-  - <= 50 Units per Faction
-  - <= 5 active (non-empty) Factions per World
-  - World *silently rejects* requests for excessive Units or Factions
-- Implement a method to spawn Unit
-  - Random initial attributes
-  - Random initial position
-    - In a passable cube
-    - Above solid cube or on the floor of the World (Pro tip: use helper method)
+- [X] World can contain unlimited number of Bolders and Logs
+- [X] World can contain <= 100 Units
+- [-] Factions
+  - [X] == 1 Faction per Unit
+  - [X] <= 50 Units per Faction
+  - [ ] <= 5 active (non-empty) Factions per World
+  - [ ] World *silently rejects* requests for excessive Units or Factions
+- [ ] Implement a method to spawn Unit
+  - [ ] Random initial attributes
+  - [ ] Random initial position
+    - [ ] In a passable cube
+    - [ ] Above solid cube or on the floor of the World (Pro tip: use helper method)
       isAboveSolid.
-  - Starts new Faction unless maximum Faction number reached. Then joins
+  - [ ] Starts new Faction unless maximum Faction number reached. Then joins
     smallest Faction.
-- Game objects (Units, Boulders, Logs) shall be removed upon death or
+- [ ] Game objects (Units, Boulders, Logs) shall be removed upon death or
   consumption or something similar
 
 
-** Game over
+** Game over [1/1]
 
-The game is never over! We gonna play till the break of dawn!
-
-
-** Implementation
-
-- Implement a method in World to ...
-  - Inspect a given cube. Give back
-    - Terrain type
-    - List of objects occupying that cube
-  - List all Factions
-  - List all Units
-    - All
-    - Of a given Faction only
-  - List all Boulders
-  - List all Logs
-  - Invoke advanceTime on all game obje
+- [X] The game is never over! We gonna play till the break of dawn!
 
 
-* Unit 								    :altered:
+** Implementation [/]
 
-- A Unit must now always belong to 1 Faction
-- Must always occupy a cube of passable terrain type
-- XP
-  - For every 10 XP, Units Str, Agl, *or* Tgh increases by 1.
-  - For every movement step (for every block the Unit arrives at), + 1 XP.
+- [ ] Implement a method in World to ...
+  - [ ] Inspect a given cube. Give back
+    - [ ] Terrain type
+    - [ ] List of objects occupying that cube
+  - [ ] List all Factions
+  - [ ] List all Units
+    - [ ] All
+    - [ ] Of a given Faction only
+  - [ ] List all Boulders
+  - [ ] List all Logs
+  - [ ] Invoke advanceTime on all game objects
 
 
-** (Not) falling 							:new:
+* Unit [1/3] 							    :altered:
 
-- Start falling when not in a cube directly adjacent to a solid cube or the
+- [X] A Unit must now always belong to 1 Faction
+- [ ] Must always occupy a cube of passable terrain type
+- [ ] XP
+  - [ ] For every 10 XP, Units Str, Agl, *or* Tgh increases by 1.
+  - [ ] For every movement step (for every block the Unit arrives at), + 1 XP.
+
+
+** (Not) falling [0/3] 							:new:
+
+- [ ] Start falling when not in a cube directly adjacent to a solid cube or the
   floor of the World (use helper method aroundSolid for all this).
-- When falling ...
-  - Move with constant velocity (0, 0, -3)
-  - Stop falling when aboveSolid
-  - The Unit can't start sprinting
-  - You cannot do anything
-    - Not even being attacked
-- Upon landing, lose 10 HP per fallen Z-level
+- [ ] When falling ...
+  - [ ] Move with constant velocity (0, 0, -3)
+  - [ ] Stop falling when aboveSolid
+  - [ ] The Unit can't start sprinting
+  - [ ] You cannot do anything
+    - [ ]Not even being attacked
+- [ ] Upon landing, lose 10 HP per fallen Z-level
 
 
-** Basic movement 						    :altered:
+** Basic movement [0/2] 					    :altered:
 
-- Units can only move through cubes of passable terrain type and that are
+- [ ] Units can only move through cubes of passable terrain type and that are
   aroundSolid cubes.
-- When arriving at a block by delibirately moving there, a Unit gains 1 XP.
+- [ ] When arriving at a block by delibirately moving there, a Unit gains 1 XP.
 
 
-** Extended movement and path finding 				    :altered:
+** Extended movement and path finding [1/4] 			    :altered:
 
-- A new path finding algorithm is given.
-- Note that due to the changing of the World, the path must be from recalculated
+- [X] A new path finding algorithm is given.
+- [ ] Note that due to the changing of the World, the path must be recalculated
   every block a Unit arrives at. There is no longer a point in storing a path,
   only in storing an ultimateTarget.
-- Moving to faraway blocks can be interrupted, *but must be resumed!*
-- When ultimateTarget is unreachable, moving is terminated.
+- [ ] Moving to faraway blocks can be interrupted, *but must be resumed!*
+- [ ] When ultimateTarget is unreachable, moving is terminated.
 
 
-** Work 							    :altered:
+** Work [0/4] 							    :altered:
 
-- Redefine method ``work'' to order the Unit to work at given block
-  - Must be current or adjacent block
-  - Store the target block somewhere
-- Upon completion of the work, there will be checked what kind of work has been
+- [ ] Redefine method ``work'' to order the Unit to work at given block
+  - [ ] Must be current or adjacent block
+  - [ ] Store the target block somewhere
+- [ ] Upon completion of the work, there will be checked what kind of work has been
   done.
-  - Carrying Boulder or Log :: The Boulder or Log is dropped at the center of
+  - [ ] Carrying Boulder or Log :: The Boulder or Log is dropped at the center of
        the *target working cube*.
-  - Target cube is Workshop and one Boulder and Log are available there :: 
+  - [ ] Target cube is Workshop and one Boulder and Log are available there :: 
        One Boulder and Log will be consumed from target cube. Weight and
        Toughness increased by 1.
-  - Boulder or Log present on target cube :: The Unit picks it up.
-  - Target cube is of Wood type :: The cube disappears, leaving a Log.
-  - Target cube is of Rock type :: The cube disappears, leaving a Boulder.
-  - No condition is met :: Nothing happens.
-- Weight of Unit is own weight plus weight of Boulder or Log the Unit is
+  - [ ] Boulder or Log present on target cube :: The Unit picks it up.
+  - [ ] Target cube is of Wood type :: The cube disappears, leaving a Log.
+  - [ ] Target cube is of Rock type :: The cube disappears, leaving a Boulder.
+  - [ ] No condition is met :: Nothing happens.
+- [ ] Weight of Unit is own weight plus weight of Boulder or Log the Unit is
   carrying.
-  - Temporary weight may exceed maximum weight
-- + 10 XP for every fully completed work
+  - [ ] Temporary weight may exceed maximum weight
+- [ ] + 10 XP for every fully completed work
 
 
-** Fighting 							    :altered:
+** Fighting [0/3] 						    :altered:
 
-- You can now only attack Units of a different Faction.
-- + 20 XP for succesful attack, dodge, or block.
-- Dodging teleportation can now only be to blocks featuring passable terrain.
-
-
-** Death 								:new:
-
-- Units die at 0 HP.
-- Dead Units can't conduct activities.
-- Picked up stuff will be dropped at Unit's position.
+- [ ] You can now only attack Units of a different Faction.
+- [ ] + 20 XP for succesful attack, dodge, or block.
+- [ ] Dodging teleportation can now only be to blocks featuring passable terrain.
 
 
-** Default behavior 						    :altered:
+** Death [0/3] 								:new:
 
-- One possibility when idle is now to fight potential enemies.
+- [ ] Units die at 0 HP.
+- [ ] Dead Units can't conduct activities.
+- [ ] Picked up stuff will be dropped at Unit's position.
 
 
-* Boulder and Log 					      :defensive:new:
+** Default behavior [0/1] 					    :altered:
 
-- Position
-  - Use doubles
-  - Always in passable terrain
-  - When not aboveSolid, starts falling like a Unit.
-    - Implement advanceTime
-- Weight
-  - Use int
-  - ∈ [10 ; 50]
-  - Chosen at random upon creation
-  - Doesn't change
-- Not present in World when being carried
-- Re-enters World when dropped
+- [ ] One possibility when idle is now to fight potential enemies.
+
+
+* Boulder and Log [2/4] 				      :defensive:new:
+
+- [-] Position
+  - [X] Use doubles
+  - [ ] Always in passable terrain
+  - [ ] When not aboveSolid, starts falling like a Unit.
+    - [ ] Implement advanceTime
+- [-] Weight
+  - [X] Use int
+  - [X] ∈ [10 ; 50]
+  - [ ] Chosen at random upon creation
+  - [X] Doesn't change
+- [X] Not present in World when being carried
+- [X] Re-enters World when dropped
