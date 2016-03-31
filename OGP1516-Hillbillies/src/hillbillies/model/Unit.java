@@ -1238,48 +1238,58 @@ public class Unit extends GameObject{
 	}
 	
 	/**
-	 * Check whether this Unit can have a given World as its world 
+	 * Check whether a Unit can have a given World as its world 
 	 * @param world
 	 * 		the world to check
-	 * @return	if the unit is terminated the given world must be null
-	 * 		| if (this.isTerminated()) then result == (world == null)
-	 * 			if the unit is not terminated the World must also not be terminated
-	 * 		|else result == ! world == null && ! world.isTerminted() 
+	 * @return
+	 * 		True iff the given World is not null
+	 * 		| result == (world != null)
 	 */
-	public boolean canHaveAsWorld(World world){
-		if (this.isTerminted()){
-			return world == null;
-		}else{
-			return ! (world == null) && ! world.isTerminted();
-		}
+	public static boolean isValidWorld(World world){
+		return world != null;
 	}
 	
 	/**
-	 * Check whether the Unit belongs to a proper world
-	 * @return true iff the unit can have its world as its world 
-	 * 			and if the unit is terminated the world must be null
-	 * 			|result == canHaveAsWorld(this.getWorld()) && (! this.isTerminated() || (this.getWorld == null))
+	 * Check whether the Unit belongs to a proper World
+	 * @return
+	 * 		True iff the Unit belongs to a valid World which has this Unit as
+	 * 		one of its Units.
+	 * 		| result == (isValidWorld(this.getWorld())
+	 * 		| 			&& this.getWorld().hasAsUnit(this))
 	 */
 	@Raw
 	public boolean hasProperWorld(){
-		return canHaveAsWorld(this.getWorld()) && (! this.isTerminated() || (this.getWorld() == null));
+		return isValidWorld(this.getWorld()) && this.getWorld().hasAsUnit(this);
 	}
 	
 	/**
 	 * Set the world this unit belongs to, to a given world
 	 * @param world
-	 * 		the world you want this unit to belong to
-	 * @post the world this unit belongs to is the given world and this unit is added to Units in world
-	 * 		|new.getWorld() == world && world.hasAsUnits(this)
+	 * 		The world you want this unit to belong to
+	 * @post
+	 * 		The world this Unit belongs to is the given World and this Unit is
+	 * 		added to Units in world.
+	 * 		| (new this).getWorld() == world
+	 * 		| && world.hasAsUnit(this)
+	 *		Also if the given World is not the old World, the old World will
+	 *		not have this Unit as one of its Units.
 	 * @throws IllegalAgumentException 
-	 * 			if this Unit can not have the given world as its world
-	 * 		|! this.canHaveAsWorld(world)
+	 * 		If the given world is not Valid
+	 * 		| ! isValidWorld(world)
 	 */
 	public void setWorld(World world) throws IllegalArgumentException {
-		if (! this.canHaveAsWorld(world) || ! world.canHaveAsUnit(this)){
-			throw new IllegalArgumentException();
+		if (! isValidWorld(world)){
+			throw new IllegalArgumentException("Given World is invalid: " + world.toString());
 		}
+		World oldWorld = this.getWorld();
+		// Remove reference to old World ... 
+		this.world = null;
+		// ... so that it will accept the disconnection
+		oldWorld.removeUnit(this);
+		// Then replace it with new reference ...
 		this.world = world;
+		// ... and use that new reference so the new World will accept the
+		// connection
 		world.addUnit(this);
 	}
 	

@@ -586,40 +586,33 @@ public class World {
 	}
 
 	/**
-	 * Check whether this World can have the given Unit
-	 * as one of its Units.
-	 * 
+	 * Check whether the given Unit is valid.
 	 * @param  unit
 	 *         The Unit to check.
-	 * @return True if and only if the given Unit is effective
-	 *         and that Unit is a valid Unit for this World.
-	 *       | result ==
-	 *       |   (unit != null) &&
-	 *       |   unit.canHaveAsWorld(this)
+	 * @return
+	 * 		True iff the given Unit is valid.
 	 */
 	@Raw
-	public boolean canHaveAsUnit(Unit unit) {
-		return (unit != null) && (unit.canHaveAsWorld(this));
+	public boolean isValidUnit(Unit unit) {
+		return Unit.isValidWorld(this);
 	}
 
 	/**
 	 * Check whether this World has proper Units attached to it.
 	 * 
-	 * @return True if and only if this World can have each of the
-	 *         Units attached to it as one of its Units,
-	 *         and if each of these Units references this World as
-	 *         the World to which they are attached.
-	 *       | for each unit in Unit:
-	 *       |   if (hasAsUnit(unit))
-	 *       |     then canHaveAsUnit(unit) &&
-	 *       |          (unit.getWorld() == this)
+	 * @return
+	 * 		True if and only if each of the Units attached to this World is
+	 * 		valid, and if each of these Units references this World as the
+	 * 		World to which they are attached.
 	 */
 	public boolean hasProperUnits() {
-		for (Unit unit : units) {
-			if (!canHaveAsUnit(unit))
+		for (Unit unit : this.units) {
+			if (!isValidUnit(unit)) {
 				return false;
-			if (unit.getWorld() != this)
+			}
+			if (unit.getWorld() != this) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -644,7 +637,7 @@ public class World {
 	 *         this World.
 	 *       | (unit != null) && (unit.getWorld() == this) && this.getNbUnits() < this.getMaxUnits()
 	 * @post   This World has the given Unit as one of its Units.
-	 *       | new.hasAsUnit(unit)
+	 *       | (new this).hasAsUnit(unit)
 	 */
 	public void addUnit(@Raw Unit unit) {
 		assert (unit != null) && (unit.getWorld() == this) && (this.getNbUnits() < this.getMaxUnits());
