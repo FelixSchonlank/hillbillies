@@ -71,7 +71,12 @@ import hillbillies.model.BadFSMStateException;
  * @Invar  If a unit has an item, the item of that Unit must be a valid item for this
  *         Unit.
  *       | ! this.hasItem() || canHaveAsItem(getItem())   
- *
+ * @Invar Each Unit has a proper Faction attached to it.
+ * 		| this.hasProperFaction()
+ * @Invar Each Unit has a proper World attached to it.
+ * 		| this.hasProperWorld()
+ * @Invar Each Unit has a proper Item attached to it.
+ * 		| this.hasProperItem()
  */
 
 public class Unit extends GameObject{
@@ -1388,6 +1393,19 @@ public class Unit extends GameObject{
 	@Raw
 	public boolean canHaveAsItem(Item item) {
 		return Item.isValidUnit(this);
+	}
+	
+	/**
+	 * Tells whether this Unit has a proper Item attached to it.
+	 * @return
+	 * 		True iff this Unit can have its Item as an Item, and if that Item
+	 * 		references this Unit back if it is effective.
+	 * 		| result == this.canHaveAsItem(this.getItem()) &&
+	 * 		| 			(this.getItem() == null || this.getItem().getUnit() == this)
+	 */
+	public boolean hasProperItem() {
+		return this.canHaveAsItem(this.getItem()) &&
+				(this.getItem() == null || this.getItem().getUnit() == this);
 	}
 
 	/**

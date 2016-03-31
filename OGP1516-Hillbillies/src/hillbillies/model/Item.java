@@ -6,10 +6,15 @@ import be.kuleuven.cs.som.annotate.Raw;
 
 /**	 
  * @Invar  Each Item can have its weight as weight.
- *       | canHaveAsWeight(this.getWeight())
+ * 		| canHaveAsWeight(this.getWeight())
  * @Invar
- * 		
  * 		| this.hasUnit() <==> ! this.hasWorld()
+ * @Invar
+ * 		Each Item has a proper Unit attached to it.
+ * 		| this.hasProperUnit()
+ * @Invar
+ * 		Each Item has a proper World attached to it.
+ * 		| this.hasProperWorld()
  */
 public class Item extends GameObject{
 	
@@ -89,6 +94,17 @@ public class Item extends GameObject{
 	public Unit getUnit(){
 		return this.unit;
 	}
+	
+	/**
+	 * Tells whether this Item has a proper Unit attached to it.
+	 * @return
+	 * 		True iff this Item's Unit is valid, and references this Item back
+	 * 		if it is effective.
+	 */
+	public boolean hasProperUnit() {
+		return isValidUnit(this.getUnit()) &&
+				(this.getUnit() == null || this.getUnit().getItem() == this);
+	}
 
 	/**
 	 * Set the unit that is carrying this Item to a given Unit
@@ -133,8 +149,37 @@ public class Item extends GameObject{
 
 
 	/* World */
-
-
+	
+	/**
+	 * Gives back this Item's World.
+	 */
+	@Raw @Basic
+	public World getWorld() {
+		return this.world;
+	}
+	
+	/**
+	 * Tells whether the given World is valid
+	 * @param world
+	 * 		The world to check the validity of.
+	 * @return
+	 * 		True always.
+	 */
+	public static boolean isValidWorld(World world) {
+		return true;
+	}
+	
+	/**
+	 * Tells whether this Item has a proper World attached to it.
+	 * @return
+	 * 		True iff this Item's World is valid, and references this Item back
+	 * 		if it is effective.
+	 */
+	public boolean hasProperWorld() {
+		return isValidWorld(this.getWorld()) &&
+				(this.getWorld() == null || this.getWorld().hasAsItem(this));
+	}
+	
 	/**
 	 * Set the world of this Item to the given world and add this items of the given world
 	 * @param world
@@ -142,18 +187,18 @@ public class Item extends GameObject{
 	 * 		If the unit can not have the given world as its world or if the world can not have this unit as one of its unit 
 	 */
 	public void setWorld(World world) throws IllegalArgumentException{
-		if (!(this.canHaveAsWorld(world) && world.canHaveAsItem(this))){
-			throw new IllegalArgumentException();
+		if (! this.isValidWorld(world)){
+			throw new IllegalArgumentException("Given World is not valid. " + world.toString());
 		}
-		this.world = world;
-		world.addItem(this);
-	}
-
-	/**
-	 * return true (iff the GameObject can have the given world as its world)
-	 */
-	public boolean canHaveAsWorld(World world){
-		return true;
+		if (this.getWorld() != null) {
+			World oldWorld = this.getWorld();
+			this.world = null;
+			oldWorld.removeItem(this);
+			this.world = world;
+		} else {
+			this.world = world;
+			world.addItem(this);
+		}
 	}
 
 	/**

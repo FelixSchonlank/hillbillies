@@ -7,8 +7,8 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
 /**
- * @Invar   Each faction must have proper units.
- *        | hasProperUnits()
+ * @Invar Each faction must have proper units.
+ * 		| this.hasProperUnits()
  */
 public class Faction {
 

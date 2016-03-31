@@ -16,13 +16,13 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @Invar Every element of the cubes map must be a valid cube.
  * 		| this.hasProperCubes()
  * @Invar Each World must have proper Items.
- *      | hasProperItems()
+ *      | this.hasProperItems()
  * @Invar Each World must have a valid cubes (Map).
- * 		| canHaveAsCubesMap(this.cubes)
+ * 		| this.canHaveAsCubesMap(this.cubes)
  * @Invar Each World must have proper Units.
- * 		| hasProperUnits()
- * @invar   Each World must have proper Factions.
- *        | hasProperFactions()
+ * 		| this.hasProperUnits()
+ * @Invar Each World must have proper Factions.
+ * 		| this.hasProperFactions()
  */
 public class World {
 	
@@ -716,14 +716,14 @@ public class World {
 	 * @param  item
 	 *         The Item to check.
 	 * @return True if and only if the given Item is effective
-	 *         and that Item is a valid Item for a World.
+	 *         and that Item is a valid Item for this World.
 	 *       | result ==
 	 *       |   (item != null) &&
-	 *       |   item.isValidWorld(this)
+	 *       |   Item.isValidWorld(this)
 	 */
 	@Raw
 	public boolean canHaveAsItem(Item item) {
-		return (item != null) && (item.canHaveAsWorld(this));
+		return (item != null) && (Item.isValidWorld(this));
 	}
 
 	/**
@@ -739,12 +739,13 @@ public class World {
 	 *       |          (item.getWorld() == this)
 	 */
 	public boolean hasProperItems() {
-		for (Item item : items) {
+		for (Item item : this.items) {
 			if (!canHaveAsItem(item))
 				return false;
 			if (item.getWorld() != this)
 				return false;
-		}return true;
+		}
+		return true;
 	}
 
 	/**
