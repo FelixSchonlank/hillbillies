@@ -649,7 +649,7 @@ public class World {
 	 */
 	@Raw
 	public boolean canHaveAsItem(Item item) {
-		return (item != null) && (item.isValidWorld(this));
+		return (item != null) && (item.canHaveAsWorld(this));
 	}
 
 	/**
@@ -670,8 +670,7 @@ public class World {
 				return false;
 			if (item.getWorld() != this)
 				return false;
-		}
-		return true;
+		}return true;
 	}
 
 	/**

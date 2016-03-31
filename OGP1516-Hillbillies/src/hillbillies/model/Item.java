@@ -121,12 +121,6 @@ public class Item extends GameObject{
 
 	/* World */
 
-	/**
-	 * return the world this unit belongs to
-	 */
-	public World getWorld(){
-		return this.world;
-	}
 
 	/**
 	 * Set the world of this Item to the given world and add this items of the given world
@@ -156,8 +150,6 @@ public class Item extends GameObject{
 		return this.getWorld() != null;
 	}
 
-	private World world;
-	
 
 	/* Terminating */
 

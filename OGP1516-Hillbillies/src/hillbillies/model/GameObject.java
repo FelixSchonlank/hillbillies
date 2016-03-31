@@ -98,7 +98,7 @@ public class GameObject implements IAdvanceable{
 	@Raw
 	public void setPosition(Position position) 
 			throws IllegalArgumentException {
-		if (! isValidPosition(position))
+		if (! this.canHaveAsPosition(position))
 			throw new IllegalArgumentException();
 		this.position = position;
 	}
@@ -118,7 +118,7 @@ public class GameObject implements IAdvanceable{
 	 */
 	public void setPosition(double[] position)
 			throws IllegalArgumentException {
-		if (! isValidPosition(position))
+		if (! this.canHaveAsPosition(position))
 			throw new IllegalArgumentException(position + " is not a valid position.");
 		this.previousPosition = this.getPosition();
 		this.position = new Position(position);
@@ -139,6 +139,15 @@ public class GameObject implements IAdvanceable{
 
 	}
 
+	/**
+	 * return the world this unit belongs to
+	 */
+	public World getWorld(){
+		return this.world;
+	}
+	
+	protected World world;
+	
 	/**
 	 * 
 	 */
