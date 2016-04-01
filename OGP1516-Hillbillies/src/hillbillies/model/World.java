@@ -10,6 +10,7 @@ import java.util.Set;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import hillbillies.part2.listener.TerrainChangeListener;
+import hillbillies.util.ConnectedToBorder;
 import be.kuleuven.cs.som.annotate.Raw;
 
 /**
@@ -159,6 +160,24 @@ public class World {
 		for (int i=0; i<5; i++){
 			factions.add(new Faction());
 		}
+		
+		// Initialize the ConnectedToBorder object to keep track of
+		// border connections.
+		this.connectedToBorder = new ConnectedToBorder(
+				this.getMaxXCoordinate(),
+				this.getMaxYCoordinate(),
+				this.getMaxZCoordinate()
+				);
+		// Using this iteration is sufficient because the cubes map always has
+		// no more than exactly one entry per cube in the World.
+		for (Coordinate coordinate : this.cubes.keySet()) {
+			if (this.isPassableCube(coordinate)) {
+				this.connectedToBorder.changeSolidToPassable(coordinate.getX(), 
+						coordinate.getY(),
+						coordinate.getZ()
+						);
+			}
+		}
 	}
 	
 	
@@ -254,6 +273,10 @@ public class World {
 	 * 		The array to transform.
 	 * @return
 	 * 		The Map.
+	 * @throws IllegalArgumentException
+	 * 		If any of the given array's sizes is 0 in a dimension.
+	 * @throws IllegalArgumentException
+	 * 		If the given array is jagged in any of its dimensions.
 	 */
 	private Map<Coordinate, TerrainType> intArrayToCubesMap(int[][][] array) 
 			throws IllegalArgumentException {
@@ -560,6 +583,9 @@ public class World {
 		}
 		this.cubes.remove(coordinate);
 		this.cubes.put(coordinate, terrainType);
+		
+		// Don't forget to inform the GUI
+		this.terrainChangeListener.notifyTerrainChanged(coordinate.getX(), coordinate.getY(), coordinate.getZ());
 	}
 	
 	/**
@@ -616,6 +642,26 @@ public class World {
 			}
 		}
 		return result;
+	}
+	/**
+	 * To be called whenever the cubes Map changes.
+	 * @effect
+	 * 		
+	 */
+	private void onCubesMapChange() {
+		for (Coordinate coordinate : this.cubes.keySet()) {
+			if (!this.connectedToBorder.isSolidConnectedToBorder(
+					coordinate.getX(),
+					coordinate.getY(),
+					coordinate.getZ())
+					) {
+				try {
+					this.digOutCube(coordinate);
+				} catch(IllegalArgumentException e) {
+					// Cube turns out to be air already or something similar.
+				}
+			}
+		}
 	}
 	
 	
@@ -1040,6 +1086,7 @@ public class World {
 	private final int maxZCoordinate;
 	private final int minZCoordinate;
 	private final TerrainChangeListener terrainChangeListener;
+	private final ConnectedToBorder connectedToBorder;
 
 	/**
 	 * A random generator used by this Unit
