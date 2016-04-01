@@ -1843,14 +1843,14 @@ public class Unit extends GameObject{
 	 * Checks whether this Unit has reached its immediateTarget, or possibly
 	 *  overshot it by some distance.
 	 * @return true iff reached or overshot the immediateTarget position
-	 * 	| result == between(immediateTarget[0], previousPosition[0], position[0])
-	 *	|		|| between(immediateTarget[1], previousPosition[1], position[1])
-	 *	|		|| between(immediateTarget[2], previousPosition[2], position[2])
+	 * 	| result == VectorUtils.between(immediateTarget.getX(), previousPosition.getX(), this.getPosition().getX())
+	 *	|		|| VectorUtils.between(immediateTarget.getY(), previousPosition.getY(), this.getPosition().getY())
+	 *	|		|| VectorUtils.between(immediateTarget.getZ(), previousPosition.getZ(), this.getPosition().getZ())
 	 */
 	private boolean reachedImmediateTarget() {
-		return (between(immediateTarget[0], previousPosition[0], position[0])
-				|| between(immediateTarget[1], previousPosition[1], position[1])
-				|| between(immediateTarget[2], previousPosition[2], position[2]));
+		return (VectorUtils.between(immediateTarget.getX(), previousPosition.getX(), this.getPosition().getX())
+				|| VectorUtils.between(immediateTarget.getY(), previousPosition.getY(), this.getPosition().getY())
+				|| VectorUtils.between(immediateTarget.getZ(), previousPosition.getZ(), this.getPosition().getZ()));
 	}
 	
 	/**
@@ -1858,12 +1858,10 @@ public class Unit extends GameObject{
 	 * @param victim
 	 * 			|The unit you want to attack
 	 * @return True if and only if the position of victim is a neighboring cube of the position of this unit 
-	 * 			|for (i = 0; i < this.getPosition().length ; i++)
-	 * 			|	this.getPosition()[i] == victim.getPosition()[i] + 1 || this.getPositon()[i] == victim.getPosition()[i] - 1
-	 * 			|
+	 * 			| result == this.getPosition().toCoordinate().isAdjacentTo(victim.getPosition().toCoordinate())
 	 */
 	private boolean inRangeForAttack(Unit victim){
-		return areAdjacentCubes(cubeCoordinates(this.getPosition()), cubeCoordinates(victim.getPosition()));
+		return this.getPosition().toCoordinate().isAdjacentTo(victim.getPosition().toCoordinate());
 	}
 	
 	/**
@@ -1900,17 +1898,17 @@ public class Unit extends GameObject{
 	 * 		The point to look at.
 	 * @post
 	 * 		Unit will be looking at target.
-	 * 		| new.getOrientation() == Math.atan2(target[1] - this.getPosition()[0],
-	 * 		| 	target[0] - this.getPosition()[0]);
+	 * 		| new.getOrientation() == Math.atan2(target.getY() - this.getPosition()getY(),
+	 * 		| 	target.getX() - this.getPosition().getX());
 	 * @throw IllegalArgumentException
 	 * 		If target is null
 	 * 		| target == null 
 	 */
-	private void pointAt(double[] target) {
+	private void pointAt(Position target) {
 		if(target == null){
 			throw new IllegalArgumentException("Can't point at null location");
 		}
-		this.setOrientation(Math.atan2(target[1] - this.getPosition()[1], target[0] - this.getPosition()[0]));
+		this.setOrientation(Math.atan2(target.getY() - this.getPosition().getY(), target.getX() - this.getPosition().getX()));
 	}
 	
 	/**
@@ -1942,14 +1940,14 @@ public class Unit extends GameObject{
 	 * Moves the Unit to random position in the game world within dodging bounds.
 	 */
 	private void dodge(){
-		double[] destination;
+		Position destination;
 		do{
-			destination = new double[] {
-					this.getPosition()[0] + (random.nextBoolean()?1:-1) * random.nextDouble(),
-					this.getPosition()[1] + (random.nextBoolean()?1:-1) * random.nextDouble(),
-					this.getPosition()[2] + (random.nextBoolean()?1:-1) * random.nextDouble()
-					};
-		}while((destination[0]==0 && destination[1]==0 && destination[2]==0) || !withinBounds(destination));
+			destination = new Position(
+					this.getPosition().getX() + (random.nextBoolean()?1:-1) * random.nextDouble(),
+					this.getPosition().getY() + (random.nextBoolean()?1:-1) * random.nextDouble(),
+					this.getPosition().getZ() + (random.nextBoolean()?1:-1) * random.nextDouble()
+					);
+		}while((destination.getX()==0 && destination.getY()==0 && destination.getZ()==0) || !this.getWorld().withinBounds(destination));
 		try {
 			this.setPosition(destination);
 		} catch (IllegalArgumentException e) {
