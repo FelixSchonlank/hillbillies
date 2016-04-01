@@ -95,6 +95,8 @@ public class World {
 		}
 	}
 	
+	
+	
 	/**
 	 * Initializes a World with given terrainTypes in threedimensional array,
 	 * and terrain change listener for notification purposes.
@@ -125,6 +127,9 @@ public class World {
 	 * @post
 	 * 		This World will have exactly 5 Factions
 	 * 		| this.getNbFactions() == 5
+	 * @effect
+	 * 		Every coordinate featuring passable terrain causes this to be
+	 * 		communicated to the ConnectedToBorder object.
 	 * @throws IllegalArgumentException
 	 * 		If the input array has any dimension of size 0 is jagged
 	 * @throws IllegalArgumentException
@@ -169,10 +174,13 @@ public class World {
 				this.getMaxZCoordinate()
 				);
 		// Using this iteration is sufficient because the cubes map always has
-		// no more than exactly one entry per cube in the World.
+		// no more than exactly one entry per cube in the World. That is in
+		// fact a representation invariant upon World.cubes, and I am proud of
+		// that.
 		for (Coordinate coordinate : this.cubes.keySet()) {
 			if (this.isPassableCube(coordinate)) {
-				this.connectedToBorder.changeSolidToPassable(coordinate.getX(), 
+				this.connectedToBorder.changeSolidToPassable(
+						coordinate.getX(), 
 						coordinate.getY(),
 						coordinate.getZ()
 						);
@@ -185,8 +193,12 @@ public class World {
 	/* THE GAME MAP */
 	
 	/**
-	 * @Invar cubes is effective
+	 * @Invar
+	 * 		cubes is effective
 	 * 		| cubes != null
+	 * @Invar
+	 * 		From the constructor onwards, cubes contains no more than exactly
+	 * 		one entry per cube in the World.
 	 */
 	private Map<Coordinate, TerrainType> cubes;
 	
@@ -561,13 +573,17 @@ public class World {
 		return this.cubes.get(coordinate);
 	}
 	
+		
 	/**
 	 * Sets the value of an entry with given coordinate in the cubes map to
-	 * a given terrain type. 
+	 * a given terrain type
 	 * @param coordinate
 	 * 		The coordinate of the cube to set
 	 * @param terrainType
 	 * 		The terrain type to set it to
+	 * @effect
+	 * 		When changing from passable to solid or vice versa, this is
+	 * 		communicated to the connectedToBorder object.
 	 * @throws IllegalArgumentException
 	 * 		If the given cube coordinate is not valid
 	 * @throws IllegalArgumentException
@@ -581,11 +597,27 @@ public class World {
 		if (!isValidTerrainType(terrainType)) {
 			throw new IllegalArgumentException("Given terrain type is not valid: " + terrainType.toString());
 		}
-		this.cubes.remove(coordinate);
-		this.cubes.put(coordinate, terrainType);
 		
 		// Don't forget to inform the GUI
 		this.terrainChangeListener.notifyTerrainChanged(coordinate.getX(), coordinate.getY(), coordinate.getZ());
+		
+		// And update the ConnectedToBorder object
+		if (terrainType.isPassable() && !this.isPassableCube(coordinate)) {
+			this.connectedToBorder.changeSolidToPassable(
+					coordinate.getX(),
+					coordinate.getY(),
+					coordinate.getZ()
+					);
+		} else if (!terrainType.isPassable() && this.isPassableCube(coordinate)) {
+			this.connectedToBorder.changePassableToSolid(
+					coordinate.getX(),
+					coordinate.getY(),
+					coordinate.getZ()
+					);
+		}
+		
+		this.cubes.remove(coordinate);
+		this.cubes.put(coordinate, terrainType);
 	}
 	
 	/**
@@ -643,12 +675,14 @@ public class World {
 		}
 		return result;
 	}
+
 	/**
 	 * To be called whenever the cubes Map changes.
 	 * @effect
 	 * 		
 	 */
-	private void onCubesMapChange() {
+	private void onCubesMapChanged() {
+		boolean changedCubesMap = false;
 		for (Coordinate coordinate : this.cubes.keySet()) {
 			if (!this.connectedToBorder.isSolidConnectedToBorder(
 					coordinate.getX(),
@@ -657,10 +691,15 @@ public class World {
 					) {
 				try {
 					this.digOutCube(coordinate);
+					changedCubesMap = true;
 				} catch(IllegalArgumentException e) {
 					// Cube turns out to be air already or something similar.
 				}
 			}
+		}
+		if (changedCubesMap) {
+			// We changed the cubes map's contents
+			this.onCubesMapChanged();
 		}
 	}
 	
