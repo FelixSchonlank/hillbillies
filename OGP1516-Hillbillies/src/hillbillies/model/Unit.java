@@ -8,6 +8,7 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.BadFSMStateException;
+import hillbillies.model.World.TerrainType;
 
 /**
  * 
@@ -54,10 +55,7 @@ import hillbillies.model.BadFSMStateException;
  * @Invar  The sprinting of each Unit must be a valid sprinting for any
  *         Unit.
  *       | isValidSprinting(getSprinting())
- *       
- * @Invar  The path of each Unit must be a valid path for any
- *         Unit.
- *       | isValidPath(getPath())
+ *
  * @Invar  The defaultBehaviorRestingCountdown of each Unit must be a valid defaultBehaviorRestingCountdown for any
  *         Unit.
  *       | isValidDefaultBehaviorRestingCountdown(getDefaultBehaviorRestingCountdown())
@@ -65,12 +63,15 @@ import hillbillies.model.BadFSMStateException;
  * @Invar  The immediateTarget of each Unit must be a valid immediateTarget for any
  *         Unit.
  *       | isValidImmidiateTarget(getImmidiateTarget())
+ *       
  * @Invar  The XP of each Unit must be a valid XP for any
  *         Unit.
  *       | isValidXP(getXP())
+ *       
  * @Invar  If a unit has an item, the item of that Unit must be a valid item for this
  *         Unit.
- *       | ! this.hasItem() || canHaveAsItem(getItem())   
+ *       | ! this.hasItem() || canHaveAsItem(getItem())  
+ *        
  * @Invar Each Unit has a proper Faction attached to it.
  * 		| this.hasProperFaction()
  * @Invar Each Unit has a proper World attached to it.
@@ -648,13 +649,20 @@ public class Unit extends GameObject{
 	 * @throws BadFSMException if the state of the unit is not NOTHING, RESTING_HP or RESTING_STAMINA 
 	 * 		| !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA)
 	 */
-	public void work() throws BadFSMStateException{
-		if (!(this.getState() == State.NOTHING || this.getState() == State.RESTING_HP || this.getState() == State.RESTING_STAMINA))
+	public void work(Coordinate workCube) throws BadFSMStateException{
+		if (!(this.getState() == State.NOTHING || this.getState() == State.RESTING_HP 
+				|| this.getState() == State.RESTING_STAMINA || workCube.isAdjacentTo(this.getPosition().toCoordinate())))
 			throw new BadFSMStateException("Can not go to working from this state");
 		else{
+			this.workCube = workCube;
 			this.shouldWork = true;
 		}
 	}
+	
+	/**
+	 * Variable referencing the cube this Unit should work at
+	 */
+	private Coordinate workCube;
 	
 	/**
 	 * Tells whether the Unit is currently working.
@@ -683,10 +691,10 @@ public class Unit extends GameObject{
 	 * @param  XP
 	 *         The XP to check.
 	 * @return 
-	 *       | result == 
+	 *       | result == XP <= Unit.getMinXP();
 	 */
 	public static boolean isValidXP(long XP) {
-		return false;
+		return XP <= Unit.getMinXP();
 	}
 	
 	/**
@@ -696,6 +704,40 @@ public class Unit extends GameObject{
 		return 0;
 	}
 
+	/**
+	 * Increment the XP of this unit with a given integer
+	 * @param dXP
+	 * 		| the number you would like to add to XP
+	 * @post the new XP is the old XP incremented with the given int 
+	 * 		| new.getXP() == this.getXP() + dXP
+	 * @effect if the new XP has reached a new ten this units strength agility 
+	 * 		and toughness are increased by one
+	 * 		| if ((new.getXP()) > (this.getXP() % 10)) then 
+	 * 		| setStrength(this.getStrength() +1) ||
+	 * 		| setAgility(this.getAgility() + 1) ||
+	 * 		| setToughness(this.getToughness() + 1)
+	 * @ throws IllegalArgumentException
+	 * 		if the given dXP is negative
+	 * 		| dXP < 0
+	 */
+	public void increaseXP(int dXP) throws IllegalArgumentException {
+		if (dXP < 0){
+			throw new IllegalArgumentException();
+		}
+		long newXP = this.getXP() + dXP;
+		if ((newXP % 10) > (this.getXP() % 10)){
+			int randomNum = random.nextInt(3);
+			if (randomNum == 0){
+				this.setStrength(this.getStrength() + 1);
+			}else if (randomNum == 1){
+				this.setAgility(this.getAgility() + 1);
+			}else{
+				this.setToughness(this.getToughness() + 1);
+			}
+		}
+		this.setXP(newXP);
+	}
+	
 	/**
 	 * Set the XP of this Unit to the given XP.
 	 * 
@@ -772,11 +814,16 @@ public class Unit extends GameObject{
 	/* Weight */
 	
 	/**
-	 * Get the weight of this unit
+	 * Get the weight of this unit and if he is carrying an item his own weight + 
+	 * the weight of the item this unit is carrying if any.
 	 */
 	@Basic @Raw
 	public int getWeight(){
-		return this.weight;
+		if (this.hasItem()){
+			return this.weight + this.getItem().getWeight();
+		}else{
+			return this.weight;
+		}
 	}
 
 	
@@ -2161,10 +2208,48 @@ public class Unit extends GameObject{
 		}else if (this.shouldAttack){
 			this.transitionToAttacking();
 		}else if (this.workingCountdown <= 0){
+			if (this.hasItem()){
+				Item oldItem = this.getItem();
+				this.dropItem();
+				oldItem.setPosition(this.workCube.toPosition());
+			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.WORKSHOP){
+				//TODO One boulder and log will be consumed from target cube
+			}else if (this.hasItemOnWorkCube()){
+				this.pickUpItem(this.getItemAtWorkCube());
+			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.TREE){
+				//TODO cube disappears and leaves a log
+			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.ROCK){
+				//TODO the cube disappears leaving a boulder 
+			}
+			this.setXP(this.getXP() + 10);
 			this.transitionToNothing();
 		}else{
 			this.workingCountdown -= dt;
 		}
+	}
+	
+	/**
+	 * Check whether the workCube has a Item on it
+	 */
+	private boolean hasItemOnWorkCube(){
+		if (this.getItemAtWorkCube() == null){
+			return false;
+		}return true;
+	}
+	
+	/**
+	 * return the Item that is at the workCube or null if nothing is on the 
+	 * gameCube. If the gameCube is null the result is also null.
+	 */
+	private Item getItemAtWorkCube(){
+		if (this.workCube == null){
+			return null;
+		}
+		for (Item item: this.getWorld().getItems()){
+			if (item.getPosition().toCoordinate() == this.workCube){
+				return item;
+			}
+		}return null;
 	}
 	
 	/**

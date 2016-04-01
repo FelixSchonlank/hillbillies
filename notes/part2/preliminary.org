@@ -60,12 +60,12 @@ No formal documentation except for Unit.
   - [X] Invoke advanceTime on all game objects
 
 
-* Unit [1/3] 							    :altered:
+* Unit [2/3] 							    :altered:
 
 - [X] A Unit must now always belong to 1 Faction
-- [ ] Must always occupy a cube of passable terrain type
-- [ ] XP
-  - [ ] For every 10 XP, Units Str, Agl, *or* Tgh increases by 1.
+- [X] Must always occupy a cube of passable terrain type
+- [-] XP
+  - [X] For every 10 XP, Units Str, Agl, *or* Tgh increases by 1.
   - [ ] For every movement step (for every block the Unit arrives at), + 1 XP.
 
 
@@ -99,26 +99,26 @@ No formal documentation except for Unit.
 - [ ] When ultimateTarget is unreachable, moving is terminated.
 
 
-** Work [0/4] 							    :altered:
+** Work [3/4] 							    :altered:
 
-- [ ] Redefine method ``work'' to order the Unit to work at given block
-  - [ ] Must be current or adjacent block
-  - [ ] Store the target block somewhere
-- [ ] Upon completion of the work, there will be checked what kind of work has been
+- [X] Redefine method ``work'' to order the Unit to work at given block
+  - [X] Must be current or adjacent block
+  - [X] Store the target block somewhere
+- [-] Upon completion of the work, there will be checked what kind of work has been
   done.
-  - [ ] Carrying Boulder or Log :: The Boulder or Log is dropped at the center of
+  - [X] Carrying Boulder or Log :: The Boulder or Log is dropped at the center of
        the *target working cube*.
   - [ ] Target cube is Workshop and one Boulder and Log are available there :: 
        One Boulder and Log will be consumed from target cube. Weight and
        Toughness increased by 1.
-  - [ ] Boulder or Log present on target cube :: The Unit picks it up.
+  - [X] Boulder or Log present on target cube :: The Unit picks it up.
   - [ ] Target cube is of Wood type :: The cube disappears, leaving a Log.
   - [ ] Target cube is of Rock type :: The cube disappears, leaving a Boulder.
-  - [ ] No condition is met :: Nothing happens.
-- [ ] Weight of Unit is own weight plus weight of Boulder or Log the Unit is
+  - [X] No condition is met :: Nothing happens.
+- [X] Weight of Unit is own weight plus weight of Boulder or Log the Unit is
   carrying.
-  - [ ] Temporary weight may exceed maximum weight
-- [ ] + 10 XP for every fully completed work
+  - [X] Temporary weight may exceed maximum weight
+- [X] + 10 XP for every fully completed work
 
 
 ** Fighting [0/3] 						    :altered:
@@ -140,17 +140,17 @@ No formal documentation except for Unit.
 - [ ] One possibility when idle is now to fight potential enemies.
 
 
-* Boulder and Log [2/4] 				      :defensive:new:
+* Boulder and Log [3/4] 				      :defensive:new:
 
 - [-] Position
   - [X] Use doubles
-  - [ ] Always in passable terrain
+  - [X] Always in passable terrain
   - [ ] When not aboveSolid, starts falling like a Unit.
     - [ ] Implement advanceTime
-- [-] Weight
+- [X] Weight
   - [X] Use int
   - [X] ∈ [10 ; 50]
-  - [ ] Chosen at random upon creation
+  - [X] Chosen at random upon creation
   - [X] Doesn't change
 - [X] Not present in World when being carried
 - [X] Re-enters World when dropped

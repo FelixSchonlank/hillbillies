@@ -30,7 +30,7 @@ public class World {
 	/**
 	 * An enum to represent the different terrain types in the World
 	 */
-	private enum TerrainType {
+	protected enum TerrainType {
 		AIR(0, true),
 		ROCK(1, false),
 		TREE(2, false),
@@ -960,6 +960,13 @@ public class World {
 		items.remove(item);
 	}
 
+	/**
+	 * return the set of Items that belong to a unit
+	 */
+	protected Set<Item> getItems(){
+		return this.items;
+	}
+	
 	/**
 	 * Variable referencing a set collecting all the Items
 	 * of this World.
