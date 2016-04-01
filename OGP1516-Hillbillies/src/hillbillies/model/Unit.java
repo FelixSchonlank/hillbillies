@@ -8,6 +8,7 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.BadFSMStateException;
+import hillbillies.model.World.TerrainType;
 
 /**
  * 
@@ -648,13 +649,20 @@ public class Unit extends GameObject{
 	 * @throws BadFSMException if the state of the unit is not NOTHING, RESTING_HP or RESTING_STAMINA 
 	 * 		| !(this.getState() == NOTHING || this.getState() == RESTING_HP || this.getState() == RESTING_STAMINA)
 	 */
-	public void work() throws BadFSMStateException{
-		if (!(this.getState() == State.NOTHING || this.getState() == State.RESTING_HP || this.getState() == State.RESTING_STAMINA))
+	public void work(Coordinate workCube) throws BadFSMStateException{
+		if (!(this.getState() == State.NOTHING || this.getState() == State.RESTING_HP 
+				|| this.getState() == State.RESTING_STAMINA || workCube.isAdjacentTo(this.getPosition().toCoordinate())))
 			throw new BadFSMStateException("Can not go to working from this state");
 		else{
+			this.workCube = workCube;
 			this.shouldWork = true;
 		}
 	}
+	
+	/**
+	 * Variable referencing the cube this Unit should work at
+	 */
+	private Coordinate workCube;
 	
 	/**
 	 * Tells whether the Unit is currently working.
@@ -2161,10 +2169,43 @@ public class Unit extends GameObject{
 		}else if (this.shouldAttack){
 			this.transitionToAttacking();
 		}else if (this.workingCountdown <= 0){
+			if (this.hasItem()){
+				Item oldItem = this.getItem();
+				this.dropItem();
+				oldItem.setPosition(this.workCube.toPosition());
+			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.WORKSHOP){
+				//TODO
+			}else if (this.hasItemOnWorkCube()){
+				
+			}
 			this.transitionToNothing();
 		}else{
 			this.workingCountdown -= dt;
 		}
+	}
+	
+	/**
+	 * Check whether the workCube has a Item on it
+	 */
+	private boolean hasItemOnWorkCube(){
+		if (this.getItemAtWorkCube() == null){
+			return false;
+		}return true;
+	}
+	
+	/**
+	 * return the Item that is at the workCube or null if nothing is on the 
+	 * gameCube. If the gameCube is null the result is also null.
+	 */
+	private Item getItemAtWorkCube(){
+		if (this.workCube == null){
+			return null;
+		}
+		for (Item item: this.getWorld().getItems()){
+			if (item.getPosition().toCoordinate() == this.workCube){
+				return item;
+			}
+		}return null;
 	}
 	
 	/**
