@@ -20,8 +20,11 @@ public class GameObject implements IAdvanceable{
 	 *         the given Position.
 	 *		| this.setPosition(position)
 	 */
-	public GameObject(Position position){
-
+	public GameObject(Position position) throws IllegalArgumentException {
+		if (! this.canHaveAsPosition(position)){
+			throw new IllegalArgumentException();
+		}
+		this.setPosition(position);
 	}
 
 
@@ -36,6 +39,9 @@ public class GameObject implements IAdvanceable{
 	 */
 	public GameObject(double[] position)
 			throws IllegalArgumentException {
+		if (! this.canHaveAsPosition(position)){
+			throw new IllegalArgumentException();
+		}
 		this.setPosition(position);
 	}
 
