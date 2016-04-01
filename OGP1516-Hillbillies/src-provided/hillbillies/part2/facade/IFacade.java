@@ -88,9 +88,11 @@ import ogp.framework.util.ModelException;
  *
  */
 public interface IFacade extends hillbillies.part1.facade.IFacade {
-
+	
+	
+	
 	/* WORLD */
-
+	
 	/**
 	 * Create a new world of the given size and with the given terrain. To keep
 	 * the GUI display up to date, the method in the given listener must be
@@ -227,9 +229,11 @@ public interface IFacade extends hillbillies.part1.facade.IFacade {
 	 * 
 	 */
 	public boolean isSolidConnectedToBorder(World world, int x, int y, int z) throws ModelException;
-
+	
+	
+	
 	/* UNITS */
-
+	
 	/**
 	 * Spawn a new unit in the world, according to the rules in the assignment
 	 * (section 1.1.2).
@@ -349,8 +353,11 @@ public interface IFacade extends hillbillies.part1.facade.IFacade {
 	default void advanceTime(Unit unit, double dt) throws ModelException {
 		throw new NoSuchMethodError("This method no longer needs to be supported");
 	}
-
+	
+	
+	
 	/* FACTIONS */
+	
 	/**
 	 * Return the current faction of the given unit.
 	 * 
@@ -382,9 +389,11 @@ public interface IFacade extends hillbillies.part1.facade.IFacade {
 	 *             A precondition was violated or an exception was thrown.
 	 */
 	public Set<Faction> getActiveFactions(World world) throws ModelException;
-
+	
+	
+	
 	/* BOULDERS */
-
+	
 	/**
 	 * Get the precise coordinates of the given boulder.
 	 * 
@@ -408,7 +417,9 @@ public interface IFacade extends hillbillies.part1.facade.IFacade {
 	 *             A precondition was violated or an exception was thrown.
 	 */
 	public Set<Boulder> getBoulders(World world) throws ModelException;
-
+	
+	
+	
 	/* LOGS */
 
 	/**
