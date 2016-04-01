@@ -1317,12 +1317,16 @@ public class Unit extends GameObject{
 	
 	/**
 	 * Check whether the faction of this unit if a valid faction for this unit 
-	 * @return true iff this unit can have this faction as its faction and the 
-	 * 			faction of this unit has this unit as one of its units
-	 * 			|result == (canHaveAsFaction(this.getFaction()) && this.getFaction().hasAsUnit(this))
+	 * @return
+	 * 		True iff this unit can have this faction as its faction and the 
+	 * 		Faction of this unit has this unit as one of its units
+	 * 		| result == (!this.isTerminated()
+	 * 		| 				&& canHaveAsFaction(this.getFaction())
+	 * 		| 				&& this.getFaction().hasAsUnit(this))
+	 * 		| 			|| (this.isTerminated() && this.getFaction() == null)
 	 */
 	public boolean hasProperFaction() {
-		return (canHaveAsFaction(this.getFaction()) && this.getFaction().hasAsUnit(this)) 
+		return (!this.isTerminated() && canHaveAsFaction(this.getFaction()) && this.getFaction().hasAsUnit(this)) 
 				|| (this.isTerminated() && this.getFaction() == null);
 	}
 	
