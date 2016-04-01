@@ -6,9 +6,8 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
 /**
- * @Invar  The Position of each GameObject must be a valid Position for any
- *         GameObject.
- *       | isValidPosition(getPosition())
+ * @Invar  Each gameObject can have its Position as its position
+ *       | this.ccacnHaveAsPosition(this.getPosition())
  */
 public abstract class GameObject implements IAdvanceable{
 	/**
@@ -80,8 +79,10 @@ public abstract class GameObject implements IAdvanceable{
 	 * check whether the given position is a valid position for a unit of this units world
 	 * @param position
 	 * 			The position to check
-	 * @return true if and only if the position is within bounds of the units game world
-	 * 			| this.getWorld().withinBouds(position) ???
+	 * @return true if and only if the position is within bounds of the units game
+	 * 			world and if the cube corresponding with that Position is passable terrain
+	 * 			| result == this.getWorld().withinBounds(position) && 
+	 * 			|	this.getWorld().isPassableCube(position.toCoordinate());
 	 */
 	@Raw
 	public boolean canHaveAsPosition(Position position){

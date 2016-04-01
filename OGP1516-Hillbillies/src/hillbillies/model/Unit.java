@@ -55,10 +55,7 @@ import hillbillies.model.World.TerrainType;
  * @Invar  The sprinting of each Unit must be a valid sprinting for any
  *         Unit.
  *       | isValidSprinting(getSprinting())
- *       
- * @Invar  The path of each Unit must be a valid path for any
- *         Unit.
- *       | isValidPath(getPath())
+ *
  * @Invar  The defaultBehaviorRestingCountdown of each Unit must be a valid defaultBehaviorRestingCountdown for any
  *         Unit.
  *       | isValidDefaultBehaviorRestingCountdown(getDefaultBehaviorRestingCountdown())
@@ -66,12 +63,15 @@ import hillbillies.model.World.TerrainType;
  * @Invar  The immediateTarget of each Unit must be a valid immediateTarget for any
  *         Unit.
  *       | isValidImmidiateTarget(getImmidiateTarget())
+ *       
  * @Invar  The XP of each Unit must be a valid XP for any
  *         Unit.
  *       | isValidXP(getXP())
+ *       
  * @Invar  If a unit has an item, the item of that Unit must be a valid item for this
  *         Unit.
- *       | ! this.hasItem() || canHaveAsItem(getItem())   
+ *       | ! this.hasItem() || canHaveAsItem(getItem())  
+ *        
  * @Invar Each Unit has a proper Faction attached to it.
  * 		| this.hasProperFaction()
  * @Invar Each Unit has a proper World attached to it.
@@ -691,10 +691,10 @@ public class Unit extends GameObject{
 	 * @param  XP
 	 *         The XP to check.
 	 * @return 
-	 *       | result == 
+	 *       | result == XP <= Unit.getMinXP();
 	 */
 	public static boolean isValidXP(long XP) {
-		return false;
+		return XP <= Unit.getMinXP();
 	}
 	
 	/**
@@ -704,6 +704,40 @@ public class Unit extends GameObject{
 		return 0;
 	}
 
+	/**
+	 * Increment the XP of this unit with a given integer
+	 * @param dXP
+	 * 		| the number you would like to add to XP
+	 * @post the new XP is the old XP incremented with the given int 
+	 * 		| new.getXP() == this.getXP() + dXP
+	 * @effect if the new XP has reached a new ten this units strength agility 
+	 * 		and toughness are increased by one
+	 * 		| if ((new.getXP()) > (this.getXP() % 10)) then 
+	 * 		| setStrength(this.getStrength() +1) ||
+	 * 		| setAgility(this.getAgility() + 1) ||
+	 * 		| setToughness(this.getToughness() + 1)
+	 * @ throws IllegalArgumentException
+	 * 		if the given dXP is negative
+	 * 		| dXP < 0
+	 */
+	public void increaseXP(int dXP) throws IllegalArgumentException {
+		if (dXP < 0){
+			throw new IllegalArgumentException();
+		}
+		long newXP = this.getXP() + dXP;
+		if ((newXP % 10) > (this.getXP() % 10)){
+			int randomNum = random.nextInt(3);
+			if (randomNum == 0){
+				this.setStrength(this.getStrength() + 1);
+			}else if (randomNum == 1){
+				this.setAgility(this.getAgility() + 1);
+			}else{
+				this.setToughness(this.getToughness() + 1);
+			}
+		}
+		this.setXP(newXP);
+	}
+	
 	/**
 	 * Set the XP of this Unit to the given XP.
 	 * 

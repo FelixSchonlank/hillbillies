@@ -60,12 +60,12 @@ No formal documentation except for Unit.
   - [X] Invoke advanceTime on all game objects
 
 
-* Unit [1/3] 							    :altered:
+* Unit [2/3] 							    :altered:
 
 - [X] A Unit must now always belong to 1 Faction
-- [ ] Must always occupy a cube of passable terrain type
-- [ ] XP
-  - [ ] For every 10 XP, Units Str, Agl, *or* Tgh increases by 1.
+- [X] Must always occupy a cube of passable terrain type
+- [-] XP
+  - [X] For every 10 XP, Units Str, Agl, *or* Tgh increases by 1.
   - [ ] For every movement step (for every block the Unit arrives at), + 1 XP.
 
 
@@ -140,17 +140,17 @@ No formal documentation except for Unit.
 - [ ] One possibility when idle is now to fight potential enemies.
 
 
-* Boulder and Log [2/4] 				      :defensive:new:
+* Boulder and Log [3/4] 				      :defensive:new:
 
 - [-] Position
   - [X] Use doubles
-  - [ ] Always in passable terrain
+  - [X] Always in passable terrain
   - [ ] When not aboveSolid, starts falling like a Unit.
     - [ ] Implement advanceTime
-- [-] Weight
+- [X] Weight
   - [X] Use int
   - [X] ∈ [10 ; 50]
-  - [ ] Chosen at random upon creation
+  - [X] Chosen at random upon creation
   - [X] Doesn't change
 - [X] Not present in World when being carried
 - [X] Re-enters World when dropped
