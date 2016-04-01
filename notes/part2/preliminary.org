@@ -45,19 +45,19 @@ No formal documentation except for Unit.
 - [X] The game is never over! We gonna play till the break of dawn!
 
 
-** Implementation [/]
+** Implementation [1/1]
 
-- [ ] Implement a method in World to ...
-  - [ ] Inspect a given cube. Give back
-    - [ ] Terrain type
-    - [ ] List of objects occupying that cube
-  - [ ] List all Factions
-  - [ ] List all Units
-    - [ ] All
-    - [ ] Of a given Faction only
-  - [ ] List all Boulders
-  - [ ] List all Logs
-  - [ ] Invoke advanceTime on all game objects
+- [X] Implement a method in World to ...
+  - [X] Inspect a given cube. Give back
+    - [X] Terrain type
+    - [X] List of objects occupying that cube
+  - [X] List all Factions
+  - [X] List all Units
+    - [X] All
+    - [X] Of a given Faction only
+  - [X] List all Boulders
+  - [X] List all Logs
+  - [X] Invoke advanceTime on all game objects
 
 
 * Unit [1/3] 							    :altered:
@@ -78,7 +78,7 @@ No formal documentation except for Unit.
   - [ ] Stop falling when aboveSolid
   - [ ] The Unit can't start sprinting
   - [ ] You cannot do anything
-    - [ ]Not even being attacked
+    - [ ] Not even being attacked
 - [ ] Upon landing, lose 10 HP per fallen Z-level
 
 

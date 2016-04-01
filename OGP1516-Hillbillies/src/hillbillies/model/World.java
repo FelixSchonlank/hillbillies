@@ -570,6 +570,34 @@ public class World {
 		}
 	}
 	
+	/**
+	 * Gives back all GameObjects that are currently present in the cube with
+	 * the given coordinate, if any.
+	 * @param coordinate
+	 * 		The Coordinate of the cube to list the contents of.
+	 * @return
+	 * 		A new (Hash)Set of all GameObjects with Positions located within
+	 * 		the cube which corresponds to the given Coordinate. That makes this
+	 * 		a shallow copy.
+	 */
+	public Set<GameObject> listGameObjectsInCube(Coordinate coordinate) {
+		if (!isValidCoordinate(coordinate)) {
+			throw new IllegalArgumentException("Given coordinate is invalid: " + coordinate.toString());
+		}
+		Set<GameObject> result = new HashSet<GameObject>();
+		for (Unit unit : this.units) {
+			if (this.cubeCoordinates(unit.getPosition()).equals(coordinate)) {
+				result.add(unit);
+			}
+		}
+		for (Item item : this.items) {
+			if (this.cubeCoordinates(item.getPosition()).equals(coordinate)) {
+				result.add(item);
+			}
+		}
+		return result;
+	}
+	
 	
 	
 	/* UNITS */
@@ -692,6 +720,38 @@ public class World {
 	 */
 	private static final int maxUnits = 100;
 	
+	/**
+	 * Gives back all the Units in this World.
+	 * @return
+	 * 		A new (Hash)Set of all the Units in this World.
+	 * 		That makes this a shallow copy
+	 */
+	public Set<Unit> listAllUnits() {
+		Set<Unit> result = new HashSet<Unit>();
+		for (Unit unit : this.units) {
+			result.add(unit);
+		}
+		return result;
+	}
+	
+	/**
+	 * Gives back all the Units in this World that belong to a given Faction.
+	 * @param faction
+	 * 		The Faction the Units must all be member of.
+	 * @return
+	 * 		A new (Hash)Set of all Units in this World who belong to the given
+	 * 		Faction. That makes this a shallow copy.
+	 */
+	public Set<Unit> listAllUnits(Faction faction) {
+		Set<Unit> result = new HashSet<Unit>();
+		for (Unit unit : this.units) {
+			if (unit.getFaction() == faction) {
+				result.add(unit);
+			}
+		}
+		return result;
+	}
+	
 	
 	
  	/* ITEMS */
@@ -809,6 +869,57 @@ public class World {
 	 */
 	private final Set<Item> items = new HashSet<Item>();
 	
+	/**
+	 * Gives back all Boulders in this World.
+	 * @return
+	 * 		A new (Hash)Set of all Boulders in this World. That makes this a
+	 * 		shallow copy.
+	 */
+	public Set<Boulder> listAllBoulders() {
+		Set<Boulder> result = new HashSet<Boulder>();
+		for (Item item : this.items) {
+			if (item instanceof Boulder) {
+				result.add((Boulder)item);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gives back all Logs in this World.
+	 * @return
+	 * 		A new (Hash)Set of all Logs in this World. That makes this a
+	 * 		shallow copy.
+	 */
+	public Set<Log> listAllLogs() {
+		Set<Log> result = new HashSet<Log>();
+		for (Item item : this.items) {
+			if (item instanceof Log) {
+				result.add((Log)item);
+			}
+		}
+		return result;
+	}
+	
+	
+	
+	/* ADVANCE TIME */
+	
+	/**
+	 * Invokes the advanceTime method on all GameObjects in this World. That is
+	 * (all Units) ∪ (all Items).
+	 * @param dt
+	 * 		The time by which to advance, expressed in seconds.
+	 */
+	public void advanceTime(double dt) {
+		for (Unit unit : this.units) {
+			unit.advanceTime(dt);
+		}
+		for (Item item : this.items) {
+			item.advanceTime(dt);
+		}
+	}
+	
 	
 	
 	/* FACTIONS */
@@ -880,6 +991,20 @@ public class World {
 	 *       |     (! faction.isTerminated()) )
 	 */
 	private final Set<Faction> factions = new HashSet<Faction>();
+	
+	/**
+	 * Gives back all the Factions in this World.
+	 * @return
+	 * 		A new (Hash)Set of all Factions in this World.
+	 * 		That makes this a shallow copy.
+	 */
+	public Set<Faction> listAllFactions() {
+		Set<Faction> result = new HashSet<Faction>();
+		for (Faction faction : this.factions) {
+			result.add(faction);
+		}
+		return result;
+	}
 	
 	
 	
