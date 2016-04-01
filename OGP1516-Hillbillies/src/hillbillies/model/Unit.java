@@ -86,7 +86,10 @@ public class Unit extends GameObject{
 	/* Constructor */
 	
 	/**
-	 * Create a new unit with a given name, position, weight, agility, strength, toughness and behavior
+	 * Create a new unit with a given name, position, weight, agility, strength,
+	 *  toughness and behavior and initialize the HP to the maximum HP the units
+	 *   Stamina to the maximum stamina and the units XP to the minimum XP a unit 
+	 *   can have.
 	 * 
 	 * @param  name                                                                                                                                                         
      *      The name for this new Unit.                                                                                                                       
@@ -150,16 +153,13 @@ public class Unit extends GameObject{
 	public Unit (String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws IllegalArgumentException{
 		
-		random = new Random();
+		super((new Coordinate(initialCoordinates)).toPosition());
 		
-		double[] initialPosition = cubeCenter(initialCoordinates);
-		
-		if (!isValidName(name) || !isValidPosition(initialPosition) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior)){
-			throw new IllegalArgumentException("Name, position, or enableDefaultBehavior are not valid");
+		if (!isValidName(name) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior)){
+			throw new IllegalArgumentException("Name, or enableDefaultBehavior are not valid");
 		}
 		
 		this.setName( name );
-		this.setPosition( initialPosition );
 		this.setDefaultBehaviorEnabled( enableDefaultBehavior);
 
 		if (!validInitialAgility(agility)){
@@ -188,12 +188,11 @@ public class Unit extends GameObject{
 		
 		setHP(getMaxHP());
 		setStamina(getMaxStamina());
-		this.setXP(this.getMinXP());
+		this.setXP(Unit.getMinXP());
 		
 		
 		this.immediateTarget = null;
 		this.previousPosition = this.getPosition();
-		this.setPath(new ArrayList<double[]>());
 		this.setState(State.NOTHING);
 		
 	}
@@ -214,13 +213,23 @@ public class Unit extends GameObject{
 		
 		Faction faction = this.getFaction();
 		this.setFaction(null);
-		faction.removeAsUnit(this);
+		faction.removeUnit(this);
 		
 		World world = this.getWorld();
 		this.setWorld(null);
-		world.removeAsUnit(this);
+		world.removeUnit(this);
 	}
 	
+	/**
+	 * Check whether this unit is terminated
+	 */
+	public boolean isTerminated(){
+		return this.isTerminated;
+	}
+	
+	/**
+	 * A variable referencing whether this unit is terminated
+	 */
 	private boolean isTerminated;
 	
 	
@@ -303,16 +312,6 @@ public class Unit extends GameObject{
 	}
 	
 	/**
-	 * Gives back the coordinates of the cube which the Unit is currently in.
-	 * @return
-	 * 		The coordinates of the cube which the Unit is currently in.
-	 * 		| result == cubeCoordinates(this.getPosition());
-	 */
-	public int[] getCubeCoordinate() {
-		return cubeCoordinates(this.getPosition());
-	}
-	
-	/**
 	 * Determines the magnitude of the velocity ("speed" in English I think)
 	 * @return
 	 * 		The speed the Unit should be going at at this moment
@@ -324,7 +323,7 @@ public class Unit extends GameObject{
 		double realSpeed;
 		double dz;
 		try{
-			dz = this.immediateTarget[2] - this.getPosition()[2];
+			dz = this.immediateTarget.getZ() - this.getPosition().getZ();
 		}catch(NullPointerException e){
 			dz = 0;
 		}
@@ -370,9 +369,7 @@ public class Unit extends GameObject{
 	 * 		| !(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1)
 	 * @throws IllegalArgumentException
 	 * 		If the calculated destination is out of bounds
-	 * 		| destination[0] < getMinCoordinate() || destination[0] >= getMaxCoordinate() ||
-	 * 		| destination[1] < getMinCoordinate() || destination[1] >= getMaxCoordinate() ||
-	 * 		| destination[2] < getMinCoordinate() || destination[2] >= getMaxCoordinate()
+	 * 		|! this.getWorld().withinBounds(destination)
 	 * @throws BadFSMStateException
 	 * 		If the current FSM state of this Unit is not right.
 	 * 		| !(this.getState() == State.NOTHING ||
@@ -389,14 +386,12 @@ public class Unit extends GameObject{
 		}else if(!(dx==-1 || dx==0 || dx==1) || !(dy==-1 || dy==0 || dy==1) || !(dz==-1 || dz==0 || dz==1) || (dx==0 && dy==0 && dz==0)){
 			throw new IllegalArgumentException("One of the parameters not -1, 0, or 1. Or all parameters equal to 0. dx: " + dx + "; dy: " + dy + "; dz: " + dz);
 		}else{
-			int[] currentCube = cubeCoordinates(this.getPosition());
-			int[] destination = new int[] {currentCube[0]+dx, currentCube[1]+dy, currentCube[2]+dz};
-			if(destination[0] < getMinCoordinate() || destination[0] >= getMaxCoordinate() ||
-					destination[1] < getMinCoordinate() || destination[1] >= getMaxCoordinate() ||
-					destination[2] < getMinCoordinate() || destination[2] >= getMaxCoordinate()){
+			Coordinate currentCube = this.getPosition().toCoordinate();
+			Coordinate destination = new Coordinate(currentCube.getX()+dx, currentCube.getY()+dy, currentCube.getZ()+dz);
+			if(! this.getWorld().withinBounds(destination)){
 				throw new IllegalArgumentException("One of the coordinates is out of bounds.");
 			}
-			immediateTarget = cubeCenter(destination);
+			immediateTarget = destination.toPosition();
 		}
 	}
 	
@@ -1317,7 +1312,7 @@ public class Unit extends GameObject{
 	 */
 	@Raw
 	public boolean canHaveAsFaction(Faction faction) {
-		return this.getWorld().hasAsFaction(this);
+		return this.getWorld().hasAsFaction(faction);
 	}
 	
 	/**
@@ -1354,7 +1349,7 @@ public class Unit extends GameObject{
 	 * 		| faction == null && !this.isTerminted()		
 	 */
 	public void setFaction(Faction faction) throws IllegalArgumentException {
-		if (faction == null && !this.isTerminted()){
+		if (faction == null && !this.isTerminated()){
 			throw new IllegalArgumentException();
 		}else if (faction == null){
 			this.faction = null;
@@ -1510,86 +1505,7 @@ public class Unit extends GameObject{
 			this.setItem(item);
 		}
 	}
-	
-	
-	
-	/* Path */
 
-	/**
-	 * Return the path of this Unit.
-	 */
-	@Basic @Raw
-	public List<double[]> getPath() {
-		return this.path;
-	}
-
-	/**
-	 * Check whether the given path is a valid path for
-	 * any Unit.
-	 *  
-	 * @param  path
-	 *         The path to check.
-	 * @return 
-	 *       | result == (path != null)
-	 */
-	public static boolean isValidPath(List<double[]> path) {
-		return path != null;
-	}
-
-	/**
-	 * Set the path of this Unit to the given path.
-	 * 
-	 * @param  path
-	 *         The new path for this Unit.
-	 * @post   The path of this new Unit is equal to
-	 *         the given path.
-	 *       | new.getPath() == path
-	 * @throws IllegalArgumentException
-	 *         The given path is not a valid path for any
-	 *         Unit.
-	 *       | ! isValidPath(getPath())
-	 */
-	@Raw
-	private void setPath(List<double[]> path) 
-			throws IllegalArgumentException {
-		if (! isValidPath(path))
-			throw new IllegalArgumentException("Not a valid path: " + path);
-		this.path = path;
-	}
-	
-	/**
-	 * Clears all the elements out of path
-	 * @post
-	 * 		The path will be empty
-	 * 		| new.getPath().length == 0;
-	 */
-	private void clearPath() {
-		this.getPath().clear();
-	}
-	
-	/**
-	 * Adds given element to the end of the path
-	 * @param element
-	 * 		The element to add
-	 * @post
-	 * 		The last element will be equal to the given one
-	 * 		| new.getPath().get(new.getPath().length) == element; 
-	 */
-	private void addToPath(double[] element) {
-		this.getPath().add(element);
-	}
-	
-	/**
-	 * Removes first element from path, and returns it.
-	 * @return
-	 * 		The first element from the path
-	 * 		| result == this.getPath().get(0);
-	 */
-	private double[] extractFromPath() {
-		return this.getPath().remove(0);
-	}
-	
-	
 	
 	
 	/* flags */
@@ -1647,7 +1563,7 @@ public class Unit extends GameObject{
 	 * Return the immediateTarget of this Unit.
 	 */
 	@Basic @Raw
-	public double[] getImmediateTarget() {
+	public Position getImmediateTarget() {
 		return this.immediateTarget;
 	}
 
@@ -1658,10 +1574,11 @@ public class Unit extends GameObject{
 	 * @param  immediateTarget
 	 *         The immediateTarget to check.
 	 * @return if and only if immediateTarget is a valid Position and ImmidiateTarget is adjacent to the current Position
-	 *       | result == isValidPosition( immediateTarget ) && areAdjacentCubes(cubeCoordinates( immediateTarget), cubeCoordinates(this.getPosition()))
+	 *       | result == this.canHaveAsPosition( immediateTarget ) && 
+	 *       this.getPosition().toCoordinate().isAdjacentTo(immediateTarget.toCoordinate());
 	 */
-	public boolean canHaveAsTarget(double[] immediateTarget) {
-		return isValidPosition( immediateTarget ) && areAdjacentCubes(cubeCoordinates( immediateTarget), cubeCoordinates(this.getPosition()));
+	public boolean canHaveAsTarget(Position immediateTarget) {
+		return this.canHaveAsPosition( immediateTarget ) && this.getPosition().toCoordinate().isAdjacentTo(immediateTarget.toCoordinate());
 	}
 
 	/**
@@ -1675,10 +1592,10 @@ public class Unit extends GameObject{
 	 * @throws IllegalArgumentException
 	 *         The given immediateTarget is not a valid immediateTarget for this
 	 *         Unit.
-	 *       | ! canHaveAsTarget(getImmidiateTarget())
+	 *       | ! canHaveAsTarget(immidiateTarget())
 	 */
 	@Raw
-	public void setImmediateTarget(double[] immediateTarget) 
+	public void setImmediateTarget(Position immediateTarget) 
 			throws IllegalArgumentException {
 		if (! this.canHaveAsTarget(immediateTarget))
 			throw new IllegalArgumentException();
@@ -2454,12 +2371,7 @@ public class Unit extends GameObject{
 	/**
 	 * The place that the Unit is currently going
 	 */
-	private double[] immediateTarget;
-	
-	/**
-	 * A list of positions that the Unit should walk towards, in correct order
-	 */
-	private List<double[]> path;
+	private Position immediateTarget;
 	
 	/**
 	 * The time it will take before the next whole point of stamina is subtracted from the Unit's stamina gauge
