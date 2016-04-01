@@ -116,8 +116,14 @@ public class World {
 	 * 		this.max(X|Y|Z)Coordinate will be equal to the length of the given
 	 * 		array in that specific direction.
 	 * @post
+	 * 		This World will have no Units to begin with
+	 * 		| this.getNbUnits() == 0
+	 * @post
 	 * 		This World will have no Items to begin with
 	 * 		| this.getNbItems() == 0
+	 * @post
+	 * 		This World will have exactly 5 Factions
+	 * 		| this.getNbFactions() == 5
 	 * @throws IllegalArgumentException
 	 * 		If the input array has any dimension of size 0 is jagged
 	 * @throws IllegalArgumentException
@@ -128,10 +134,13 @@ public class World {
 		if (terrainChangeListener == null) {
 			throw new IllegalArgumentException("Terrain Change Listener is null");
 		}
+		// Initialize terrain change listener of this World
 		this.terrainChangeListener = terrainChangeListener;
 		
+		// Initialize the cubes map for this World
 		this.cubes = intArrayToCubesMap(terrainTypes);
 		
+		// Initialize the dimensions of this World
 		this.minXCoordinate = 0;
 		this.maxXCoordinate = terrainTypes.length;
 		this.minYCoordinate = 0;
@@ -139,6 +148,17 @@ public class World {
 		this.minZCoordinate = 0;
 		this.maxZCoordinate = terrainTypes[0][0].length;
 		
+		// Initialize the Units Set of this World
+		this.units = new HashSet<Unit>();
+		
+		// Initialize the Items Set of this World
+		this.items = new HashSet<Item>();
+		
+		// Initialize the Factions Set of this World
+		this.factions = new HashSet<Faction>();
+		for (int i=0; i<5; i++){
+			factions.add(new Faction());
+		}
 	}
 	
 	
@@ -706,7 +726,7 @@ public class World {
 	 *       |   ( (unit != null) &&
 	 *       |     (! unit.isTerminated()) )
 	 */
-	private final Set<Unit> units = new HashSet<Unit>();
+	private final Set<Unit> units;
 	
 	/**
 	 * return the maximum number of units a world can have 
@@ -867,7 +887,7 @@ public class World {
 	 *       |   ( (item != null) &&
 	 *       |     (! item.isTerminated()) )
 	 */
-	private final Set<Item> items = new HashSet<Item>();
+	private final Set<Item> items;
 	
 	/**
 	 * Gives back all Boulders in this World.
@@ -990,7 +1010,7 @@ public class World {
 	 *       |   ( (faction != null) &&
 	 *       |     (! faction.isTerminated()) )
 	 */
-	private final Set<Faction> factions = new HashSet<Faction>();
+	private final Set<Faction> factions;
 	
 	/**
 	 * Gives back all the Factions in this World.
