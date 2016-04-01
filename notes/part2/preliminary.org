@@ -99,26 +99,26 @@ No formal documentation except for Unit.
 - [ ] When ultimateTarget is unreachable, moving is terminated.
 
 
-** Work [0/4] 							    :altered:
+** Work [3/4] 							    :altered:
 
-- [ ] Redefine method ``work'' to order the Unit to work at given block
-  - [ ] Must be current or adjacent block
-  - [ ] Store the target block somewhere
-- [ ] Upon completion of the work, there will be checked what kind of work has been
+- [X] Redefine method ``work'' to order the Unit to work at given block
+  - [X] Must be current or adjacent block
+  - [X] Store the target block somewhere
+- [-] Upon completion of the work, there will be checked what kind of work has been
   done.
-  - [ ] Carrying Boulder or Log :: The Boulder or Log is dropped at the center of
+  - [X] Carrying Boulder or Log :: The Boulder or Log is dropped at the center of
        the *target working cube*.
   - [ ] Target cube is Workshop and one Boulder and Log are available there :: 
        One Boulder and Log will be consumed from target cube. Weight and
        Toughness increased by 1.
-  - [ ] Boulder or Log present on target cube :: The Unit picks it up.
+  - [X] Boulder or Log present on target cube :: The Unit picks it up.
   - [ ] Target cube is of Wood type :: The cube disappears, leaving a Log.
   - [ ] Target cube is of Rock type :: The cube disappears, leaving a Boulder.
-  - [ ] No condition is met :: Nothing happens.
-- [ ] Weight of Unit is own weight plus weight of Boulder or Log the Unit is
+  - [X] No condition is met :: Nothing happens.
+- [X] Weight of Unit is own weight plus weight of Boulder or Log the Unit is
   carrying.
-  - [ ] Temporary weight may exceed maximum weight
-- [ ] + 10 XP for every fully completed work
+  - [X] Temporary weight may exceed maximum weight
+- [X] + 10 XP for every fully completed work
 
 
 ** Fighting [0/3] 						    :altered:

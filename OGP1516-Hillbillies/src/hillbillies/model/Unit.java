@@ -780,11 +780,16 @@ public class Unit extends GameObject{
 	/* Weight */
 	
 	/**
-	 * Get the weight of this unit
+	 * Get the weight of this unit and if he is carrying an item his own weight + 
+	 * the weight of the item this unit is carrying if any.
 	 */
 	@Basic @Raw
 	public int getWeight(){
-		return this.weight;
+		if (this.hasItem()){
+			return this.weight + this.getItem().getWeight();
+		}else{
+			return this.weight;
+		}
 	}
 
 	
@@ -2174,10 +2179,15 @@ public class Unit extends GameObject{
 				this.dropItem();
 				oldItem.setPosition(this.workCube.toPosition());
 			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.WORKSHOP){
-				//TODO
+				//TODO One boulder and log will be consumed from target cube
 			}else if (this.hasItemOnWorkCube()){
-				
+				this.pickUpItem(this.getItemAtWorkCube());
+			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.TREE){
+				//TODO cube disappears and leaves a log
+			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.ROCK){
+				//TODO the cube disappears leaving a boulder 
 			}
+			this.setXP(this.getXP() + 10);
 			this.transitionToNothing();
 		}else{
 			this.workingCountdown -= dt;
