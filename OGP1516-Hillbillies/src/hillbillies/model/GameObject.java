@@ -6,11 +6,11 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
 /**
- * @invar  The Position of each GameObject must be a valid Position for any
+ * @Invar  The Position of each GameObject must be a valid Position for any
  *         GameObject.
  *       | isValidPosition(getPosition())
  */
-public class GameObject implements IAdvanceable{
+public abstract class GameObject implements IAdvanceable{
 	/**
 	 * Constructor initializing a GameObject with a given position
 	 * 
@@ -135,6 +135,13 @@ public class GameObject implements IAdvanceable{
 	 */
 	private Position position;
 
+	/**
+	 * return the previous position of this unit 
+	 */
+	public Position getPreviousPosition(){
+		return this.previousPosition;
+	}
+	
 	/**
 	 * Holds the previous position of the Unit. Very important to determine whether it has reached its destination
 	 */
