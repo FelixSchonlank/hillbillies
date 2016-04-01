@@ -421,7 +421,7 @@ public class Unit extends GameObject{
 				this.getState() != State.WORKING){
 			throw new BadFSMStateException("Can't execute moveTo from within state: " + this.getState().toString());
 		}
-		if(!withinBounds(destination)){
+		if(!this.getWorld().withinBounds(destination)){
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
 		
@@ -1340,7 +1340,7 @@ public class Unit extends GameObject{
 	 * @Post if the given faction is not null the faction of this unit is set 
 	 * 		to the given faction and this unit is added to Units in Faction
 	 * 		| if (! faction == null) then 
-	 * 		| 	this.getfaction == null && faction.hasAsUnit(this)
+	 * 		| 	this.getfaction == faction && faction.hasAsUnit(this)
 	 * @Post if the given faction is null the faction of this unit is set to 
 	 * 		null iff this unit is terminated  
 	 * 		| if (faction == null) then new.getFaction() == null

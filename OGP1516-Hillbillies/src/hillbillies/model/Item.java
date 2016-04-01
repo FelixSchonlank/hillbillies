@@ -109,6 +109,7 @@ public class Item extends GameObject{
 	/**
 	 * Set the unit that is carrying this Item to a given Unit
 	 */
+	@Raw //@Raw because calling this method can probably make Items disappear if not used properly.
 	public void setUnit(Unit unit) {
 		if (! isValidUnit(unit)) {
 			throw new IllegalArgumentException("Given unit is invalid. " + unit.toString());
@@ -186,6 +187,7 @@ public class Item extends GameObject{
 	 * @throws IllegalArgumentException
 	 * 		If the unit can not have the given world as its world or if the world can not have this unit as one of its unit 
 	 */
+	@Raw //@Raw because calling this method can probably make Items disappear if not used properly.
 	public void setWorld(World world) throws IllegalArgumentException{
 		if (! this.isValidWorld(world)){
 			throw new IllegalArgumentException("Given World is not valid. " + world.toString());
