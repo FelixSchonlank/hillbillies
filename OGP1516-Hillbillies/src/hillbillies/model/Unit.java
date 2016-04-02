@@ -236,9 +236,11 @@ public class Unit extends GameObject{
 	 * Get a random valid agility
 	 */
 	private static int getRandomValidInitialAgility(){
+		int agility;
 		do{
-			int agility = randomInt(this.getMinAgility(), this.getMaxAgility());
+			agility = Utils.randomInt(Unit.getMinAgility(), Unit.getMaxAgility());
 		}while (! Unit.validInitialAgility(agility));
+		return agility;
 		
 	}
 	
@@ -246,27 +248,33 @@ public class Unit extends GameObject{
 	 * Get a random valid Toughness
 	 */
 	private static int getRandomValidInitialToughness(){
+		int toughness;
 		do{
-			int toughness = randomInt(this.getMinToughness(), this.getMaxToughness());
+			toughness = Utils.randomInt(Unit.getMinToughness(), Unit.getMaxToughness());
 		}while (! Unit.validInitialToughness(toughness));
+		return toughness;
 	}
 	
 	/**
 	 * Get a random valid Strength
 	 */
 	private int getRandomValidInitialStrength(){
+		int strength;
 		do{
-			int strength = randomInt(this.getMinStrength(), this.getMaxStrength());
+			strength = Utils.randomInt(this.getMinStrength(), this.getMaxStrength());
 		}while (! Unit.validInitialStrength(strength));
+		return strength;
 	}
 	
 	/**
 	 * Get a random valid Weight
 	 */
 	private int getRandomValidInitialWeight(){
+		int weight;
 		do{
-			int weight = randomInt(this.getMinWeight(), this.getMaxWeight());
+			weight = Utils.randomInt(this.getMinWeight(), this.getMaxWeight());
 		}while (! Unit.validInitialWeight(weight));
+		return weight;
 	}
 	
 	/* Destructor */
