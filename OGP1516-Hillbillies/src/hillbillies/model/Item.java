@@ -8,7 +8,7 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @Invar  Each Item can have its weight as weight.
  * 		| canHaveAsWeight(this.getWeight())
  * @Invar
- * 		| this.hasUnit() <==> ! this.hasWorld()
+ * 		| !this.isTerminated <==> (this.hasUnit() <==> ! this.hasWorld())
  * @Invar
  * 		Each Item has a proper Unit attached to it.
  * 		| this.hasProperUnit()
@@ -99,12 +99,17 @@ public class Item extends GameObject{
 	/**
 	 * Tells whether this Item has a proper Unit attached to it.
 	 * @return
-	 * 		True iff this Item's Unit is valid, and references this Item back
-	 * 		if it is effective.
+	 * 		True iff this Item's unit is valid, and
+	 * 		If not terminated: this Item's Unit references this Item back if it
+	 * 			is effective.
+	 * 		If terminated: this Item's Unit is not effective.
 	 */
 	public boolean hasProperUnit() {
-		return isValidUnit(this.getUnit()) &&
-				(this.getUnit() == null || this.getUnit().getItem() == this);
+		// The documentation has been translated into Java code masterfully
+		// through the use of my unbelievable Logic Skillz.
+		return isValidUnit(this.getUnit())
+				&& (this.isTerminated() || (this.getUnit() == null || this.getUnit().getItem() == this))
+				&& (!this.isTerminated() || this.getUnit() == null);
 	}
 
 	/**
@@ -174,12 +179,17 @@ public class Item extends GameObject{
 	/**
 	 * Tells whether this Item has a proper World attached to it.
 	 * @return
-	 * 		True iff this Item's World is valid, and references this Item back
-	 * 		if it is effective.
+	 * 		True iff this Item's World is valid, and
+	 * 		If not terminated: this Item's World references this Item back if it
+	 * 			is effective.
+	 * 		If terminated: this Item's World is not effective.
 	 */
 	public boolean hasProperWorld() {
-		return isValidWorld(this.getWorld()) &&
-				(this.getWorld() == null || this.getWorld().hasAsItem(this));
+		// The documentation has been translated into Java code masterfully
+		// through the use of my unbelievable Logic Skillz.
+		return isValidWorld(this.getWorld())
+				&& (this.isTerminated() || (this.getWorld() == null || this.getWorld().hasAsItem(this)))
+				&& (!this.isTerminated() || this.getWorld() == null);
 	}
 	
 	/**
