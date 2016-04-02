@@ -19,7 +19,7 @@ No formal documentation except for Unit.
   Boulder (rock cube) or Log (wood cube) spawns at the center.
   
 
-** Game objects [3/5]
+** Game objects [4/5]
 
 - [X] World can contain unlimited number of Bolders and Logs
 - [X] World can contain <= 100 Units
@@ -28,11 +28,11 @@ No formal documentation except for Unit.
   - [X] <= 50 Units per Faction
   - [X] <= 5 active (non-empty) Factions per World
   - [X] World *silently rejects* requests for excessive Units or Factions
-- [-] Implement a method to spawn Unit
-  - [ ] Random initial attributes
-  - [ ] Random initial position
-    - [ ] In a passable cube
-    - [ ] Above solid cube or on the floor of the World (Pro tip: use helper method)
+- [X] Implement a method to spawn Unit
+  - [X] Random initial attributes
+  - [X] Random initial position
+    - [X] In a passable cube
+    - [X] Above solid cube or on the floor of the World (Pro tip: use helper method)
       isAboveSolid.
   - [X] Starts new Faction unless maximum Faction number reached. Then joins
     smallest Faction.
