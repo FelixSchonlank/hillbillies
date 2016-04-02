@@ -573,7 +573,6 @@ public class World {
 		return this.cubes.get(coordinate);
 	}
 	
-		
 	/**
 	 * Sets the value of an entry with given coordinate in the cubes map to
 	 * a given terrain type
@@ -996,6 +995,24 @@ public class World {
 		}
 		return result;
 	}
+
+	/**
+	 * Creates a new Boulder in this World, on the position given.
+	 */
+	public void createBoulder(Position position) {
+		new Boulder(this, position);
+	}
+	
+	/**
+	 * Gives back the chance that a boulder drops after excavating a ROCK cube.
+	 * @return
+	 * 		The chance that a boulder drops after excavating a TREE cube.
+	 */
+	@Basic
+	public double getBoulderDropChance() {
+		return this.boulderDropChance;
+	}
+	
 	
 	/**
 	 * Gives back all Logs in this World.
@@ -1014,6 +1031,23 @@ public class World {
 	}
 	
 	
+	/**
+	 * Creates a new Log in this World, on the position given.
+	 * @param position
+	 */
+	public void createLog(Position position) {
+		new Log(this, position);
+	}
+	
+	/**
+	 * Returns the chance that a log drops after excavating a TREE cube.
+	 * @return
+	 * 		The chance that a log drops after excavating a TREE cube.
+	 */
+	@Basic
+	public double getLogDropChance() {
+		return this.logDropChance;
+	}
 	
 	/* ADVANCE TIME */
 	
@@ -1133,6 +1167,8 @@ public class World {
 	private final int minZCoordinate;
 	private final TerrainChangeListener terrainChangeListener;
 	private final ConnectedToBorder connectedToBorder;
+	private final double boulderDropChance;
+	private final double logDropChance;
 
 	/**
 	 * A random generator used by this Unit
