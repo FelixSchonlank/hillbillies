@@ -67,9 +67,9 @@ public class VectorD extends Vector3<Double> {
 	 * 		Whether the prime object is in between the other two.
 	 */
 	public boolean between(VectorD first, VectorD second) {
-		return (VectorUtils.between(this.getX(), first.getX(), second.getX())
-				|| VectorUtils.between(this.getY(), first.getY(), second.getY())
-				|| VectorUtils.between(this.getZ(), first.getZ(), second.getZ()));
+		return (Utils.between(this.getX(), first.getX(), second.getX())
+				|| Utils.between(this.getY(), first.getY(), second.getY())
+				|| Utils.between(this.getZ(), first.getZ(), second.getZ()));
 	}
 	
 	/**

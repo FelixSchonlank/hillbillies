@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.Basic;
@@ -516,9 +515,9 @@ public class World {
 	public Coordinate getRandomCoordinate() {
 		
 		return new Coordinate(
-				random.nextInt((int)(getMaxXCoordinate() - getMinXCoordinate())) + getMinXCoordinate(),
-				random.nextInt((int)(getMaxYCoordinate() - getMinYCoordinate())) + getMinYCoordinate(),
-				random.nextInt((int)(getMaxZCoordinate() - getMinZCoordinate())) + getMinZCoordinate()
+				Utils.randomInt(getMinXCoordinate(), getMaxXCoordinate()),
+				Utils.randomInt(getMinYCoordinate(), getMaxYCoordinate()),
+				Utils.randomInt(getMinZCoordinate(), getMaxZCoordinate())
 				);
 	}
 	
@@ -635,12 +634,12 @@ public class World {
 		this.setCubeAt(coordinate, TerrainType.AIR);
 		switch (terrainType) {
 		case ROCK:
-			if (random.nextDouble() <= getBoulderDropChance()) {
+			if (Utils.randomBoolean(getBoulderDropChance())) {
 				createBoulder(cubeCenter(coordinate));
 			}
 			break;
 		case TREE:
-			if (random.nextDouble() <= getLogDropChance()) {
+			if (Utils.randomBoolean(getLogDropChance())) {
 				createLog(cubeCenter(coordinate));
 			}
 			break;
@@ -1167,11 +1166,7 @@ public class World {
 	private final int minZCoordinate;
 	private final TerrainChangeListener terrainChangeListener;
 	private final ConnectedToBorder connectedToBorder;
-	private final double boulderDropChance;
-	private final double logDropChance;
+	private final double boulderDropChance = 0.25d;
+	private final double logDropChance = 0.25d;
 
-	/**
-	 * A random generator used by this Unit
-	 */
-	private static Random random;
 }
