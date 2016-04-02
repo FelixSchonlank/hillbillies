@@ -25,7 +25,7 @@ public class Item extends GameObject{
 	public Item( World world, Position position) {
 		super(position);
 		this.setWorld(world);
-		this.weight = Utils.randomInt(getMinWeight(), getMinWeight());
+		this.weight = Utils.randomInt(getMinWeight(), getMaxWeight());
 	}
 	
 	/**
