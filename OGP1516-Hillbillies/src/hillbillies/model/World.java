@@ -94,8 +94,6 @@ public class World {
 		}
 	}
 	
-	
-	
 	/**
 	 * Initializes a World with given terrainTypes in threedimensional array,
 	 * and terrain change listener for notification purposes.
