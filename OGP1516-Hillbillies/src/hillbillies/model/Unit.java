@@ -1,6 +1,7 @@
 package hillbillies.model;
 
 import java.util.*;
+import ogp.framework.util.*;
 
 import java.lang.Math;
 
@@ -674,6 +675,35 @@ public class Unit extends GameObject{
 		return this.getState() == State.WORKING;
 	}
 	
+	/* Falling */
+	
+	/**
+	 * Check whether at lees one of the neighbourinCubes of this unit is solid
+	 * @return true if and only if one of the neighboring cubes is either ROCK or TREE
+	 * 		| for all cubes in getNeighbours
+	 * 		|	if (getCubeAt(Cube) == ROCK || getCubeAt(Cube) == TREE) then
+	 * 		|		return false
+	 */
+	private boolean aroundSolid(){
+		for (Coordinate cube: this.getWorld().getNeighbors(this.getPosition().toCoordinate())){
+			if (this.getWorld().getCubeAt(cube) == World.TerrainType.ROCK || 
+				 this.getWorld().getCubeAt(cube) == World.TerrainType.TREE){
+				return true;
+			}
+		}return false;
+	}
+	
+	/**
+	 * Check whether this unit is above a solid cube
+	 */
+	private boolean aboveSolid(){
+		Coordinate below = new Coordinate(this.getPosition().toCoordinate().getX(),
+				this.getPosition().toCoordinate().getY(),
+				(Integer) (this.getPosition().toCoordinate().getZ() - 1));
+		return this.getWorld().getCubeAt(below) == World.TerrainType.ROCK || 
+				this.getWorld().getCubeAt(below) == World.TerrainType.TREE;
+	}
+	
 	/* XP */
 
 	/**
@@ -762,6 +792,7 @@ public class Unit extends GameObject{
 	/**
 	 * Variable registering the XP of this Unit.
 	 */
+	
 	private long XP;
 	
  	/* Name */
@@ -2250,6 +2281,14 @@ public class Unit extends GameObject{
 				return item;
 			}
 		}return null;
+	}
+	
+	/**
+	 * Execute the behavior when in falling state
+	 * @param dt
+	 * 		| the passed time
+	 */
+	private void doBehaviorFalling(double dt){
 	}
 	
 	/**
