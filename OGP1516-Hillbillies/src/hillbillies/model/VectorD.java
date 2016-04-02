@@ -40,6 +40,52 @@ public class VectorD extends Vector3<Double> {
 		super(wrapDoubleArray(array));
 	}
 
+	/**
+	 * Function to add 2 vectors
+	 * @param vector1
+	 * @param vector2
+	 * @return
+	 */
+	public static VectorD add(VectorD vector1, VectorD vector2){
+		 double X = vector1.getX() + vector2.getX();
+		 double Y = vector1.getY() + vector2.getY();
+		 double Z = vector1.getZ() + vector2.getZ();
+		 return new VectorD(X, Y, Z);
+	}
+	
+	/**
+	 * Function calculating the result you get when you multyply a vector with 
+	 * a given number
+	 * @param vector
+	 * @param x
+	 * @return
+	 */
+	public static VectorD multiply(VectorD vector, int x){
+		double X = vector.getX() * x;
+		double Y = vector.getY() * x;
+		double Z = vector.getZ() * x;
+		return new VectorD(X, Y, Z);
+	}
+	
+	/**
+	 * Subtract a vector from an other vector
+	 * @param vector1
+	 * @param vector2
+	 * @return
+	 */
+	public static VectorD subtract(VectorD vector1, VectorD vector2){
+		return VectorD.add(vector2, invert(vector2));
+	}
+	
+	/**
+	 * Invert a given vector
+	 * @param vector
+	 * @return
+	 */
+	private static VectorD invert(VectorD vector) {
+		return VectorD.multiply(vector, -1);
+	}
+
 	public static VectorD ZERO = new VectorD(0d, 0d, 0d);
 	public static VectorD ONE_X = new VectorD(1d, 0d, 0d);
 	public static VectorD ONE_Y = new VectorD(0d, 1d, 0d);
