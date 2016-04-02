@@ -2248,13 +2248,13 @@ public class Unit extends GameObject{
 			
 			double velocity = this.determineVelocity();
 			Position position = this.getPosition();
-			Position deltaPosition = Position.subtract(immediateTarget, position);
+			VectorD deltaPosition = Position.subtract(immediateTarget, position);
 			deltaPosition = Position.multiply(Position.normalize(deltaPosition), velocity * dt);
 			
 			this.setOrientation(Math.atan2(deltaPosition.getY(), deltaPosition.getX()));
 			
 			try{
-				this.setPosition(position.add(deltaPosition));
+				this.setPosition(Position.add(position, deltaPosition));
 			}catch(IllegalArgumentException e){}
 			
 			if(this.sprinting){
@@ -2517,16 +2517,29 @@ public class Unit extends GameObject{
 	private void doFalling(double dt) {
 		VectorD velocity = getFallingVelocity();
 		VectorD deltaPosition = VectorD.multiply(velocity, dt);
-		this.setPosition(VectorD.add(this.getPosition(), deltaPosition));
+		this.setPosition(Position.add(this.getPosition(), deltaPosition));
 	}
 	
 	/**
 	 * Inflicts falling damage on this Unit based on how far it has fallen.
 	 * @post
-	 * 		This Unit will 
+	 * 		// If you want a postcondition, you can have one :) Bam jongeuh.
+	 * 		The Unit will have its original HP minus the falling damage, or
+	 * 		0 if that is invalid.
+	 * 		| if (isValidHP(this.getHP() - ((int) (Position.add(this.fallingStartingPoint, this.getPosition()).getZ())) * 10) ) then
+	 * 		| 	this.setHP(this.getHP() - ((int) (Position.add(this.fallingStartingPoint, this.getPosition()).getZ())) * 10)
+	 * 		| else
+	 * 		| 	this.setHP(0);
 	 */
 	private void inflictFallingDamage() {
-		double distanceFallen = Position.add(this.fallingStartingPoint, this.getPosition());
+		double distanceFallen = Position.add(this.fallingStartingPoint, this.getPosition()).getZ();
+		int damage = ((int) (distanceFallen)) * 10;
+		int hp = this.getHP() - damage;
+		if (isValidHP(hp)) {
+			this.setHP(hp);
+		} else {
+			this.setHP(0);
+		}
 	}
 	
 	@Basic @Immutable
