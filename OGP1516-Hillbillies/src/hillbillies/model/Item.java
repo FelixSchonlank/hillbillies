@@ -19,13 +19,25 @@ import be.kuleuven.cs.som.annotate.Raw;
 public class Item extends GameObject{
 	
 	/**
-	 * Initialize a new Item with a given position and a random weight
+	 * Initialize a new Item with a given position and a random weight, and
+	 * that starts by being attached to a given World.
 	 */
-	public Item( World world, Position position){
+	public Item( World world, Position position) {
 		super(position);
 		this.setWorld(world);
-		int weight = Utils.randomInt(getMinWeight(), getMinWeight());
-		this.weight = weight;
+		this.weight = Utils.randomInt(getMinWeight(), getMinWeight());
+	}
+	
+	/**
+	 * Initialize a new Item with a random weight, and that starts by being
+	 * attached to a given Unit.
+	 * @param unit
+	 * 		The Unit to be attached to.
+	 */
+	public Item(Unit unit) {
+		super((Position) Position.ZERO);
+		this.setUnit(unit);
+		this.weight = Utils.randomInt(getMinWeight(), getMaxWeight());
 	}
 	
 	
