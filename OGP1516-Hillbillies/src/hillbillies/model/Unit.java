@@ -153,7 +153,7 @@ public class Unit extends GameObject{
 	 */
 	@Raw
 	public Unit (String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
-			boolean enableDefaultBehavior) throws IllegalArgumentException{
+			boolean enableDefaultBehavior) throws IllegalArgumentException {
 		
 		super((new Coordinate(initialCoordinates)).toPosition());
 		
@@ -197,6 +197,23 @@ public class Unit extends GameObject{
 		this.previousPosition = this.getPosition();
 		this.setState(State.NOTHING);
 		
+	}
+	
+	/**
+	 * Creates a new Unit with random (valid): name, position, weight, agility,
+	 * toughness; maximal HP and Stamina; minimal XP; and given default
+	 * behavior.
+	 * @param enableDefaultBehavior
+	 * 		Whether this Unit must have default behavior enabled.
+	 */
+	public Unit(boolean enableDefaultBehavior) {
+		String name = getRandomValidName();
+		Position position = getRandomValidInitialPosition();
+		int agility = getRandomValidInitialAgility();
+		int toughness = getRandomValidInitialToughness();
+		int strength = getRandomValidInitialStrength();
+		int weight = getRandomValidInitialWeight();
+		new Unit(name, position, weight, agility, strength, toughness, enableDefaultBehavior);
 	}
 	
 	
@@ -894,6 +911,21 @@ public class Unit extends GameObject{
 		return weight <= getMaxWeight() && weight >= this.getMinWeight();
 	}
 	
+	/**
+	 * Tells whether the given weight would be valid, given the strength and
+	 * agility.
+	 * @param weight
+	 * 		The weight to check the validity of.
+	 * @param strength
+	 * 		The strength that the hypothetical Unit would have.
+	 * @param agility
+	 * 		The agility that the hypothetical Unit would have.
+	 * @return
+	 * 		True iff the weight would be valid.
+	 */
+	public static boolean isValidWeight(int weight, int strength, int agility) {
+		return getMinWeight(strength, agility) <= weight && weight <= getMaxWeight();
+	}
 	
 	/**
 	 * The maximum weight this unit can have
@@ -903,7 +935,6 @@ public class Unit extends GameObject{
 		return maxWeight;
 	}
 	
-
 	/**
 	 * The minimum weight a unit can have 
 	 * @return the minimum weight of this unit
@@ -912,6 +943,18 @@ public class Unit extends GameObject{
 	@Basic
 	public int getMinWeight(){
 		return ((this.getStrength() + this.getAgility()) / 2);
+	}
+	
+	/**
+	 * The minimal weight a hypothetical Unit could have, given its
+	 * hypothetical strength and agility
+	 * @param strength
+	 * @param agility
+	 * @return
+	 * 		The average of the given strength and agility.
+	 */
+	public static int getMinWeight(int strength, int agility) {
+		return (strength + agility) / 2;
 	}
 
 	
