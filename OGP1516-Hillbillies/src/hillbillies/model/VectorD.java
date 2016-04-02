@@ -47,15 +47,17 @@ public class VectorD extends Vector3<Double> {
 	public static VectorD ONE = new VectorD(1d, 1d, 1d);
 
 	/**
-	 * Gives back the prime object, but normalized to have magnitude 1.
+	 * Gives back the given object, but normalized to have magnitude 1.
+	 * @param vector
+	 * 		The vector to have normalized.
 	 * @return
 	 * 		The normalized version of the vector
 	 */
-	private VectorD normalize() {
+	public static VectorD normalize(VectorD vector) {
 		
-		double magnitude = Math.sqrt(this.getX() + this.getY() + this.getZ());
+		double magnitude = Math.sqrt(vector.getX() + vector.getY() + vector.getZ());
 		
-		return new VectorD(this.getX()/magnitude, this.getY()/magnitude, this.getZ()/magnitude);
+		return new VectorD(vector.getX()/magnitude, vector.getY()/magnitude, vector.getZ()/magnitude);
 	}
 	
 	/**
