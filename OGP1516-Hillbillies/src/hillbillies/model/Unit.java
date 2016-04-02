@@ -2020,6 +2020,20 @@ public class Unit extends GameObject{
 	}
 	
 	/**
+	 * Set the state of this Unit to Falling
+	 * @effect
+	 * 		| this.setState(State.FALLING);
+	 * 		| this.setFlagsLow();
+	 * @post
+	 * 		| (new this).fallingStartingPoint == this.getPosition();
+	 */
+	private void transitionToFalling() {
+		this.setState(State.FALLING);
+		this.setFlagsLow();
+		this.fallingStartingPoint = this.getPosition();
+	}
+	
+	/**
 	 * Checks whether this Unit has reached its immediateTarget, or possibly
 	 *  overshot it by some distance.
 	 * @return true iff reached or overshot the immediateTarget position
@@ -2227,32 +2241,20 @@ public class Unit extends GameObject{
 		}else{
 			
 			if(this.defaultBehaviorEnabled){
-				if(random.nextDouble() <= getDefaultBehaviorSprintingThreshold() * dt){
+				if(Utils.randomBoolean(getDefaultBehaviorSprintingThreshold() * dt)){
 					this.startSprinting();
 				}
 			}
 			
 			double velocity = this.determineVelocity();
-			double[] position = this.getPosition();
-			double[] deltaPosition = new double[] {
-					immediateTarget[0] - position[0],
-					immediateTarget[1] - position[1],
-					immediateTarget[2] - position[2]
-							};
-			deltaPosition = new double[] {
-					normalize(deltaPosition)[0] * velocity * dt,
-					normalize(deltaPosition)[1] * velocity * dt,
-					normalize(deltaPosition)[2] * velocity * dt
-					};
+			Position position = this.getPosition();
+			Position deltaPosition = Position.subtract(immediateTarget, position);
+			deltaPosition = Position.multiply(Position.normalize(deltaPosition), velocity * dt);
 			
-			this.setOrientation(Math.atan2(deltaPosition[1], deltaPosition[0]));
+			this.setOrientation(Math.atan2(deltaPosition.getY(), deltaPosition.getX()));
 			
 			try{
-				this.setPosition(new double[] {
-						position[0] + deltaPosition[0],
-						position[1] + deltaPosition[1],
-						position[2] + deltaPosition[2]
-				});
+				this.setPosition(position.add(deltaPosition));
 			}catch(IllegalArgumentException e){}
 			
 			if(this.sprinting){
@@ -2384,14 +2386,6 @@ public class Unit extends GameObject{
 	}
 	
 	/**
-	 * Execute the behavior when in falling state
-	 * @param dt
-	 * 		| the passed time
-	 */
-	private void doBehaviorFalling(double dt){
-	}
-	
-	/**
 	 * Execute the behavior when in the ATTACKING state.
 	 * @param dt
 	 * 		The passed time 
@@ -2408,7 +2402,29 @@ public class Unit extends GameObject{
 		}else{
 			this.transitionToNothing();
 		}
-		
+	}
+	
+	/**
+	 * Execute the behavior when in falling state
+	 * @param dt
+	 * 		The passed time
+	 * @effect
+	 * 		If this Unit appears to be above solid ground, it stops falling and
+	 * 		and inflicts an appropriate amount of damage. Else, it just keeps
+	 * 		on falling.
+	 * 		| if (this.aboveSolid()) then
+	 * 		| 	this.inflictFallingDamage();
+	 * 		| 	this.transitionToNothing();
+	 * 		| else
+	 * 		| 	this.doFalling();
+	 */
+	private void doBehaviorFalling(double dt){
+		if (this.aboveSolid()) {
+			this.inflictFallingDamage();
+			this.transitionToNothing();
+		} else {
+			this.doFalling(dt);
+		}
 	}
 	
 	/**
@@ -2490,6 +2506,29 @@ public class Unit extends GameObject{
 		}
 	}
 	
+	/**
+	 * Makes this Unit fall down a bit.
+	 * @param dt
+	 * 		The time passed
+	 * @post
+	 * 		| (new this).getPosition() ==
+	 * 		| VectorD.add(this.getPosition(), VectorD.multiply(getFallingVelocity(), dt))
+	 */
+	private void doFalling(double dt) {
+		VectorD velocity = getFallingVelocity();
+		VectorD deltaPosition = VectorD.multiply(velocity, dt);
+		this.setPosition(VectorD.add(this.getPosition(), deltaPosition));
+	}
+	
+	/**
+	 * Inflicts falling damage on this Unit based on how far it has fallen.
+	 * @post
+	 * 		This Unit will 
+	 */
+	private void inflictFallingDamage() {
+		double distanceFallen = Position.add(this.fallingStartingPoint, this.getPosition());
+	}
+	
 	@Basic @Immutable
 	private static double getDefaultBehaviorRestingTime() {
 		return defaultBehaviorRestingTime;
@@ -2558,7 +2597,6 @@ public class Unit extends GameObject{
 	
 	
 	/* Constants */
-
 
 	private static final int maxWeight = 200;
 	private static final int minAgility = 0;
@@ -2638,6 +2676,11 @@ public class Unit extends GameObject{
 	 * The unit that will be attacked once the attackingCountdown is done
 	 */
 	private Unit victim;
+	
+	/**
+	 * The Position at which this Unit started falling.
+	 */
+	private Position fallingStartingPoint;
 	
 	private boolean shouldRest;
 	private boolean shouldWork;
