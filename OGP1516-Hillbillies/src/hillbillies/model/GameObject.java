@@ -1,7 +1,5 @@
 package hillbillies.model;
 
-import java.util.Random;
-
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 
@@ -177,10 +175,5 @@ public abstract class GameObject implements IAdvanceable{
 	}
 	
 	protected World world;
-	
-	/**
-	 * 
-	 */
-	protected Random random = new Random();
 
 }

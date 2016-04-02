@@ -3,7 +3,7 @@ No formal documentation except for Unit.
 
 * World [/] 						      :defensive:new:
 
-** Terrain [2/3]
+** Terrain [3/3]
 
 - [X] Cubes can be different types of things. A cube's type can change over its
   lifetime.
@@ -15,7 +15,7 @@ No formal documentation except for Unit.
 - [X] When not (in)directly connected to the borders of the world, a cube will
   disappear (cave-in) after at most 5 seconds.
   - [X] Algorithm for check connectedness to border is given.
-- [ ] When disappearing, a cube's type changes to ``air'', and with 0.25 chance a
+- [X] When disappearing, a cube's type changes to ``air'', and with 0.25 chance a
   Boulder (rock cube) or Log (wood cube) spawns at the center.
   
 

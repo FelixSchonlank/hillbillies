@@ -824,7 +824,7 @@ public class Unit extends GameObject{
 		}
 		long newXP = this.getXP() + dXP;
 		if ((newXP % 10) > (this.getXP() % 10)){
-			int randomNum = random.nextInt(3);
+			int randomNum = Utils.randomInt(0, 3);
 			if (randomNum == 0){
 				this.setStrength(this.getStrength() + 1);
 			}else if (randomNum == 1){
@@ -2020,9 +2020,9 @@ public class Unit extends GameObject{
 	 *	|		|| VectorUtils.between(immediateTarget.getZ(), previousPosition.getZ(), this.getPosition().getZ())
 	 */
 	private boolean reachedImmediateTarget() {
-		return (VectorUtils.between(immediateTarget.getX(), previousPosition.getX(), this.getPosition().getX())
-				|| VectorUtils.between(immediateTarget.getY(), previousPosition.getY(), this.getPosition().getY())
-				|| VectorUtils.between(immediateTarget.getZ(), previousPosition.getZ(), this.getPosition().getZ()));
+		return (Utils.between(immediateTarget.getX(), previousPosition.getX(), this.getPosition().getX())
+				|| Utils.between(immediateTarget.getY(), previousPosition.getY(), this.getPosition().getY())
+				|| Utils.between(immediateTarget.getZ(), previousPosition.getZ(), this.getPosition().getZ()));
 	}
 	
 	/**
@@ -2099,9 +2099,7 @@ public class Unit extends GameObject{
 			throw new IllegalArgumentException();
 		}
 		double chance = 0.20 * this.getAgility() / attacker.getAgility();
-		double result = random.nextDouble();
-		System.out.println(result);
-		if(result <= chance){
+		if(Utils.randomBoolean(chance)){
 			return true;
 		}else{
 			return false;
@@ -2115,9 +2113,9 @@ public class Unit extends GameObject{
 		Position destination;
 		do{
 			destination = new Position(
-					this.getPosition().getX() + (random.nextBoolean()?1:-1) * random.nextDouble(),
-					this.getPosition().getY() + (random.nextBoolean()?1:-1) * random.nextDouble(),
-					this.getPosition().getZ() + (random.nextBoolean()?1:-1) * random.nextDouble()
+					this.getPosition().getX() + (Utils.randomBoolean()?1:-1) * Utils.randomDouble(),
+					this.getPosition().getY() + (Utils.randomBoolean()?1:-1) * Utils.randomDouble(),
+					this.getPosition().getZ() + (Utils.randomBoolean()?1:-1) * Utils.randomDouble()
 					);
 		}while((destination.getX()==0 && destination.getY()==0 && destination.getZ()==0) || !this.getWorld().withinBounds(destination));
 		try {
@@ -2142,7 +2140,7 @@ public class Unit extends GameObject{
 			throw new IllegalArgumentException();
 		}
 		double chance = 0.25 * (this.getAgility() + this.getStrength()) / (attacker.getAgility() + attacker.getStrength());
-		if(random.nextDouble() <= chance){
+		if(Utils.randomBoolean(chance)){
 			return true;
 		}else{
 			return false;
