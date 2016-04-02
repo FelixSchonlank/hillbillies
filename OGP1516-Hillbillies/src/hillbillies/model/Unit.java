@@ -206,17 +206,68 @@ public class Unit extends GameObject{
 	 * @param enableDefaultBehavior
 	 * 		Whether this Unit must have default behavior enabled.
 	 */
-	public Unit(boolean enableDefaultBehavior) {
+	public Unit(World world, boolean enableDefaultBehavior) {
+		super();
 		String name = getRandomValidName();
-		Position position = getRandomValidInitialPosition();
-		int agility = getRandomValidInitialAgility();
-		int toughness = getRandomValidInitialToughness();
-		int strength = getRandomValidInitialStrength();
-		int weight = getRandomValidInitialWeight();
-		new Unit(name, position, weight, agility, strength, toughness, enableDefaultBehavior);
+		this.setName(name);
+        int agility = getRandomValidInitialAgility();
+        this.setAgility(agility);
+        int toughness = getRandomValidInitialToughness();
+        this.setToughness(toughness);
+        int strength = getRandomValidInitialStrength();
+        this.setStrength(strength);
+        int weight = getRandomValidInitialWeight();
+        this.setWeight(weight);
+        setHP(getMaxHP());
+		setStamina(getMaxStamina());
+		this.setXP(Unit.getMinXP());
+		this.immediateTarget = null;
+		this.previousPosition = this.getPosition();
+		this.setState(State.NOTHING);
+		this.setWorld(world);
+		this.setFaction(this.getWorld().getSmallestFaction());
 	}
 	
+	public String getRandomValidName(){
+		return ""; //TODO
+	}
 	
+	/**
+	 * Get a random valid agility
+	 */
+	private static int getRandomValidInitialAgility(){
+		do{
+			int agility = randomInt(this.getMinAgility(), this.getMaxAgility());
+		}while (! Unit.validInitialAgility(agility));
+		
+	}
+	
+	/**
+	 * Get a random valid Toughness
+	 */
+	private static int getRandomValidInitialToughness(){
+		do{
+			int toughness = randomInt(this.getMinToughness(), this.getMaxToughness());
+		}while (! Unit.validInitialToughness(toughness));
+	}
+	
+	/**
+	 * Get a random valid Strength
+	 */
+	private int getRandomValidInitialStrength(){
+		do{
+			int strength = randomInt(this.getMinStrength(), this.getMaxStrength());
+		}while (! Unit.validInitialStrength(strength));
+	}
+	
+	/**
+	 * Get a random valid Weight
+	 */
+	private int getRandomValidInitialWeight(){
+		do{
+			int weight = randomInt(this.getMinWeight(), this.getMaxWeight());
+		}while (! Unit.validInitialWeight(weight));
+	}
 	
 	/* Destructor */
 	
