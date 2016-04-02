@@ -853,6 +853,20 @@ public class World {
 		return result;
 	}
 	
+	/**
+	 * Creates a Unit in this World.
+	 * @param enableDefaultBehavior
+	 * 		Whether the Unit must have default behavior enabled.
+	 * @effect
+	 * 		If the maximum number of Units is not yet reached, a new Unit will
+	 * 		be created, that builds up an association between itself and this
+	 * 		World.
+	 */
+	public void spawnUnit(boolean enableDefaultBehavior) {
+		if (this.getNbUnits() < this.getMaxUnits()) {
+			new Unit(this, enableDefaultBehavior);
+		}
+	}
 	
 	
  	/* ITEMS */
@@ -1064,7 +1078,6 @@ public class World {
 	}
 	
 	
-	
 	/* FACTIONS */
 
 	/**
@@ -1147,6 +1160,21 @@ public class World {
 			result.add(faction);
 		}
 		return result;
+	}
+	
+	/**
+	 * Gives back the Faction of this World with the least Units.
+	 * @return
+	 * 		The Faction of this World with the least Units.
+	 */
+	public Faction getSmallestFaction() {
+		Faction smallestFaction = null;
+		for (Faction faction : this.factions) {
+			if (smallestFaction == null || faction.getNbUnits() < smallestFaction.getNbUnits()) {
+				smallestFaction = faction;
+			}
+		}
+		return smallestFaction;
 	}
 	
 	
