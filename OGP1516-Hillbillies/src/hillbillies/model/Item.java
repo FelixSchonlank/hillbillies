@@ -18,6 +18,12 @@ import be.kuleuven.cs.som.annotate.Raw;
  */
 public class Item extends GameObject{
 	
+	private enum ItemState {
+		NOTHING, FALLING
+	}
+	
+	private ItemState state;
+	
 	/**
 	 * Initialize a new Item with a given position and a random weight, and
 	 * that starts by being attached to a given World.
@@ -26,6 +32,7 @@ public class Item extends GameObject{
 		super(position);
 		this.setWorld(world);
 		this.weight = Utils.randomInt(getMinWeight(), getMaxWeight());
+		this.state = ItemState.NOTHING;
 	}
 	
 	/**
@@ -38,6 +45,7 @@ public class Item extends GameObject{
 		super((Position) Position.ZERO);
 		this.setUnit(unit);
 		this.weight = Utils.randomInt(getMinWeight(), getMaxWeight());
+		this.state = ItemState.NOTHING;
 	}
 	
 	
@@ -266,9 +274,101 @@ public class Item extends GameObject{
 	 * Variable registering whether this Item is terminated
 	 */
 	private boolean isTerminated;
-
-	public void advanceTime(double dt) throws IllegalArgumentException{
-
+	
+	/**
+	 * Makes this Item act out its behavior for one tick of game time.
+	 * @param dt
+	 * 		The passed time since last tick
+	 * @throws IllegalArgumentException
+	 * 		If
+	 */
+	public void advanceTime(double dt) throws IllegalArgumentException {
+		if (dt >= getMaxDT()) {
+			throw new IllegalArgumentException("dt went over its maximum of " + getMaxDT() + ". dt: " + dt);
+		}
+		if (this.hasWorld()) {
+			if (this.state == ItemState.NOTHING) {
+				doBehaviorNothing(dt);
+			} else if (this.state == ItemState.FALLING) {
+				doBehaviorFalling(dt);
+			}
+		}
 	}
+	
+	/**
+	 * Makes this Item transition to the nothing state.
+	 * @post
+	 * 		This Item will be in the NOTHING state.
+	 */
+	private void transitionToNothing() {
+		this.state = ItemState.NOTHING;
+	}
+	
+	/**
+	 * Carries out the bevavhior this Item should have when it is doing nothing
+	 * according to the FSM, which is in this case, well, nothing.
+	 * @param dt
+	 * 		The time passed since the last tick.
+	 * @effect
+	 * 		If this Item is not above solid ground, it starts falling. 
+	 */
+	private void doBehaviorNothing(double dt) {
+		if (!this.aboveSolid()) {
+			this.transitionToFalling();
+		}
+	}
+	
+	/**
+	 * Makes this Item transition to the falling state.
+	 * @post
+	 * 		This Item will be in the FALLING state.
+	 */
+	private void transitionToFalling() {
+		this.state = ItemState.FALLING;
+	}
+	
+	/**
+	 * Carries out the behavior this Item should have when it is falling
+	 * according to the FSM. This means it will fall down.
+	 * @param dt
+	 * 		The time passed since the last tick.
+	 * @effect
+	 * 		If this Item is above solid ground, it stops falling.
+	 * 		If it is above solid ground, it keeps on falling down.
+	 */
+	private void doBehaviorFalling(double dt) {
+		if (this.aboveSolid()) {
+			this.transitionToNothing();
+		} else {
+			this.doFalling(dt);
+		}
+	}
+	
+	/**
+	 * Makes this Item fall down a bit.
+	 * @param dt
+	 * 		The time passed since last tick.
+	 * @post
+	 * 		| (new this).getPosition() ==
+	 * 		| VectorD.add(this.getPosition(), VectorD.multiply(getFallingVelocity(), dt))
+	 */
+	private void doFalling(double dt) {
+		VectorD velocity = getFallingVelocity();
+		VectorD deltaPosition = VectorD.multiply(velocity, dt);
+		this.setPosition(Position.add(this.getPosition(), deltaPosition));
+	}
+	
+	/**
+	 * Gives back the velocity with which a Unit falls.
+	 */
+	private VectorD getFallingVelocity() {
+		return new VectorD(0, 0, -3);
+	}
+	
+	public static double getMaxDT() {
+		return maxDT;
+	}
+	
+	private final static double maxDT = 0.2d;
 
 }

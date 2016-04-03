@@ -162,10 +162,31 @@ public abstract class GameObject implements IAdvanceable{
 	 */
 	protected Position previousPosition;
 
-
-	public void advanceTime(double dt) throws IllegalArgumentException{
-
+	/**
+	 * Tells whether at least one of the neighboring cubes of this GameObject
+	 * GameObject is solid (or the GameObject stands on the ground, that's fine too).
+	 * @return
+	 * 		True iff this GameObject's World says its cube is around a solid one.
+	 */
+	protected boolean aroundSolid(){
+		return this.getWorld().isAroundSolid(this.getWorld().cubeCoordinates(this.getPosition()));
 	}
+	
+	/**
+	 * Check whether this GameObject is above a solid cube or the floor of the World.
+	 * @return
+	 * 		True iff this GameObject's World says its cube is above a solid one.
+	 */
+	protected boolean aboveSolid(){
+		return this.getWorld().isAboveSolid(this.getWorld().cubeCoordinates(this.getPosition()));
+	}
+	
+	/**
+	 * Makes the GameObject advance one tick of game time.
+	 * @param dt
+	 * 		The time passed since the last tick. Should not be getMaxDT() or more.
+	 */
+	public abstract void advanceTime(double dt) throws IllegalArgumentException;
 
 	/**
 	 * return the world this unit belongs to

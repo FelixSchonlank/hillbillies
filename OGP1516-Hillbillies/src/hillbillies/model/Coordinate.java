@@ -15,14 +15,6 @@ public class Coordinate extends VectorI {
 		super(array);
 	}
 
-	public Coordinate(Integer x, Integer y, Integer z) {
-		super(x, y, z);
-	}
-
-	public Coordinate(Integer[] array) {
-		super(array);
-	}
-
 	/**
 	 * Returns a Position representing the center of the cube with this coordinate.
 	 * 

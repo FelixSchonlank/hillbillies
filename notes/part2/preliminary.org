@@ -140,13 +140,13 @@ No formal documentation except for Unit.
 - [ ] One possibility when idle is now to fight potential enemies.
 
 
-* Boulder and Log [3/4] 				      :defensive:new:
+* Boulder and Log [4/4] 				      :defensive:new:
 
-- [-] Position
+- [X] Position
   - [X] Use doubles
   - [X] Always in passable terrain
-  - [ ] When not aboveSolid, starts falling like a Unit.
-    - [ ] Implement advanceTime
+  - [X] When not aboveSolid, starts falling like a Unit.
+    - [X] Implement advanceTime
 - [X] Weight
   - [X] Use int
   - [X] ∈ [10 ; 50]
