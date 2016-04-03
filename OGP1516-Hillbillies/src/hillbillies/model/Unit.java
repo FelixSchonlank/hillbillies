@@ -361,31 +361,33 @@ public class Unit extends GameObject{
 	 * @param dt
 	 */
 	@Override
-	public void advanceTime(double dt) throws IllegalArgumentException{
-		if(dt > getMaxDT()){
-			throw new IllegalArgumentException("dt went over its maximum of " + getMaxDT() + ": dt = " + dt);
-		}
-		State state = this.getState();
-		if(state == State.NOTHING){
-			doBehaviorNothing(dt);
-		}else if(state == State.MOVING){
-			doBehaviorMoving(dt);
-		}else if(state == State.RESTING_INIT){
-			doBehaviorRestingInit(dt);
-		}else if(state == State.RESTING_HP){
-			doBehaviorRestingHP(dt);
-		}else if(state == State.RESTING_STAMINA){
-			doBehaviorRestingStamina(dt);
-		}else if(state == State.WORKING){
-			doBehaviorWorking(dt);
-		}else if(state == State.ATTACKING){
-			doBehaviorAttacking(dt);
-		}
+	public void advanceTime(double dt) throws IllegalArgumentException {
+		if (!this.isTerminated()) {
+			if(dt > getMaxDT()){
+				throw new IllegalArgumentException("dt went over its maximum of " + getMaxDT() + ": dt = " + dt);
+			}
+			State state = this.getState();
+			if(state == State.NOTHING){
+				doBehaviorNothing(dt);
+			}else if(state == State.MOVING){
+				doBehaviorMoving(dt);
+			}else if(state == State.RESTING_INIT){
+				doBehaviorRestingInit(dt);
+			}else if(state == State.RESTING_HP){
+				doBehaviorRestingHP(dt);
+			}else if(state == State.RESTING_STAMINA){
+				doBehaviorRestingStamina(dt);
+			}else if(state == State.WORKING){
+				doBehaviorWorking(dt);
+			}else if(state == State.ATTACKING){
+				doBehaviorAttacking(dt);
+			}
 
-		if(this.getDefaultBehaviorRestingCountdown() <= 0){
-			this.doDefaultBehaviorResting(this.getDefaultBehaviorRestingCountdown());
-		}else{
-			this.setDefaultBehaviorRestingCountdown(this.getDefaultBehaviorRestingCountdown() - dt);
+			if(this.getDefaultBehaviorRestingCountdown() <= 0){
+				this.doDefaultBehaviorResting(this.getDefaultBehaviorRestingCountdown());
+			}else{
+				this.setDefaultBehaviorRestingCountdown(this.getDefaultBehaviorRestingCountdown() - dt);
+			}
 		}
 	}
 	
@@ -648,6 +650,16 @@ public class Unit extends GameObject{
 	}
 	
 	/**
+	 * Tells whether this Unit can be attacked at this moment.
+	 * @return
+	 * 		True iff the Unit is not falling.
+	 * 		| result == (this.state != State.FALLING)
+	 */
+	public boolean canBeAttacked() {
+		return this.state != State.FALLING;
+	}
+	
+	/**
 	 * An instantaneous response to the attack. Everything is handled immediately:
 	 * dodging, blocking, damage taking, teleportation.
 	 * @param attacker
@@ -657,9 +669,12 @@ public class Unit extends GameObject{
 	 * 		If attacker is null
 	 * 		| attacker == null
 	 */
-	public void defend(Unit attacker) throws IllegalArgumentException {
-		if(attacker == null){
+	public void defend(Unit attacker) throws IllegalArgumentException, BadFSMStateException {
+		if (attacker == null) {
 			throw new IllegalArgumentException("Attacker shouldn't be null.");
+		}
+		if (!this.canBeAttacked()) {
+			throw new BadFSMStateException("Can't be attacked at this moment.");
 		}
 		
 		pointAt(attacker);
@@ -2194,7 +2209,11 @@ public class Unit extends GameObject{
 	 * 		The passed time since last update.
 	 */
 	private void doBehaviorNothing(double dt) {
-		if(immediateTarget != null){
+		if (this.getHP() == getMinHP()) {
+			this.terminate();
+		} else if (!this.aroundSolid()) {
+			this.transitionToFalling();
+		}else if(immediateTarget != null){
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(!this.getPath().isEmpty()){
@@ -2229,7 +2248,11 @@ public class Unit extends GameObject{
 	 * 		The passed time since last update.
 	 */
 	private void doBehaviorMoving(double dt) {
-		if(reachedImmediateTarget()){
+		if (this.getHP() == this.getMinHP()) {
+			this.terminate();
+		} else if (!this.aroundSolid()) {
+			this.transitionToFalling();
+		} else if(reachedImmediateTarget()){
 			if(!this.getPath().isEmpty()){
 				try{this.setPosition(immediateTarget);}catch(IllegalArgumentException e){}
 				immediateTarget = this.extractFromPath();
@@ -2277,7 +2300,11 @@ public class Unit extends GameObject{
 	 * 		The passed time 
 	 */
 	private void doBehaviorRestingInit(double dt) {
-		if (this.restingInitialCountdown > 0){
+		if (this.getHP() == getMinHP()) {
+			this.terminate();
+		} else if (!this.aroundSolid()) {
+			this.transitionToFalling();
+		} else if (this.restingInitialCountdown > 0){
 			this.restingInitialCountdown -= dt;
 		}else{
 			this.transitionToRestingHP();
@@ -2291,7 +2318,11 @@ public class Unit extends GameObject{
 	 * 		The passed time 
 	 */
 	private void doBehaviorRestingHP(double dt) {
-		if (this.shouldWork){
+		if (this.getHP() == getMinHP()) {
+			this.terminate();
+		} else if (!this.aroundSolid()) {
+			this.transitionToFalling();
+		} else if (this.shouldWork){
 			this.transitionToWorking( );
 		}else if (this.shouldAttack){
 			this.transitionToAttacking();
@@ -2313,7 +2344,11 @@ public class Unit extends GameObject{
 	 * 		The passed time 
 	 */
 	private void doBehaviorRestingStamina(double dt) {
-		if (this.shouldWork){
+		if (this.getHP() == getMinHP()) {
+			this.terminate();
+		} else if (!this.aroundSolid()) {
+			this.transitionToFalling();
+		} else if (this.shouldWork){
 			this.transitionToWorking();
 		}else if (this.shouldAttack){
 			this.transitionToAttacking();
@@ -2336,7 +2371,11 @@ public class Unit extends GameObject{
 	 * 		The passed time 
 	 */
 	private void doBehaviorWorking(double dt) {
-		if (this.shouldRest){
+		if (this.getHP() == getMinHP()) {
+			this.terminate();
+		} else if (!this.aroundSolid()) {
+			this.transitionToFalling();
+		} else if (this.shouldRest){
 			this.transitionToRestingInit();
 		}else if (this.shouldAttack){
 			this.transitionToAttacking();
@@ -2391,12 +2430,17 @@ public class Unit extends GameObject{
 	 * 		The passed time 
 	 */
 	private void doBehaviorAttacking(double dt) {
-		if (this.attackingCountdown > 0){
+		if (this.getHP() == getMinHP()) {
+			this.terminate();
+		} else if (!this.aroundSolid()) {
+			this.transitionToFalling();
+		} else if (this.attackingCountdown > 0){
 			this.attackingCountdown -= dt;
 		}else if (this.inRangeForAttack(this.getVictim())){
 			try{
 				this.getVictim().defend(this);
-			}catch (IllegalArgumentException e){
+			}catch (IllegalArgumentException | BadFSMStateException e){
+				// There is nothing to be done
 			}
 			this.transitionToNothing();
 		}else{
@@ -2419,7 +2463,9 @@ public class Unit extends GameObject{
 	 * 		| 	this.doFalling();
 	 */
 	private void doBehaviorFalling(double dt){
-		if (this.aboveSolid()) {
+		if (this.getHP() == getMinHP()) {
+			this.terminate();
+		} else if (this.aboveSolid()) {
 			this.inflictFallingDamage();
 			this.transitionToNothing();
 		} else {
@@ -2532,7 +2578,7 @@ public class Unit extends GameObject{
 	 * 		| 	this.setHP(0);
 	 */
 	private void inflictFallingDamage() {
-		double distanceFallen = Position.add(this.fallingStartingPoint, this.getPosition()).getZ();
+		double distanceFallen = Position.subtract(this.fallingStartingPoint, this.getPosition()).getZ();
 		int damage = ((int) (distanceFallen)) * 10;
 		int hp = this.getHP() - damage;
 		if (isValidHP(hp)) {
