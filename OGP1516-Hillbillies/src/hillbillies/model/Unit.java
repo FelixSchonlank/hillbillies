@@ -518,7 +518,7 @@ public class Unit extends GameObject{
 		}
 		if (Path.contains(this.getPosition().toCoordinate())){
 			Coordinate immediateTarget = PathTuple.getSmallestAjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
-			//this.moveToAjacent(immediateTarget);
+			this.immediateTarget = immediateTarget.toPosition();
 		}
 	}
 	
@@ -2258,7 +2258,7 @@ public class Unit extends GameObject{
 	 * 		The passed time since last update.
 	 */
 	private void doBehaviorMoving(double dt) {
-		if (this.getHP() == this.getMinHP()) {
+		if (this.getHP() == Unit.getMinHP()) {
 			this.terminate();
 		} else if (!this.aroundSolid()) {
 			this.transitionToFalling();
