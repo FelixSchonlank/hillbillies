@@ -69,17 +69,17 @@ No formal documentation except for Unit.
   - [ ] For every movement step (for every block the Unit arrives at), + 1 XP.
 
 
-** (Not) falling [0/3] 							:new:
+** (Not) falling [3/3] 							:new:
 
-- [ ] Start falling when not in a cube directly adjacent to a solid cube or the
+- [X] Start falling when not in a cube directly adjacent to a solid cube or the
   floor of the World (use helper method aroundSolid for all this).
-- [ ] When falling ...
-  - [ ] Move with constant velocity (0, 0, -3)
-  - [ ] Stop falling when aboveSolid
-  - [ ] The Unit can't start sprinting
-  - [ ] You cannot do anything
-    - [ ] Not even being attacked
-- [ ] Upon landing, lose 10 HP per fallen Z-level
+- [X] When falling ...
+  - [X] Move with constant velocity (0, 0, -3)
+  - [X] Stop falling when aboveSolid
+  - [X] The Unit can't start sprinting
+  - [X] You cannot do anything
+    - [X] Not even being attacked
+- [X] Upon landing, lose 10 HP per fallen Z-level
 
 
 ** Basic movement [0/2] 					    :altered:
@@ -121,18 +121,18 @@ No formal documentation except for Unit.
 - [X] + 10 XP for every fully completed work
 
 
-** Fighting [0/3] 						    :altered:
+** Fighting [1/3] 						    :altered:
 
-- [ ] You can now only attack Units of a different Faction.
+- [X] You can now only attack Units of a different Faction.
 - [ ] + 20 XP for succesful attack, dodge, or block.
 - [ ] Dodging teleportation can now only be to blocks featuring passable terrain.
 
 
-** Death [0/3] 								:new:
+** Death [3/3] 								:new:
 
-- [ ] Units die at 0 HP.
-- [ ] Dead Units can't conduct activities.
-- [ ] Picked up stuff will be dropped at Unit's position.
+- [X] Units die at 0 HP.
+- [X] Dead Units can't conduct activities.
+- [X] Picked up stuff will be dropped at Unit's position.
 
 
 ** Default behavior [0/1] 					    :altered:
