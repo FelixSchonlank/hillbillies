@@ -517,9 +517,10 @@ public class Unit extends GameObject{
 			}
 		}
 		if (Path.contains(this.getPosition().toCoordinate())){
-
 			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
 			this.immediateTarget = immediateTarget.toPosition();
+		}else{
+			this.UltimateTarget = null;
 		}
 	}
 	
@@ -2242,7 +2243,7 @@ public class Unit extends GameObject{
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(this.hasUltimateTarget()){
-			this.moveTo(this.getUltimateTarget());
+			try{this.moveTo(this.getUltimateTarget());}catch(IllegalArgumentException w){} catch (BadFSMStateException e) {}
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(this.shouldRest){
@@ -2265,7 +2266,10 @@ public class Unit extends GameObject{
 				this.shouldRest = true;
 			} else {
 				victim = (Unit) Utils.getRandomElement(this.getEnemiesInRange());
-				this.attack(victim);
+				try {
+					this.attack(victim);
+				} catch (IllegalArgumentException e) {
+				} catch (BadFSMStateException e) {}
 			}
 		}
 	}
@@ -2284,14 +2288,14 @@ public class Unit extends GameObject{
 			if(this.hasUltimateTarget()){
 				try{
 					this.setPosition(immediateTarget);
-					this.setXP(this.getXP() + 1);
+					this.increaseXP(1);
 				}catch(IllegalArgumentException e){}
 				try{this.moveTo(this.getUltimateTarget());}catch(IllegalArgumentException w){
 				}catch(BadFSMStateException wi){}
 			}else{
 				try{
 					this.setPosition(immediateTarget);
-					this.setXP(this.getXP() + 1);
+					this.increaseXP(1);
 				}catch(IllegalArgumentException e){}
 				immediateTarget = null;
 				this.transitionToNothing();
