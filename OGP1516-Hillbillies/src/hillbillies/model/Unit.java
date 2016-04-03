@@ -507,25 +507,66 @@ public class Unit extends GameObject{
 		if(!this.getWorld().withinBounds(destination)){
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
-		
 		Queue<PathTuple> Path = new LinkedList<PathTuple>();
 		while(! this.getPosition().toCoordinate().equals(destination)){
 			Path.add(new PathTuple(destination, 0));
-			while(! Path.contains(this.getPosition().toCoordinate()) && Path.hasNext){
-				PathTuple next = Path.getNext();
-				search(next);
+			while(! Path.contains(this.getPosition().toCoordinate()) && PathTuple.hasNext(Path)){
+				PathTuple next = PathTuple.getNext(Path);
+				search(next, Path);
+				next.hasBeenCheckt = true;
 			}
 		}
-			if(!(World.isPassableTerain(neighbor) && hasSolidAjacent)){
-				
-			}
+		if (Path.contains(this.getPosition().toCoordinate())){
+			Coordinate immediateTarget = PathTuple.getSmallestAjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
+			//this.moveToAjacent(immediateTarget);
 		}
 	}
 	
 	
 	
-	/* Sprinting */
+	
+	/**
+	 * The search function as defined in the pdf
+	 * @param next
+	 * @param Path
+	 */
+	private void search(PathTuple next, Queue<PathTuple> Path) {
+		List<Coordinate> neighbors = new LinkedList<Coordinate>();
+		neighbors.addAll(this.getWorld().getNeighbors(next.getCube()));
+		for (Coordinate neighbor: neighbors){//remove all Coordinates that are already in Path with a smaller weight
+			if (Path.contains(neighbor)){
+				PathTuple tmp = PathTuple.getPathTuple(neighbor, Path);
+				if (tmp.getWeight() <= next.getWeight()){
+					neighbors.remove(neighbor);
+				}
+			}else if (! this.getWorld().isPassableCube(neighbor)){//remove all non solid neighbors
+				neighbors.remove(neighbor);
+			}else if (! this.hasSolidNeighbor( neighbor, next.getCube())){// remove all neighbors that are not adjacent to a solid cube
+				neighbors.remove(neighbor);
+			}else{
+				Path.add(new PathTuple(neighbor, next.getWeight() + 1));
+			}
+		}
+	}
+	
+	/**
+	 * Check whether a given cube has a solid neighbor that is not the previous
+	 * @param cube
+	 * @return
+	 */
+	private boolean hasSolidNeighbor(Coordinate cube, Coordinate next){
+		for (Coordinate neighbor: cube.getNeighbors()){
+			if (neighbor != next){
+			}else if (this.getWorld().getCubeAt(neighbor) == World.TerrainType.ROCK ||
+					this.getWorld().getCubeAt(neighbor) == World.TerrainType.TREE){
+				return true;
+			}
+		} return false;
+	}
 
+	
+	/* Sprinting */
+	
 	/**
 	 * Tells the Unit to start sprinting, if possible
 	 * @post
