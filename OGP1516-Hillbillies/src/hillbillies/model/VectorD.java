@@ -54,7 +54,7 @@ public class VectorD extends Vector3<Double> {
 	}
 	
 	/**
-	 * Function calculating the result you get when you multyply a vector with 
+	 * Function calculating the result you get when you multiply a vector with 
 	 * a given number
 	 * @param vector
 	 * @param x
