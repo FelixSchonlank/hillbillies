@@ -121,10 +121,10 @@ No formal documentation except for Unit.
 - [X] + 10 XP for every fully completed work
 
 
-** Fighting [1/3] 						    :altered:
+** Fighting [2/3] 						    :altered:
 
 - [X] You can now only attack Units of a different Faction.
-- [ ] + 20 XP for succesful attack, dodge, or block.
+- [X] + 20 XP for succesful attack, dodge, or block.
 - [ ] Dodging teleportation can now only be to blocks featuring passable terrain.
 
 

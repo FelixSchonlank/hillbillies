@@ -718,8 +718,10 @@ public class Unit extends GameObject{
 		pointAt(attacker);
 		
 		if(dodgeSucceeds(attacker)){
+			this.increaseXP(getXPSuccessfulDodge());
 			dodge();
 		}else if(!blockSucceeds(attacker)){
+			this.increaseXP(getXPSuccessfulBlock());
 			takeDamage(attacker.getStrength() / 10);
 		}
 		
@@ -2243,7 +2245,11 @@ public class Unit extends GameObject{
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(this.hasUltimateTarget()){
-			try{this.moveTo(this.getUltimateTarget());}catch(IllegalArgumentException w){} catch (BadFSMStateException e) {}
+			try {
+				this.moveTo(this.getUltimateTarget());
+			} catch (BadFSMStateException e) {
+				// There is nothing to be done.
+			}
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(this.shouldRest){
@@ -2505,6 +2511,7 @@ public class Unit extends GameObject{
 		}else if (this.inRangeForAttack(this.getVictim())){
 			try{
 				this.getVictim().defend(this);
+				this.increaseXP(getXPSuccessfulAttack());
 			}catch (IllegalArgumentException | BadFSMStateException e){
 				// There is nothing to be done
 			}
@@ -2726,6 +2733,38 @@ public class Unit extends GameObject{
 			this.defaultBehaviorRestingCountdown = defaultBehaviorRestingCountdown;
 	}
 	
+	/**
+	 * Gives back the amount of XP to be added when conducting a successful
+	 * attack.
+	 * @return
+	 * 		| result == xpSuccessfulAttack;
+	 */
+	@Basic @Immutable
+	private static int getXPSuccessfulAttack() {
+		return xpSuccessfulAttack;
+	}
+	
+	/**
+	 * Gives back the amount of XP to be added when successfully dodging an
+	 * attack.
+	 * @return
+	 * 		| result == xpSuccessfulDodge;
+	 */
+	@Basic @Immutable
+	private static int getXPSuccessfulDodge() {
+		return xpSuccessfulDodge;
+	}
+	
+	/**
+	 * Gives back the amount of XP to be added when successfully blocking an
+	 * attack.
+	 * @return
+	 * 		| result == xpSuccessfulBlock;
+	 */
+	@Basic @Immutable
+	private static int getXPSuccessfulBlock() {
+		return xpSuccessfulBlock;
+	}
 	
 	
 	/* Constants */
@@ -2748,6 +2787,10 @@ public class Unit extends GameObject{
 	private static final int restingStaminaAmount = 1;
 	
 	private static final double attackingTime = 1d;
+	
+	private static final int xpSuccessfulAttack = 20;
+	private static final int xpSuccessfulDodge = 20;
+	private static final int xpSuccessfulBlock = 20;
 	
 	/**
 	 * A helper variable to hold the chance that a Unit starts.
