@@ -29,7 +29,7 @@ public class World {
 	/**
 	 * An enum to represent the different terrain types in the World
 	 */
-	protected enum TerrainType {
+	public enum TerrainType {
 		AIR(0, true),
 		ROCK(1, false),
 		TREE(2, false),
@@ -732,11 +732,7 @@ public class World {
 	private void onCubesMapChanged() {
 		boolean changedCubesMap = false;
 		for (Coordinate coordinate : this.cubes.keySet()) {
-			if (!this.connectedToBorder.isSolidConnectedToBorder(
-					coordinate.getX(),
-					coordinate.getY(),
-					coordinate.getZ())
-					) {
+			if (!this.isSolidConnectedToBorder(coordinate)) {
 				try {
 					this.digOutCube(coordinate);
 					changedCubesMap = true;
@@ -749,6 +745,24 @@ public class World {
 			// We changed the cubes map's contents
 			this.onCubesMapChanged();
 		}
+	}
+	
+	/**
+	 * Tells whether the cube at the given coordinate is both solid and
+	 * (in)directly connected to the border of this World.
+	 * @param coordinate
+	 * 		The coordinate of the cube.
+	 * @return
+	 * 		True iff the cube at the given coordinate is both solid and
+	 * 		(in)directly connected to the border of this World.
+	 */
+	public boolean isSolidConnectedToBorder(Coordinate coordinate) {
+		return !this.isPassableCube(coordinate) &&
+				this.connectedToBorder.isSolidConnectedToBorder(
+						coordinate.getX(),
+						coordinate.getY(),
+						coordinate.getZ()
+						);
 	}
 	
 	
@@ -896,28 +910,26 @@ public class World {
 	 * 		Faction. That makes this a shallow copy.
 	 */
 	public Set<Unit> listAllUnits(Faction faction) {
-		Set<Unit> result = new HashSet<Unit>();
-		for (Unit unit : this.units) {
-			if (unit.getFaction() == faction) {
-				result.add(unit);
-			}
-		}
-		return result;
+		return faction.listAllUnits();
 	}
 	
 	/**
 	 * Creates a Unit in this World.
 	 * @param enableDefaultBehavior
 	 * 		Whether the Unit must have default behavior enabled.
+	 * @return
+	 * 		If the maximal number of Units is not reached yet, one new Unit is
+	 * 		returned. If not, null is returned.
 	 * @effect
 	 * 		If the maximum number of Units is not yet reached, a new Unit will
 	 * 		be created, that builds up an association between itself and this
 	 * 		World.
 	 */
-	public void spawnUnit(boolean enableDefaultBehavior) {
+	public Unit spawnUnit(boolean enableDefaultBehavior) {
 		if (this.getNbUnits() < this.getMaxUnits()) {
-			new Unit(this, enableDefaultBehavior);
+			return new Unit(this, enableDefaultBehavior);
 		}
+		return null;
 	}
 	
 	

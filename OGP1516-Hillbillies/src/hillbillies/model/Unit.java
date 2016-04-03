@@ -1734,6 +1734,26 @@ public class Unit extends GameObject{
 			this.setItem(item);
 		}
 	}
+	
+	/**
+	 * Tells whether this Unit is currently carrying a Boulder.
+	 * @return
+	 * 		True iff this Unit is currently carrying a Boulder.
+	 * 		| result == this.item instanceof Boulder;
+	 */
+	public boolean isCarryingBoulder() {
+		return this.item instanceof Boulder;
+	}
+	
+	/**
+	 * Tells whether this Unit is currently carrying a Log.
+	 * @return
+	 * 		True iff this Unit is currently carrying a Log.
+	 * 		| result == this.item instanceof Log;
+	 */
+	public boolean isCarryingLog() {
+		return this.item instanceof Log;
+	}
 
 	
 	

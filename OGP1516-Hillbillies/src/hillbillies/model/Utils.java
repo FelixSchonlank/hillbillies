@@ -125,4 +125,38 @@ public class Utils {
 		}
 		return null;
 	}
+	
+	/**
+	 * Gives back the given array, but of primitive type double[] instead of
+	 * Double[].
+	 * @param array
+	 * 		The array to have unboxed.
+	 * @return
+	 * 		A new array containing the same items as the given array, only they
+	 * 		are primitive doubles instead of Doubles.
+	 */
+	public static double[] unboxArray(Double[] array) {
+		double[] result = new double[array.length];
+		for (int i=0; i<array.length; i++) {
+			result[i] = array[i];
+		}
+		return result;
+	}
+	
+	/**
+	 * Gives back the given array, but of primitive type int[] instead of
+	 * Integer[].
+	 * @param array
+	 * 		The array to have unboxed.
+	 * @return
+	 * 		A new array containing the same items as the given array, only they
+	 * 		are primitive ints instead of Integers.
+	 */
+	public static int[] unboxArray(Integer[] array) {
+		int[] result = new int[array.length];
+		for (int i=0; i<array.length; i++) {
+			result[i] = array[i];
+		}
+		return result;
+	}
 }

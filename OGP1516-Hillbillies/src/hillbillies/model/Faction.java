@@ -126,6 +126,20 @@ public class Faction {
 	 */
 	private final Set<Unit> units = new HashSet<Unit>();
 	
+	/**
+	 * Gives back all the Units in this Faction.
+	 * @return
+	 * 		A new (Hash)Set of all the Units in this Faction.
+	 * 		That makes this a shallow copy.
+	 */
+	public Set<Unit> listAllUnits() {
+		Set<Unit> result = new HashSet<Unit>();
+		for (Unit unit : this.units) {
+			result.add(unit);
+		}
+		return result;
+	}
+	
 	public int getMaxUnits(){
 		return this.MaxUnits;
 	}
