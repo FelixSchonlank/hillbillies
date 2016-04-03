@@ -60,13 +60,13 @@ No formal documentation except for Unit.
   - [X] Invoke advanceTime on all game objects
 
 
-* Unit [2/3] 							    :altered:
+* Unit [3/3] 							    :altered:
 
 - [X] A Unit must now always belong to 1 Faction
 - [X] Must always occupy a cube of passable terrain type
-- [-] XP
+- [X] XP
   - [X] For every 10 XP, Units Str, Agl, *or* Tgh increases by 1.
-  - [ ] For every movement step (for every block the Unit arrives at), + 1 XP.
+  - [X] For every movement step (for every block the Unit arrives at), + 1 XP.
 
 
 ** (Not) falling [3/3] 							:new:
@@ -82,17 +82,17 @@ No formal documentation except for Unit.
 - [X] Upon landing, lose 10 HP per fallen Z-level
 
 
-** Basic movement [0/2] 					    :altered:
+** Basic movement [2/2] 					    :altered:
 
-- [ ] Units can only move through cubes of passable terrain type and that are
+- [X] Units can only move through cubes of passable terrain type and that are
   aroundSolid cubes.
-- [ ] When arriving at a block by delibirately moving there, a Unit gains 1 XP.
+- [X] When arriving at a block by delibirately moving there, a Unit gains 1 XP.
 
 
-** Extended movement and path finding [1/4] 			    :altered:
+** Extended movement and path finding [2/4] 			    :altered:
 
 - [X] A new path finding algorithm is given.
-- [ ] Note that due to the changing of the World, the path must be recalculated
+- [X] Note that due to the changing of the World, the path must be recalculated
   every block a Unit arrives at. There is no longer a point in storing a path,
   only in storing an ultimateTarget.
 - [ ] Moving to faraway blocks can be interrupted, *but must be resumed!*

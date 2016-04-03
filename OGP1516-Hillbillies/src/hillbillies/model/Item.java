@@ -275,6 +275,8 @@ public class Item extends GameObject{
 	 */
 	private boolean isTerminated;
 	
+	/* Methods */
+	
 	/**
 	 * Makes this Item act out its behavior for one tick of game time.
 	 * @param dt
@@ -305,7 +307,7 @@ public class Item extends GameObject{
 	}
 	
 	/**
-	 * Carries out the bevavhior this Item should have when it is doing nothing
+	 * Carries out the behavior this Item should have when it is doing nothing
 	 * according to the FSM, which is in this case, well, nothing.
 	 * @param dt
 	 * 		The time passed since the last tick.

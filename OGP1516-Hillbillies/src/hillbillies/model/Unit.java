@@ -513,17 +513,15 @@ public class Unit extends GameObject{
 			while(! Path.contains(this.getPosition().toCoordinate()) && PathTuple.hasNext(Path)){
 				PathTuple next = PathTuple.getNext(Path);
 				search(next, Path);
-				next.hasBeenCheckt = true;
+				next.hasBeenChecked = true;
 			}
 		}
 		if (Path.contains(this.getPosition().toCoordinate())){
-			Coordinate immediateTarget = PathTuple.getSmallestAjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
+
+			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
 			this.immediateTarget = immediateTarget.toPosition();
 		}
 	}
-	
-	
-	
 	
 	/**
 	 * The search function as defined in the pdf
@@ -735,6 +733,25 @@ public class Unit extends GameObject{
 	 */
 	public boolean isAttacking() {
 		return this.getState() == State.ATTACKING;
+	}
+	
+	/**
+	 * Gives back a Set of all Units in range of another Faction.
+	 * @return
+	 * 		A HashSet of all Units in range of another Faction.
+	 */
+	private Set<Unit> getEnemiesInRange() {
+		Set<Unit> enemies = new HashSet<Unit>();
+		Coordinate coordinate = this.getWorld().cubeCoordinates(this.getPosition()); 
+		for (Coordinate neighbor : this.getWorld().getNeighbors(coordinate)) {
+			Set<GameObject> gameObjects = this.getWorld().listGameObjectsInCube(neighbor);
+			for (GameObject gameObject : gameObjects) {
+				if (gameObject instanceof Unit) {
+					enemies.add((Unit) gameObject);
+				}
+			}
+		}
+		return enemies;
 	}
 	
 	
@@ -1991,8 +2008,6 @@ public class Unit extends GameObject{
 		return 20 / (double) this.getToughness();
 	}
 
-	
-	
 	/**
 	 * Gives back the amount of stamina to restore every time a Unit does.
 	 * @return
@@ -2226,8 +2241,8 @@ public class Unit extends GameObject{
 		}else if(immediateTarget != null){
 			this.setState(State.MOVING);
 			this.setFlagsLow();
-		}else if(!this.getPath().isEmpty()){
-			this.immediateTarget = this.extractFromPath();
+		}else if(this.hasUltimateTarget()){
+			this.moveTo(this.getUltimateTarget());
 			this.setState(State.MOVING);
 			this.setFlagsLow();
 		}else if(this.shouldRest){
@@ -2237,17 +2252,20 @@ public class Unit extends GameObject{
 		}else if(this.shouldAttack){
 			this.transitionToAttacking();
 		}else if(this.getDefaultBehaviorEnabled()){
-			int result = random.nextInt(3);
+			int result = Utils.randomInt(0, 4);
 			if(result == 0){
 				try{
-					this.moveTo(getRandomCoordinate());
+					this.moveTo(this.getWorld().getRandomCoordinate());
 				}catch(IllegalArgumentException e){
 				}catch(BadFSMStateException f){
 				}
 			}else if(result == 1){
 				this.shouldWork = true;
-			}else{
+			}else if (result == 2){
 				this.shouldRest = true;
+			} else {
+				victim = Utils.getRandomElementFromSet(this.getEnemiesInRange());
+				this.attack(victim);
 			}
 		}
 	}
@@ -2263,11 +2281,18 @@ public class Unit extends GameObject{
 		} else if (!this.aroundSolid()) {
 			this.transitionToFalling();
 		} else if(reachedImmediateTarget()){
-			if(!this.getPath().isEmpty()){
-				try{this.setPosition(immediateTarget);}catch(IllegalArgumentException e){}
-				immediateTarget = this.extractFromPath();
+			if(this.hasUltimateTarget()){
+				try{
+					this.setPosition(immediateTarget);
+					this.setXP(this.getXP() + 1);
+				}catch(IllegalArgumentException e){}
+				try{this.moveTo(this.getUltimateTarget());}catch(IllegalArgumentException w){
+				}catch(BadFSMStateException wi){}
 			}else{
-				try{this.setPosition(immediateTarget);}catch(IllegalArgumentException e){}
+				try{
+					this.setPosition(immediateTarget);
+					this.setXP(this.getXP() + 1);
+				}catch(IllegalArgumentException e){}
 				immediateTarget = null;
 				this.transitionToNothing();
 			}
@@ -2302,6 +2327,33 @@ public class Unit extends GameObject{
 			}
 			
 		}
+	}
+	
+	private Coordinate getUltimateTarget() {
+		return this.UltimateTarget;
+	}
+
+	/**
+	 * Set the ultimateTarget of this uit to a given ultimateTarget
+	 * @param UltimateTarget
+	 * @Post The ultimateTarget of this unit is set to a given UltimateTarget
+	 * 		| new.getUltimateTarget() == UltimateTarget
+	 * @throws IllegalArgumetException
+	 * 		Is a valid Position for this unit
+	 * 		|this.getWorld().isValidPosition(UltimateTarget.toPosition())
+	 */
+	private void setUltimateTarget(Coordinate UltimateTarget){
+		if (this.getWorld().isValidPosition(UltimateTarget.toPosition())){
+			throw new IllegalArgumentException();
+		}
+		this.UltimateTarget = UltimateTarget;
+	}
+	
+	/**
+	 * Check whether this unit has an ultimate target to go to
+	 */
+ 	private boolean hasUltimateTarget(){
+		return ! (this.UltimateTarget == null);
 	}
 	
 	/**
@@ -2707,6 +2759,10 @@ public class Unit extends GameObject{
 	
 	/* Variables */
 	
+	/**
+	 * The ultimate target this unit has to move to 
+	 */
+	private Coordinate UltimateTarget;
 		
 	/**
 	 * The place that the Unit is currently going
