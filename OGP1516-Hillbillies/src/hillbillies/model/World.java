@@ -557,6 +557,58 @@ public class World {
 	}
 	
 	/**
+	 * Tells whether the cube at the given coordinate has a neighbor which is
+	 * solid, or is just located on the ground of the World, that's fine too.
+	 * @param coordinate
+	 * 		The coordinate of the cube to check.
+	 * @return
+	 * 		True iff the given coordinate is of a cube located on the ground
+	 * 		of this World, or located next to a solid cube.
+	 * @throws IllegalArgumentException
+	 * 		If the given coordinate is not valid.
+	 */
+	public boolean isAroundSolid(Coordinate coordinate) throws IllegalArgumentException {
+		if (!isValidCoordinate(coordinate)) {
+			throw new IllegalArgumentException("Given coordinate is not valid: " + coordinate.toString());
+		}
+		// Being above the ground counts too
+		if (coordinate.getZ() == this.getMinZCoordinate()) {
+			return true;
+		}
+		for (Coordinate neighbor : this.getNeighbors(coordinate)) {
+			if (!this.isPassableCube(neighbor)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Tells whether the cube at the given coordinate is located above a solid
+	 * one, or directly above the ground of the World, that's fine too.
+	 * @param coordinate
+	 * 		The coordinate of the cube to check.
+	 * @return
+	 * 		True iff the given coordinate is of a cube located on the ground of
+	 * 		this World, or located directly above a solid cube.
+	 * @throws IllegalArgumentException
+	 * 		If the given coordinate is not valid.
+	 */
+	public boolean isAboveSolid(Coordinate coordinate) throws IllegalArgumentException {
+		if (!isValidCoordinate(coordinate)) {
+			throw new IllegalArgumentException("Given coordinate is not valid: " + coordinate.toString());
+		}
+		// Being above the ground counts too
+		if (coordinate.getZ() == this.getMinZCoordinate()) {
+			return true;
+		}
+		if (!this.isPassableCube(new Coordinate(coordinate.getX(), coordinate.getY(), coordinate.getZ() - 1))) {
+			return true; 
+		}
+		return false;
+	}
+	
+	/**
 	 * Gives back the terrain type of the cube at the given coordinate.
 	 * @param coordinate
 	 * 		The coordinate of the cube to check.

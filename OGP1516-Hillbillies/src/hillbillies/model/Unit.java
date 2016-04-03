@@ -357,8 +357,11 @@ public class Unit extends GameObject{
 	/**
 	 * Advances the time for the Unit by the given time. This includes basically all the Unit's behavior,
 	 * except for defending against an attack, which is instantaneous and outside of the finite state
-	 * machine model, which is used for the Unit's behavior.
+	 * machine model, which is used for the Unit's behavior. As said, Unit
+	 * implements an FSM. Every tick advanceTime checks which state Unit is in,
+	 * and the appropriate method is executed.
 	 * @param dt
+	 * 		The time that has passed since the last tick.
 	 */
 	@Override
 	public void advanceTime(double dt) throws IllegalArgumentException {
@@ -764,35 +767,6 @@ public class Unit extends GameObject{
 	 */
 	public boolean isWorking() {
 		return this.getState() == State.WORKING;
-	}
-	
-	/* Falling */
-	
-	/**
-	 * Check whether at lees one of the neighbourinCubes of this unit is solid
-	 * @return true if and only if one of the neighboring cubes is either ROCK or TREE
-	 * 		| for all cubes in getNeighbours
-	 * 		|	if (getCubeAt(Cube) == ROCK || getCubeAt(Cube) == TREE) then
-	 * 		|		return false
-	 */
-	private boolean aroundSolid(){
-		for (Coordinate cube: this.getWorld().getNeighbors(this.getPosition().toCoordinate())){
-			if (this.getWorld().getCubeAt(cube) == World.TerrainType.ROCK || 
-				 this.getWorld().getCubeAt(cube) == World.TerrainType.TREE){
-				return true;
-			}
-		}return false;
-	}
-	
-	/**
-	 * Check whether this unit is above a solid cube
-	 */
-	private boolean aboveSolid(){
-		Coordinate below = new Coordinate(this.getPosition().toCoordinate().getX(),
-				this.getPosition().toCoordinate().getY(),
-				(Integer) (this.getPosition().toCoordinate().getZ() - 1));
-		return this.getWorld().getCubeAt(below) == World.TerrainType.ROCK || 
-				this.getWorld().getCubeAt(below) == World.TerrainType.TREE;
 	}
 	
 	/* XP */
@@ -2555,7 +2529,7 @@ public class Unit extends GameObject{
 	/**
 	 * Makes this Unit fall down a bit.
 	 * @param dt
-	 * 		The time passed
+	 * 		The time passed since last tick.
 	 * @post
 	 * 		| (new this).getPosition() ==
 	 * 		| VectorD.add(this.getPosition(), VectorD.multiply(getFallingVelocity(), dt))
@@ -2564,6 +2538,13 @@ public class Unit extends GameObject{
 		VectorD velocity = getFallingVelocity();
 		VectorD deltaPosition = VectorD.multiply(velocity, dt);
 		this.setPosition(Position.add(this.getPosition(), deltaPosition));
+	}
+	
+	/**
+	 * Gives back the velocity with which a Unit falls.
+	 */
+	private VectorD getFallingVelocity() {
+		return new VectorD(0, 0, -3);
 	}
 	
 	/**
