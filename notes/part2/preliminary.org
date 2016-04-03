@@ -135,9 +135,9 @@ No formal documentation except for Unit.
 - [X] Picked up stuff will be dropped at Unit's position.
 
 
-** Default behavior [0/1] 					    :altered:
+** Default behavior [1/1] 					    :altered:
 
-- [ ] One possibility when idle is now to fight potential enemies.
+- [X] One possibility when idle is now to fight potential enemies.
 
 
 * Boulder and Log [4/4] 				      :defensive:new:

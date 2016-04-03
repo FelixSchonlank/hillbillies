@@ -2268,7 +2268,7 @@ public class Unit extends GameObject{
 			}else if (result == 2){
 				this.shouldRest = true;
 			} else {
-				victim = Utils.getRandomElementFromSet(this.getEnemiesInRange());
+				victim = (Unit) Utils.getRandomElement(this.getEnemiesInRange());
 				this.attack(victim);
 			}
 		}

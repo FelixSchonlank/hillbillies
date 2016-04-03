@@ -1,6 +1,7 @@
 package hillbillies.model;
 
 import java.util.Random;
+import java.util.Set;
 
 public class Utils {
 	
@@ -103,5 +104,25 @@ public class Utils {
 	 */
 	public static boolean randomBoolean() {
 		return randomBoolean(0.5d);
+	}
+	
+	/**
+	 * Gives back a random element in the given Set.
+	 * @return
+	 * 		A random element in the given Set, or null if the Set is empty or
+	 * 		null itself.
+	 */
+	public static <T> Object getRandomElement(Set<T> set) {
+		if (set != null) {
+			int n = randomInt(0, set.size());
+			int i = 0;
+			for (Object object : set) {
+				if (i == n) {
+					return object;
+				}
+				i += 1;
+			}
+		}
+		return null;
 	}
 }
