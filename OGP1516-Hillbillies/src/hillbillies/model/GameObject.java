@@ -52,10 +52,10 @@ public abstract class GameObject implements IAdvanceable{
 	/**
 	 * return a random valid Position
 	 */
-	private Position getRandomValidInitialPosition(){
-		double X = randomDouble(this.getWorld().getMinXCoordinate(), this.getWorld().getMaxXCoordinate()); 
-		double Y = randomDouble(this.getWorld().getMinYCoordinate(), this.getWorld().getMaxYCoordinate());
-		double Z = randomDouble(this.getWorld().getMinZCoordinate(), this.getWorld().getMaxZCoordinate());
+	protected Position getRandomValidInitialPosition(){
+		double X = Utils.randomDouble(this.getWorld().getMinXCoordinate(), this.getWorld().getMaxXCoordinate()); 
+		double Y = Utils.randomDouble(this.getWorld().getMinYCoordinate(), this.getWorld().getMaxYCoordinate());
+		double Z = Utils.randomDouble(this.getWorld().getMinZCoordinate(), this.getWorld().getMaxZCoordinate());
 		Position position = new Position(X, Y, Z);
 		return position;
 	}

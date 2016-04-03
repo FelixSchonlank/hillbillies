@@ -54,13 +54,13 @@ public class VectorD extends Vector3<Double> {
 	}
 	
 	/**
-	 * Function calculating the result you get when you multyply a vector with 
+	 * Function calculating the result you get when you multiply a vector with 
 	 * a given number
 	 * @param vector
 	 * @param x
 	 * @return
 	 */
-	public static VectorD multiply(VectorD vector, int x){
+	public static VectorD multiply(VectorD vector, double x){
 		double X = vector.getX() * x;
 		double Y = vector.getY() * x;
 		double Z = vector.getZ() * x;
@@ -84,6 +84,17 @@ public class VectorD extends Vector3<Double> {
 	 */
 	private static VectorD invert(VectorD vector) {
 		return VectorD.multiply(vector, -1);
+	}
+	
+	/**
+	 * return a position with the same properties of this vectorD
+	 * @return
+	 */
+	public Position toPosition(){
+		double X = this.getX();
+		double Y = this.getY();
+		double Z = this.getZ();
+		return new Position(X, Y, Z);
 	}
 
 	public static VectorD ZERO = new VectorD(0d, 0d, 0d);
