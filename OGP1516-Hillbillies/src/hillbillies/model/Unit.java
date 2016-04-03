@@ -505,19 +505,14 @@ public class Unit extends GameObject{
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
 		
-		Queue<Coordinate> Path = new LinkedList<Coordinate>();
-		List<Coordinate> AjacentCubes = addAll(World.getNeighbors( this.getPosition().toCoordinate()));
-		for(Coordinate neighbor: AjacentCubes){
-			Boolean hasSolidAjacent = False;
-			for(Coordinate ajacent: World.getNeighbors(neighbor) ){
-				if(Worls.isSolidTerrain(ajacent)) {
-					hasSolidAjacent = True;
-				}
+		Queue<PathTuple> Path = new LinkedList<PathTuple>();
+		while(! this.getPosition().toCoordinate().equals(destination)){
+			Path.add(new PathTuple(destination, 0));
+			while(! Path.contains(this.getPosition().toCoordinate()) && Path.hasNext){
+				PathTuple next = Path.getNext();
+				search(next);
 			}
-			Boolean constraint = False;
-			for(Coordinate element: Path){
-				if(element == (neighbor, n))// can a queue contaign tuples??
-			}
+		}
 			if(!(World.isPassableTerain(neighbor) && hasSolidAjacent)){
 				
 			}

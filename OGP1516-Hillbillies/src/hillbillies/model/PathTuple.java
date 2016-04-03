@@ -7,14 +7,14 @@ import java.util.Set;
 import be.kuleuven.cs.som.annotate.Value;
 
 @Value
-public class PathTupel {
+public class PathTuple {
 	
 	/**
 	 * Constructor initializing a PathTupel with a weight and a cube
 	 * @param cube
 	 * @param weight
 	 */
-	PathTupel(Coordinate cube,int weight){
+	PathTuple(Coordinate cube,int weight){
 		this.cube = cube;
 		this.weight = weight;
 	}
@@ -26,11 +26,11 @@ public class PathTupel {
 	 * @param world
 	 * @return
 	 */
-	public Coordinate getSmallestAjacentWeight(Coordinate current, Queue<PathTupel> path, World world){
+	public Coordinate getSmallestAjacentWeight(Coordinate current, Queue<PathTuple> path, World world){
 		Set<Coordinate> neighbours = world.getNeighbors(current);
-		LinkedList<PathTupel> neighboursInPath = new LinkedList<PathTupel>();
+		LinkedList<PathTuple> neighboursInPath = new LinkedList<PathTuple>();
 		for (Coordinate cube: neighbours){
-			for (PathTupel block: path){
+			for (PathTuple block: path){
 				if (block.getCube() == cube){
 					neighboursInPath.add(block);
 				}
@@ -44,9 +44,9 @@ public class PathTupel {
 	 * @param elements
 	 * @return
 	 */
-	private PathTupel smallestWeight(LinkedList<PathTupel> elements) {
-		PathTupel smallest = elements.getFirst();
-		for(PathTupel element: elements){
+	private PathTuple smallestWeight(LinkedList<PathTuple> elements) {
+		PathTuple smallest = elements.getFirst();
+		for(PathTuple element: elements){
 			if (element.getWeight() < smallest.getWeight()){
 				smallest = element;
 			}
@@ -66,6 +66,22 @@ public class PathTupel {
 	 */
 	public Coordinate getCube(){
 		return this.cube;
+	}
+	
+	/**
+	 * return whether a given Queue of PathTupels contaigns a tuple with a given 
+	 * cube as cube
+	 * @param cube
+	 * @param Q
+	 * @return
+	 */
+	public static Boolean Contaigns(Coordinate cube, Queue<PathTuple> Q){
+		for (PathTuple tuple: Q){
+			if (tuple.getCube() == cube){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private final int weight;
