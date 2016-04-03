@@ -17,7 +17,7 @@ public class PathTuple {
 	PathTuple(Coordinate cube,int weight){
 		this.cube = cube;
 		this.weight = weight;
-		this.hasBeenCheckt = false;
+		this.hasBeenChecked = false;
 	}
 	
 	/**
@@ -27,7 +27,7 @@ public class PathTuple {
 	 * @param world
 	 * @return
 	 */
-	public static Coordinate getSmallestAjacentWeight(Coordinate current, Queue<PathTuple> path, World world){
+	public static Coordinate getSmallestAdjacentWeight(Coordinate current, Queue<PathTuple> path, World world){
 		Set<Coordinate> neighbours = world.getNeighbors(current);
 		LinkedList<PathTuple> neighboursInPath = new LinkedList<PathTuple>();
 		for (Coordinate cube: neighbours){
@@ -89,7 +89,7 @@ public class PathTuple {
 	 */
 	public static PathTuple getNext(Queue<PathTuple> Path){
 		for (PathTuple tuple: Path){
-			if (! tuple.hasBeenCheckt){
+			if (! tuple.hasBeenChecked){
 				return tuple;
 			}
 		}
@@ -127,7 +127,7 @@ public class PathTuple {
 		return null;
 	}
 	
-	public boolean hasBeenCheckt;
+	public boolean hasBeenChecked;
 	private final int weight;
 	private final Coordinate cube;
 }

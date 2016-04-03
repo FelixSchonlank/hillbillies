@@ -513,11 +513,11 @@ public class Unit extends GameObject{
 			while(! Path.contains(this.getPosition().toCoordinate()) && PathTuple.hasNext(Path)){
 				PathTuple next = PathTuple.getNext(Path);
 				search(next, Path);
-				next.hasBeenCheckt = true;
+				next.hasBeenChecked = true;
 			}
 		}
 		if (Path.contains(this.getPosition().toCoordinate())){
-			Coordinate immediateTarget = PathTuple.getSmallestAjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
+			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
 			//this.moveToAjacent(immediateTarget);
 		}
 	}
@@ -735,6 +735,25 @@ public class Unit extends GameObject{
 	 */
 	public boolean isAttacking() {
 		return this.getState() == State.ATTACKING;
+	}
+	
+	/**
+	 * Gives back a Set of all Units in range of another Faction.
+	 * @return
+	 * 		A HashSet of all Units in range of another Faction.
+	 */
+	private Set<Unit> getEnemiesInRange() {
+		Set<Unit> enemies = new HashSet<Unit>();
+		Coordinate coordinate = this.getWorld().cubeCoordinates(this.getPosition()); 
+		for (Coordinate neighbor : this.getWorld().getNeighbors(coordinate)) {
+			Set<GameObject> gameObjects = this.getWorld().listGameObjectsInCube(neighbor);
+			for (GameObject gameObject : gameObjects) {
+				if (gameObject instanceof Unit) {
+					enemies.add((Unit) gameObject);
+				}
+			}
+		}
+		return enemies;
 	}
 	
 	
@@ -2237,17 +2256,20 @@ public class Unit extends GameObject{
 		}else if(this.shouldAttack){
 			this.transitionToAttacking();
 		}else if(this.getDefaultBehaviorEnabled()){
-			int result = random.nextInt(3);
+			int result = Utils.randomInt(0, 4);
 			if(result == 0){
 				try{
-					this.moveTo(getRandomCoordinate());
+					this.moveTo(this.getWorld().getRandomCoordinate());
 				}catch(IllegalArgumentException e){
 				}catch(BadFSMStateException f){
 				}
 			}else if(result == 1){
 				this.shouldWork = true;
-			}else{
+			}else if (result == 2){
 				this.shouldRest = true;
+			} else {
+				victim = Utils.getRandomElementFromSet(this.getEnemiesInRange());
+				this.attack(victim);
 			}
 		}
 	}
