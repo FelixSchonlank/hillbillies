@@ -57,5 +57,15 @@ public class VectorI extends Vector3<Integer>{
 		}
 		return result;
 	}
-	
+
+	/**
+	 * Returns an array of three doubles, representing this Position.
+	 * @return
+	 * 		The array 
+	 */
+	@Immutable
+	public Integer[] toArray() {
+		// Type cast will always be possible
+		return new Integer[] {this.getX(), this.getY(), this.getZ()};
+	}
 }

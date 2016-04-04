@@ -41,8 +41,8 @@ public class Facade implements IFacade {
 	public void setName(Unit unit, String newName) throws ModelException {
 		try{
 			unit.setName(newName);
-		}catch(IllegalArgumentException w){
-			throw new ModelException();
+		}catch(IllegalArgumentException e){
+			throw new ModelException(e);
 		}
 	}
 
@@ -55,8 +55,8 @@ public class Facade implements IFacade {
 	public void setWeight(Unit unit, int newValue) throws ModelException {
 		try{
 			unit.setWeight(newValue);
-		}catch(IllegalArgumentException w){
-			throw new ModelException();
+		}catch(IllegalArgumentException e){
+			throw new ModelException(e);
 		}
 	}
 
@@ -69,8 +69,8 @@ public class Facade implements IFacade {
 	public void setStrength(Unit unit, int newValue) throws ModelException {
 		try{
 			unit.setStrength(newValue);
-		}catch(IllegalArgumentException w){
-			throw new ModelException();
+		}catch(IllegalArgumentException e){
+			throw new ModelException(e);
 		}
 	}
 
@@ -84,7 +84,7 @@ public class Facade implements IFacade {
 		try {
 			unit.setAgility(newValue);
 		} catch (IllegalArgumentException e) {
-			throw new ModelException();
+			throw new ModelException(e);
 		}
 	}
 
@@ -97,8 +97,8 @@ public class Facade implements IFacade {
 	public void setToughness(Unit unit, int newValue) throws ModelException {
 		try{
 			unit.setToughness(newValue);
-		}catch(IllegalArgumentException w){
-			throw new ModelException();
+		}catch(IllegalArgumentException e){
+			throw new ModelException(e);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class Facade implements IFacade {
 		try {
 			unit.moveToAdjacent(dx, dy, dz);
 		} catch (IllegalArgumentException | BadFSMStateException e) {
-			throw new ModelException();
+			throw new ModelException(e);
 		}	
 	}
 
@@ -143,8 +143,8 @@ public class Facade implements IFacade {
 		}else{
 			try{
 				return unit.determineVelocity();
-			}catch(IllegalArgumentException w){
-				throw new ModelException();
+			}catch(IllegalArgumentException e){
+				throw new ModelException(e);
 			}
 		}
 	}

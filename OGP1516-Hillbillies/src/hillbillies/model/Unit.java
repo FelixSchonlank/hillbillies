@@ -207,7 +207,9 @@ public class Unit extends GameObject{
 	 * 		Whether this Unit must have default behavior enabled.
 	 */
 	public Unit(World world, boolean enableDefaultBehavior) {
-		super(world);
+		super();
+		this.setWorld(world);
+		this.setPosition(this.getRandomValidInitialPosition(this.getWorld()));
 		String name = getRandomValidName();
 		this.setName(name);
         int agility = getRandomValidInitialAgility();
@@ -229,7 +231,7 @@ public class Unit extends GameObject{
 	}
 	
 	public String getRandomValidName(){
-		return ""; //TODO
+		return "Willie W"; //TODO
 	}
 	
 	/**
@@ -384,6 +386,8 @@ public class Unit extends GameObject{
 				doBehaviorWorking(dt);
 			}else if(state == State.ATTACKING){
 				doBehaviorAttacking(dt);
+			}else if (state == State.FALLING) {
+				doBehaviorFalling(dt);
 			}
 
 			if(this.getDefaultBehaviorRestingCountdown() <= 0){
@@ -842,10 +846,10 @@ public class Unit extends GameObject{
 	 * @param  XP
 	 *         The XP to check.
 	 * @return 
-	 *       | result == XP <= Unit.getMinXP();
+	 *       | result == XP >= Unit.getMinXP();
 	 */
 	public static boolean isValidXP(long XP) {
-		return XP <= Unit.getMinXP();
+		return XP >= Unit.getMinXP();
 	}
 	
 	/**
@@ -1510,7 +1514,9 @@ public class Unit extends GameObject{
 		// Remove reference to old World ... 
 		this.world = null;
 		// ... so that it will accept the disconnection
-		oldWorld.removeUnit(this);
+		if (oldWorld != null) {
+			oldWorld.removeUnit(this);
+		}
 		// Then replace it with new reference ...
 		this.world = world;
 		// ... and use that new reference so the new World will accept the
@@ -2476,16 +2482,20 @@ public class Unit extends GameObject{
 				Item oldItem = this.getItem();
 				this.dropItem();
 				oldItem.setPosition(this.workCube.toPosition());
+				this.increaseXP(10);
 			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.WORKSHOP){
+				this.increaseXP(10);
 				//TODO One boulder and log will be consumed from target cube
 			}else if (this.hasItemOnWorkCube()){
 				this.pickUpItem(this.getItemAtWorkCube());
+				this.increaseXP(10);
 			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.TREE){
-				//TODO cube disappears and leaves a log
+				this.getWorld().digOutCube(this.workCube);
+				this.increaseXP(10);
 			}else if (this.getWorld().getCubeAt(this.workCube) == World.TerrainType.ROCK){
-				//TODO the cube disappears leaving a boulder 
+				this.getWorld().digOutCube(this.workCube);
+				this.increaseXP(10);
 			}
-			this.setXP(this.getXP() + 10);
 			this.transitionToNothing();
 		}else{
 			this.workingCountdown -= dt;

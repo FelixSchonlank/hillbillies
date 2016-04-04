@@ -44,7 +44,11 @@ public abstract class GameObject implements IAdvanceable{
 
 	
 	public GameObject(World world){
-		this.setPosition(GameObject.getRandomValidInitialPosition(world));
+		this.setPosition(this.getRandomValidInitialPosition(world));
+	}
+	
+	public GameObject() {
+		
 	}
 	
 	/* Position */
@@ -52,11 +56,14 @@ public abstract class GameObject implements IAdvanceable{
 	/**
 	 * return a random valid Position
 	 */
-	protected static Position getRandomValidInitialPosition(World world){
-		double X = Utils.randomDouble(world.getMinXCoordinate(), world.getMaxXCoordinate()); 
-		double Y = Utils.randomDouble(world.getMinYCoordinate(), world.getMaxYCoordinate());
-		double Z = Utils.randomDouble(world.getMinZCoordinate(), world.getMaxZCoordinate());
-		Position position = new Position(X, Y, Z);
+	protected Position getRandomValidInitialPosition(World world){
+		Position position = null;
+		do {
+			double X = Utils.randomDouble(world.getMinXCoordinate(), world.getMaxXCoordinate()); 
+			double Y = Utils.randomDouble(world.getMinYCoordinate(), world.getMaxYCoordinate());
+			double Z = Utils.randomDouble(world.getMinZCoordinate(), world.getMaxZCoordinate());
+			position = new Position(X, Y, Z);
+		} while (!this.canHaveAsPosition(position));
 		return position;
 	}
 	

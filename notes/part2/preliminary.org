@@ -112,8 +112,8 @@ No formal documentation except for Unit.
        One Boulder and Log will be consumed from target cube. Weight and
        Toughness increased by 1.
   - [X] Boulder or Log present on target cube :: The Unit picks it up.
-  - [ ] Target cube is of Wood type :: The cube disappears, leaving a Log.
-  - [ ] Target cube is of Rock type :: The cube disappears, leaving a Boulder.
+  - [X] Target cube is of Wood type :: The cube disappears, leaving a Log.
+  - [X] Target cube is of Rock type :: The cube disappears, leaving a Boulder.
   - [X] No condition is met :: Nothing happens.
 - [X] Weight of Unit is own weight plus weight of Boulder or Log the Unit is
   carrying.

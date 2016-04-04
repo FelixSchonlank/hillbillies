@@ -929,6 +929,8 @@ public class World {
 		if (this.getNbUnits() < this.getMaxUnits()) {
 			return new Unit(this, enableDefaultBehavior);
 		}
+		// TODO
+		System.out.println("World: spawned null Unit.");
 		return null;
 	}
 	

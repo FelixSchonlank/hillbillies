@@ -8,7 +8,7 @@ public class Utils {
 	/**
 	 * The Random generator used for this game.
 	 */
-	private static Random random;
+	private static Random random = new Random();
 	
 	/**
 	 * Checks whether x lies in between y and z. It doesn't matter if y is to
@@ -138,7 +138,7 @@ public class Utils {
 	public static double[] unboxArray(Double[] array) {
 		double[] result = new double[array.length];
 		for (int i=0; i<array.length; i++) {
-			result[i] = array[i];
+			result[i] = array[i].doubleValue();
 		}
 		return result;
 	}

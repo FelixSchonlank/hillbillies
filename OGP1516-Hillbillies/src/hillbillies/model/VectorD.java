@@ -144,4 +144,15 @@ public class VectorD extends Vector3<Double> {
 		}
 		return result;
 	}
+
+	/**
+	 * Returns an array of three doubles, representing this Position.
+	 * @return
+	 * 		The array 
+	 */
+	@Immutable
+	public Double[] toArray() {
+		// Type cast will always be possible
+		return new Double[] {this.getX(), this.getY(), this.getZ()};
+	}
 }

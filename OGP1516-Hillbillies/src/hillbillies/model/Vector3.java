@@ -103,17 +103,6 @@ private final T x, y, z;
 	}
 	
 	/**
-	 * Returns an array of three doubles, representing this Position.
-	 * @return
-	 * 		The array 
-	 */
-	@Immutable
-	public T[] toArray() {
-		// Type cast will always be possible
-		return (T[]) new Object[] {this.getX(), this.getY(), this.getZ()};
-	}
-	
-	/**
 	 * Tells whether the prime and given object are to be considered equal.
 	 * 
 	 * @return
