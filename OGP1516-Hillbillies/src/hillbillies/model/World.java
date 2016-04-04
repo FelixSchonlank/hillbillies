@@ -791,7 +791,7 @@ public class World {
 	 */
 	@Raw
 	public boolean canHaveAsUnit(Unit unit) {
-		return Unit.isValidWorld(this);
+		return unit.canHaveAsWorld(this);
 	}
 
 	/**

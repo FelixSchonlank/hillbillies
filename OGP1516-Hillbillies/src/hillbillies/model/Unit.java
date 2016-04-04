@@ -1470,15 +1470,18 @@ public class Unit extends GameObject{
 	}
 	
 	/**
-	 * Check whether a Unit can have a given World as its world 
+	 * Check whether this Unit can have a given World as its world 
 	 * @param world
 	 * 		the world to check
 	 * @return
-	 * 		True iff the given World is not null
-	 * 		| result == (world != null)
+	 * 		If this Unit is not terminated:
+	 * 			True iff world is effective
+	 * 		Else:
+	 * 			True iff world not effective
+	 * 		| result == (!this.isTerminated() || world == null) && (this.isTerminated() || world != null)
 	 */
-	public static boolean isValidWorld(World world){
-		return world != null;
+	public boolean canHaveAsWorld(World world){
+		return (!this.isTerminated() || world == null) && (this.isTerminated() || world != null);
 	}
 	
 	/**
@@ -1491,7 +1494,7 @@ public class Unit extends GameObject{
 	 */
 	@Raw
 	public boolean hasProperWorld(){
-		return isValidWorld(this.getWorld()) && this.getWorld().hasAsUnit(this);
+		return canHaveAsWorld(this.getWorld()) && this.getWorld().hasAsUnit(this);
 	}
 	
 	/**
@@ -1510,7 +1513,7 @@ public class Unit extends GameObject{
 	 * 		| ! isValidWorld(world)
 	 */
 	public void setWorld(World world) throws IllegalArgumentException {
-		if (! isValidWorld(world)){
+		if (! canHaveAsWorld(world)){
 			throw new IllegalArgumentException("Given World is invalid: " + world.toString());
 		}
 		World oldWorld = this.getWorld();
@@ -2327,10 +2330,16 @@ public class Unit extends GameObject{
 				}catch(IllegalArgumentException e){
 					
 				}
-				try {
-					this.moveTo(this.getUltimateTarget());
-				} catch (IllegalArgumentException | BadFSMStateException e) {
-					
+				if (!this.getPosition().toCoordinate().equals(this.getUltimateTarget())) {
+					try {
+						this.moveTo(this.getUltimateTarget());
+					} catch (IllegalArgumentException | BadFSMStateException e) {
+
+					}
+				} else {
+					this.immediateTarget = null;
+					this.setUltimateTarget(null);
+					this.transitionToNothing();
 				}
 			}else{
 				try{
