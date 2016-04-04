@@ -65,7 +65,7 @@ public class Position extends VectorD {
 	 * @return
 	 */
 	public static Position subtract(VectorD vector1, VectorD vector2){
-		return Position.add(vector2, invert(vector2));
+		return Position.add(vector1, invert(vector2));
 	}
 	
 	/**

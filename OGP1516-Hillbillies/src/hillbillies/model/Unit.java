@@ -520,6 +520,8 @@ public class Unit extends GameObject{
 				search(next, Path);
 				next.hasBeenChecked = true;
 			}
+		}else{
+			this.UltimateTarget = null;
 		}
 		if (PathTuple.Contains(this.getPosition().toCoordinate(), Path)){
 			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
@@ -2323,18 +2325,19 @@ public class Unit extends GameObject{
 					this.setPosition(immediateTarget);
 					this.increaseXP(1);
 				}catch(IllegalArgumentException e){}
-				try{this.moveTo(this.getUltimateTarget());}catch(IllegalArgumentException w){
-				}catch(BadFSMStateException wi){}
+				try {
+					this.moveTo(this.getUltimateTarget());
+				} catch (IllegalArgumentException | BadFSMStateException e) {
+				}
 			}else{
 				try{
 					this.setPosition(immediateTarget);
-					this.increaseXP(1);
 				}catch(IllegalArgumentException e){}
+				this.increaseXP(1);
 				immediateTarget = null;
 				this.transitionToNothing();
 			}
 		}else{
-			
 			if(this.defaultBehaviorEnabled){
 				if(Utils.randomBoolean(getDefaultBehaviorSprintingThreshold() * dt)){
 					this.startSprinting();
@@ -2390,7 +2393,7 @@ public class Unit extends GameObject{
 	 * Check whether this unit has an ultimate target to go to
 	 */
  	private boolean hasUltimateTarget(){
-		return ! (this.UltimateTarget == null);
+		return this.UltimateTarget != null;
 	}
 	
 	/**
