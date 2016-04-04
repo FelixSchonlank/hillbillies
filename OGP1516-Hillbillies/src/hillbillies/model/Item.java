@@ -29,21 +29,7 @@ public class Item extends GameObject{
 	 * that starts by being attached to a given World.
 	 */
 	public Item( World world, Position position) {
-		super(position);
-		this.setWorld(world);
-		this.weight = Utils.randomInt(getMinWeight(), getMaxWeight());
-		this.state = ItemState.NOTHING;
-	}
-	
-	/**
-	 * Initialize a new Item with a random weight, and that starts by being
-	 * attached to a given Unit.
-	 * @param unit
-	 * 		The Unit to be attached to.
-	 */
-	public Item(Unit unit) {
-		super((Position) Position.ZERO);
-		this.setUnit(unit);
+		super(world, position);
 		this.weight = Utils.randomInt(getMinWeight(), getMaxWeight());
 		this.state = ItemState.NOTHING;
 	}

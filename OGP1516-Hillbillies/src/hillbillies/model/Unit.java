@@ -155,7 +155,7 @@ public class Unit extends GameObject{
 	public Unit (String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws IllegalArgumentException {
 		
-		super((new Coordinate(initialCoordinates)).toPosition());
+		//super((new Coordinate(initialCoordinates)).toPosition());
 		
 		if (!isValidName(name) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior)){
 			throw new IllegalArgumentException("Name, or enableDefaultBehavior are not valid");
@@ -2334,7 +2334,7 @@ public class Unit extends GameObject{
 					}
 				} else {
 					this.immediateTarget = null;
-					this.setUltimateTarget(null);
+					this.UltimateTarget = null;
 					this.transitionToNothing();
 				}
 			}else{

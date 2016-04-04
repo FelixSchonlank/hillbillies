@@ -8,45 +8,25 @@ import be.kuleuven.cs.som.annotate.Raw;
  *       | this.ccacnHaveAsPosition(this.getPosition())
  */
 public abstract class GameObject implements IAdvanceable{
-	/**
-	 * Constructor initializing a GameObject with a given position
-	 * 
-	 * @param  position
-	 *         The Position for this new GameObject.
-	 * @effect The Position of this new GameObject is set to
-	 *         the given Position.
-	 *		| this.setPosition(position)
-	 */
-	public GameObject(Position position) throws IllegalArgumentException {
-		if (! this.canHaveAsPosition(position)){
-			throw new IllegalArgumentException();
-		}
-		this.setPosition(position);
-	}
-
-
-	/**
-	 * Initialize this new GameObject with given Position.
-	 *
-	 * @param  position
-	 *         The Position for this new GameObject.
-	 * @effect The Position of this new GameObject is set to
-	 *         the given Position.
-	 *       | this.setPosition(position)
-	 */
-	public GameObject(double[] position)
-			throws IllegalArgumentException {
-		if (! this.canHaveAsPosition(position)){
-			throw new IllegalArgumentException();
-		}
-		this.setPosition(position);
-	}
-
 	
+	public GameObject(World world, Position position) throws IllegalArgumentException {
+		this(world);
+		this.setPosition(position);
+	}
+	
+	/**
+	 * 
+	 * @param world
+	 */
+	// TODO documentation
 	public GameObject(World world){
 		this.setPosition(this.getRandomValidInitialPosition(world));
 	}
 	
+	/**
+	 *
+	 */
+	// TODO documentation
 	public GameObject() {
 		
 	}
