@@ -511,16 +511,17 @@ public class Unit extends GameObject{
 		if(!this.getWorld().withinBounds(destination)){
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
+		this.UltimateTarget = destination;
 		Queue<PathTuple> Path = new LinkedList<PathTuple>();
-		while(! this.getPosition().toCoordinate().equals(destination)){
+		if(! this.getPosition().toCoordinate().equals(destination)){
 			Path.add(new PathTuple(destination, 0));
-			while(! Path.contains(this.getPosition().toCoordinate()) && PathTuple.hasNext(Path)){
+			while(! PathTuple.Contains(this.getPosition().toCoordinate(), Path) && PathTuple.hasNext(Path)){
 				PathTuple next = PathTuple.getNext(Path);
 				search(next, Path);
 				next.hasBeenChecked = true;
 			}
 		}
-		if (Path.contains(this.getPosition().toCoordinate())){
+		if (PathTuple.Contains(this.getPosition().toCoordinate(), Path)){
 			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
 			this.immediateTarget = immediateTarget.toPosition();
 		}else{
@@ -535,17 +536,18 @@ public class Unit extends GameObject{
 	 */
 	private void search(PathTuple next, Queue<PathTuple> Path) {
 		List<Coordinate> neighbors = new LinkedList<Coordinate>();
+		List<Coordinate> neighborsToRemove = new LinkedList<Coordinate>(); 
 		neighbors.addAll(this.getWorld().getNeighbors(next.getCube()));
 		for (Coordinate neighbor: neighbors){//remove all Coordinates that are already in Path with a smaller weight
 			if (Path.contains(neighbor)){
 				PathTuple tmp = PathTuple.getPathTuple(neighbor, Path);
 				if (tmp.getWeight() <= next.getWeight()){
-					neighbors.remove(neighbor);
+					neighborsToRemove.add(neighbor);
 				}
 			}else if (! this.getWorld().isPassableCube(neighbor)){//remove all non solid neighbors
-				neighbors.remove(neighbor);
+				neighborsToRemove.add(neighbor);
 			}else if (! this.hasSolidNeighbor( neighbor, next.getCube())){// remove all neighbors that are not adjacent to a solid cube
-				neighbors.remove(neighbor);
+				neighborsToRemove.add(neighbor);
 			}else{
 				Path.add(new PathTuple(neighbor, next.getWeight() + 1));
 			}
@@ -558,10 +560,9 @@ public class Unit extends GameObject{
 	 * @return
 	 */
 	private boolean hasSolidNeighbor(Coordinate cube, Coordinate next){
-		for (Coordinate neighbor: cube.getNeighbors()){
-			if (neighbor != next){
-			}else if (this.getWorld().getCubeAt(neighbor) == World.TerrainType.ROCK ||
-					this.getWorld().getCubeAt(neighbor) == World.TerrainType.TREE){
+		for (Coordinate neighbor: this.getWorld().getNeighbors(cube)){
+			if (neighbor == next){
+			}else if (! this.getWorld().isPassableCube(neighbor)){
 				return true;
 			}
 		} return false;
@@ -2370,7 +2371,7 @@ public class Unit extends GameObject{
 	}
 
 	/**
-	 * Set the ultimateTarget of this uit to a given ultimateTarget
+	 * Set the ultimateTarget of this unit to a given ultimateTarget
 	 * @param UltimateTarget
 	 * @Post The ultimateTarget of this unit is set to a given UltimateTarget
 	 * 		| new.getUltimateTarget() == UltimateTarget
@@ -2379,7 +2380,7 @@ public class Unit extends GameObject{
 	 * 		|this.getWorld().isValidPosition(UltimateTarget.toPosition())
 	 */
 	private void setUltimateTarget(Coordinate UltimateTarget){
-		if (this.getWorld().isValidPosition(UltimateTarget.toPosition())){
+		if (this.canHaveAsPosition(UltimateTarget.toPosition())){
 			throw new IllegalArgumentException();
 		}
 		this.UltimateTarget = UltimateTarget;

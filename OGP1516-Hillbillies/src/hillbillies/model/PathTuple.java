@@ -32,7 +32,7 @@ public class PathTuple {
 		LinkedList<PathTuple> neighboursInPath = new LinkedList<PathTuple>();
 		for (Coordinate cube: neighbours){
 			for (PathTuple block: path){
-				if (block.getCube() == cube){
+				if (block.getCube().equals(cube)){
 					neighboursInPath.add(block);
 				}
 			}
@@ -46,13 +46,17 @@ public class PathTuple {
 	 * @return
 	 */
 	private static PathTuple smallestWeight(LinkedList<PathTuple> elements) {
-		PathTuple smallest = elements.getFirst();
-		for(PathTuple element: elements){
-			if (element.getWeight() < smallest.getWeight()){
-				smallest = element;
+		if (! elements.isEmpty()){
+			PathTuple smallest = elements.getFirst();
+			for(PathTuple element: elements){
+				if (element.getWeight() < smallest.getWeight()){
+					smallest = element;
+				}
 			}
+			return smallest;
+		}else{
+			return null;
 		}
-		return smallest;
 	}
 
 	/**
@@ -103,9 +107,9 @@ public class PathTuple {
 	 * @param Q
 	 * @return
 	 */
- 	public static Boolean Contaigns(Coordinate cube, Queue<PathTuple> Q){
+ 	public static Boolean Contains(Coordinate cube, Queue<PathTuple> Q){
 		for (PathTuple tuple: Q){
-			if (tuple.getCube() == cube){
+			if (tuple.getCube().equals(cube)){
 				return true;
 			}
 		}
