@@ -151,7 +151,7 @@ public class Unit extends GameObject{
 	 * @throws IllegalArgumentException if either name or initialPosition are not valid 
 	 * 		| (!isValidName(name) || !isValidPosition(position) || !isValidDefaultBehaviorEnabled(enableDefaultBehavior)
 	 */
-	@Raw
+	@Raw @Deprecated
 	public Unit (String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws IllegalArgumentException {
 		
@@ -207,7 +207,7 @@ public class Unit extends GameObject{
 	 * 		Whether this Unit must have default behavior enabled.
 	 */
 	public Unit(World world, boolean enableDefaultBehavior) {
-		super();
+		super(world);
 		String name = getRandomValidName();
 		this.setName(name);
         int agility = getRandomValidInitialAgility();
@@ -223,8 +223,8 @@ public class Unit extends GameObject{
 		this.setXP(Unit.getMinXP());
 		this.immediateTarget = null;
 		this.previousPosition = this.getPosition();
-		this.setState(State.NOTHING);
 		this.setWorld(world);
+		this.setState(State.NOTHING);
 		this.setFaction(this.getWorld().getSmallestFaction());
 	}
 	

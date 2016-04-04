@@ -1,25 +1,32 @@
 package hillbillies.part1.facade;
 
 import hillbillies.model.BadFSMStateException;
+import hillbillies.model.Coordinate;
 import hillbillies.model.Unit;
+import hillbillies.model.Utils;
 import ogp.framework.util.ModelException;
 
 public class Facade implements IFacade {
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public Unit createUnit(String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws ModelException {
-		return new Unit(name, initialCoordinates, weight, agility, strength, toughness, enableDefaultBehavior);
+		try{
+			return new Unit(name, initialCoordinates, weight, agility, strength, toughness, enableDefaultBehavior);
+		}catch (IllegalArgumentException e){
+			throw new ModelException();
+		}
 	}
 
 	@Override
 	public double[] getPosition(Unit unit) throws ModelException {
-		return unit.getPosition();
+		return Utils.unboxArray(unit.getPosition().toArray());
 	}
 
 	@Override
 	public int[] getCubeCoordinate(Unit unit) throws ModelException {
-		return unit.getCubeCoordinate();
+		return Utils.unboxArray(unit.getPosition().toCoordinate().toArray());
 	}
 
 	@Override
@@ -139,7 +146,7 @@ public class Facade implements IFacade {
 	@Override
 	public void moveTo(Unit unit, int[] cube) throws ModelException {
 		try{
-			unit.moveTo(cube);
+			unit.moveTo(new Coordinate(cube));
 		}catch(BadFSMStateException e){
 			throw new ModelException(e);
 		}
@@ -148,7 +155,7 @@ public class Facade implements IFacade {
 	@Override
 	public void work(Unit unit) throws ModelException {
 		try{
-			unit.work();
+			unit.work(unit.getPosition().toCoordinate());
 		}catch(BadFSMStateException e){
 			throw new ModelException(e);
 		}
