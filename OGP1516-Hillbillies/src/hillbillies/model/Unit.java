@@ -520,14 +520,10 @@ public class Unit extends GameObject{
 				search(next, Path);
 				next.hasBeenChecked = true;
 			}
-		}else{
-			this.UltimateTarget = null;
 		}
 		if (PathTuple.Contains(this.getPosition().toCoordinate(), Path)){
 			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
 			this.immediateTarget = immediateTarget.toPosition();
-		}else{
-			this.UltimateTarget = null;
 		}
 	}
 	
