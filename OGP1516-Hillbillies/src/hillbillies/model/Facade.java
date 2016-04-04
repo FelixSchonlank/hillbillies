@@ -1,22 +1,25 @@
-package hillbillies.model;
+package hillbillies.part2.facade;
+
+import java.util.Set;
 
 import hillbillies.model.BadFSMStateException;
+import hillbillies.model.Boulder;
 import hillbillies.model.Coordinate;
+import hillbillies.model.Faction;
+import hillbillies.model.Log;
+import hillbillies.model.State;
 import hillbillies.model.Unit;
 import hillbillies.model.Utils;
+import hillbillies.model.World;
+import hillbillies.part2.listener.TerrainChangeListener;
 import ogp.framework.util.ModelException;
 
 public class Facade implements IFacade {
 
-	@SuppressWarnings("deprecation")
 	@Override
-	public Unit createUnit(String name, int[] initialCoordinates, int weight, int agility, int strength, int toughness,
+	public Unit createUnit(String name, int[] initialPosition, int weight, int agility, int strength, int toughness,
 			boolean enableDefaultBehavior) throws ModelException {
-		try{
-			return new Unit(name, initialCoordinates, weight, agility, strength, toughness, enableDefaultBehavior);
-		}catch (IllegalArgumentException e){
-			throw new ModelException();
-		}
+		return new Unit(name, initialPosition, weight, agility, strength, toughness, enableDefaultBehavior);
 	}
 
 	@Override
@@ -36,7 +39,11 @@ public class Facade implements IFacade {
 
 	@Override
 	public void setName(Unit unit, String newName) throws ModelException {
-		unit.setName(newName);
+		try{
+			unit.setName(newName);
+		}catch(IllegalArgumentException e){
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
@@ -46,7 +53,11 @@ public class Facade implements IFacade {
 
 	@Override
 	public void setWeight(Unit unit, int newValue) throws ModelException {
-		unit.setWeight(newValue);
+		try{
+			unit.setWeight(newValue);
+		}catch(IllegalArgumentException e){
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
@@ -56,7 +67,11 @@ public class Facade implements IFacade {
 
 	@Override
 	public void setStrength(Unit unit, int newValue) throws ModelException {
-		unit.setStrength(newValue);
+		try{
+			unit.setStrength(newValue);
+		}catch(IllegalArgumentException e){
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
@@ -66,7 +81,11 @@ public class Facade implements IFacade {
 
 	@Override
 	public void setAgility(Unit unit, int newValue) throws ModelException {
-		unit.setAgility(newValue);
+		try {
+			unit.setAgility(newValue);
+		} catch (IllegalArgumentException e) {
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
@@ -76,7 +95,11 @@ public class Facade implements IFacade {
 
 	@Override
 	public void setToughness(Unit unit, int newValue) throws ModelException {
-		unit.setToughness(newValue);
+		try{
+			unit.setToughness(newValue);
+		}catch(IllegalArgumentException e){
+			throw new ModelException(e);
+		}
 	}
 
 	@Override
@@ -99,23 +122,31 @@ public class Facade implements IFacade {
 		return unit.getStamina();
 	}
 
-	@Override
+	@Override @Deprecated
 	public void advanceTime(Unit unit, double dt) throws ModelException {
 		unit.advanceTime(dt);
 	}
 
 	@Override
 	public void moveToAdjacent(Unit unit, int dx, int dy, int dz) throws ModelException {
-		try{
+		try {
 			unit.moveToAdjacent(dx, dy, dz);
-		}catch(BadFSMStateException e){
+		} catch (IllegalArgumentException | BadFSMStateException e) {
 			throw new ModelException(e);
-		}
+		}	
 	}
 
 	@Override
 	public double getCurrentSpeed(Unit unit) throws ModelException {
-		return unit.determineVelocity();
+		if (unit.getState() == State.FALLING){
+			return 3;
+		}else{
+			try{
+				return unit.determineVelocity();
+			}catch(IllegalArgumentException e){
+				throw new ModelException(e);
+			}
+		}
 	}
 
 	@Override
@@ -145,20 +176,16 @@ public class Facade implements IFacade {
 
 	@Override
 	public void moveTo(Unit unit, int[] cube) throws ModelException {
-		try{
+		try {
 			unit.moveTo(new Coordinate(cube));
-		}catch(BadFSMStateException e){
+		} catch (BadFSMStateException e) {
 			throw new ModelException(e);
 		}
 	}
 
-	@Override
+	@Override @Deprecated
 	public void work(Unit unit) throws ModelException {
-		try{
-			unit.work(unit.getPosition().toCoordinate());
-		}catch(BadFSMStateException e){
-			throw new ModelException(e);
-		}
+		// DEPRECATED BABY
 	}
 
 	@Override
@@ -168,11 +195,9 @@ public class Facade implements IFacade {
 
 	@Override
 	public void fight(Unit attacker, Unit defender) throws ModelException {
-		try{
+		try {
 			attacker.attack(defender);
-		}catch(BadFSMStateException e){
-			throw new ModelException(e);
-		}catch(IllegalArgumentException e){
+		} catch (BadFSMStateException e) {
 			throw new ModelException(e);
 		}
 	}
@@ -184,9 +209,9 @@ public class Facade implements IFacade {
 
 	@Override
 	public void rest(Unit unit) throws ModelException {
-		try{
+		try {
 			unit.rest();
-		}catch(BadFSMStateException e){
+		} catch (BadFSMStateException e) {
 			throw new ModelException(e);
 		}
 	}
@@ -204,6 +229,125 @@ public class Facade implements IFacade {
 	@Override
 	public boolean isDefaultBehaviorEnabled(Unit unit) throws ModelException {
 		return unit.getDefaultBehaviorEnabled();
+	}
+
+	@Override
+	public World createWorld(int[][][] terrainTypes, TerrainChangeListener modelListener) throws ModelException {
+		return new World(terrainTypes, modelListener);
+	}
+
+	@Override
+	public int getNbCubesX(World world) throws ModelException {
+		return world.getMaxXCoordinate();
+	}
+
+	@Override
+	public int getNbCubesY(World world) throws ModelException {
+		return world.getMaxYCoordinate();
+	}
+
+	@Override
+	public int getNbCubesZ(World world) throws ModelException {
+		return world.getMaxZCoordinate();
+	}
+
+	@Override
+	public void advanceTime(World world, double dt) throws ModelException {
+		world.advanceTime(dt);
+	}
+
+	@Override
+	public int getCubeType(World world, int x, int y, int z) throws ModelException {
+		return world.getCubeAt(new Coordinate(x, y, z)).toInt();
+	}
+
+	@Override
+	public void setCubeType(World world, int x, int y, int z, int value) throws ModelException {
+		world.setCubeAt(new Coordinate(x, y, z), World.TerrainType.fromInt(value));
+	}
+
+	@Override
+	public boolean isSolidConnectedToBorder(World world, int x, int y, int z) throws ModelException {
+		return world.isSolidConnectedToBorder(new Coordinate(x, y, z));
+	}
+
+	@Override
+	public Unit spawnUnit(World world, boolean enableDefaultBehavior) throws ModelException {
+		return world.spawnUnit(enableDefaultBehavior);
+	}
+
+	@Override
+	public void addUnit(Unit unit, World world) throws ModelException {
+		unit.setWorld(world);
+	}
+
+	@Override
+	public Set<Unit> getUnits(World world) throws ModelException {
+		return world.listAllUnits();
+	}
+
+	@Override
+	public boolean isCarryingLog(Unit unit) throws ModelException {
+		return unit.isCarryingLog();
+	}
+
+	@Override
+	public boolean isCarryingBoulder(Unit unit) throws ModelException {
+		return unit.isCarryingBoulder();
+	}
+
+	@Override
+	public boolean isAlive(Unit unit) throws ModelException {
+		return !unit.isTerminated();
+	}
+
+	@Override
+	public int getExperiencePoints(Unit unit) throws ModelException {
+		return (int) unit.getXP();
+	}
+
+	@Override
+	public void workAt(Unit unit, int x, int y, int z) throws ModelException {
+		try {
+			unit.work(new Coordinate(x, y, z));
+		} catch(BadFSMStateException e) {
+			throw new ModelException(e);
+		}
+	}
+
+	@Override
+	public Faction getFaction(Unit unit) throws ModelException {
+		return unit.getFaction();
+	}
+
+	@Override
+	public Set<Unit> getUnitsOfFaction(Faction faction) throws ModelException {
+		return faction.listAllUnits();
+	}
+
+	@Override
+	public Set<Faction> getActiveFactions(World world) throws ModelException {
+		return world.listAllFactions();
+	}
+
+	@Override
+	public double[] getPosition(Boulder boulder) throws ModelException {
+		return Utils.unboxArray(boulder.getPosition().toArray());
+	}
+
+	@Override
+	public Set<Boulder> getBoulders(World world) throws ModelException {
+		return world.listAllBoulders();
+	}
+
+	@Override
+	public double[] getPosition(Log log) throws ModelException {
+		return Utils.unboxArray(log.getPosition().toArray());
+	}
+
+	@Override
+	public Set<Log> getLogs(World world) throws ModelException {
+		return world.listAllLogs();
 	}
 
 }
