@@ -112,7 +112,7 @@ public class VectorD extends Vector3<Double> {
 	 */
 	public static VectorD normalize(VectorD vector) {
 		
-		double magnitude = Math.sqrt(vector.getX() + vector.getY() + vector.getZ());
+		double magnitude = Math.sqrt(vector.getX()*vector.getX() + vector.getY()*vector.getY() + vector.getZ()*vector.getZ());
 		
 		return new VectorD(vector.getX()/magnitude, vector.getY()/magnitude, vector.getZ()/magnitude);
 	}

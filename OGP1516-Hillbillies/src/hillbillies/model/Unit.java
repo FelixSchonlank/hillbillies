@@ -2324,10 +2324,13 @@ public class Unit extends GameObject{
 				try{
 					this.setPosition(immediateTarget);
 					this.increaseXP(1);
-				}catch(IllegalArgumentException e){}
+				}catch(IllegalArgumentException e){
+					
+				}
 				try {
 					this.moveTo(this.getUltimateTarget());
 				} catch (IllegalArgumentException | BadFSMStateException e) {
+					
 				}
 			}else{
 				try{
@@ -2353,7 +2356,9 @@ public class Unit extends GameObject{
 			
 			try{
 				this.setPosition(Position.add(position, deltaPosition));
-			}catch(IllegalArgumentException e){}
+			}catch(IllegalArgumentException e){
+				System.out.print("");
+			}
 			
 			if(this.sprinting){
 				if(this.sprintingStaminaDecreaseCountdown <= 0){

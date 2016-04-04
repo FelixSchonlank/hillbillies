@@ -115,9 +115,12 @@ public abstract class GameObject implements IAdvanceable{
 	 * 
 	 * @param  position
 	 *         The new Position for this GameObject.
-	 * @post   The Position of this new GameObject is equal to
+	 * @post   The new Position of this GameObject is equal to
 	 *         the given Position.
 	 *       | new.getPosition() == position
+	 * @post
+	 * 		The new previousPosition of this GameObject is equal to the
+	 * 		previous position of this GameObject.
 	 * @throws IllgalArgumentException
 	 *         The given Position is not a valid Position for any
 	 *         GameObject.
@@ -128,6 +131,7 @@ public abstract class GameObject implements IAdvanceable{
 			throws IllegalArgumentException {
 		if (! this.canHaveAsPosition(position))
 			throw new IllegalArgumentException();
+		this.setPreviousPosition(this.getPosition());
 		this.position = position;
 	}
 
@@ -146,16 +150,22 @@ public abstract class GameObject implements IAdvanceable{
 	 */
 	public void setPosition(double[] position)
 			throws IllegalArgumentException {
-		if (! this.canHaveAsPosition(position))
-			throw new IllegalArgumentException(position + " is not a valid position.");
-		this.previousPosition = this.getPosition();
-		this.position = new Position(position);
+		this.setPosition(new Position(position));
 	}
 
 	/**
 	 * Variable registering the Position of this GameObject.
 	 */
 	private Position position;
+	
+	/**
+	 * Sets the previous position of this GameObject to the given Position.
+	 * @param position
+	 * 		The Position to set it to.
+	 */
+	private void setPreviousPosition(Position position) {
+		this.previousPosition = position;
+	}
 
 	/**
 	 * return the previous position of this unit 
