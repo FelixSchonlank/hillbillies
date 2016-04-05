@@ -191,7 +191,7 @@ public class Unit extends GameObject{
 		setHP(getMaxHP());
 		setStamina(getMaxStamina());
 		this.setXP(Unit.getMinXP());
-		
+		this.position = (new Coordinate(initialCoordinates)).toPosition();
 		
 		this.immediateTarget = null;
 		this.previousPosition = this.getPosition();
@@ -511,7 +511,6 @@ public class Unit extends GameObject{
 		if(!this.getWorld().withinBounds(destination)){
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
-		this.UltimateTarget = destination;
 		Queue<PathTuple> Path = new LinkedList<PathTuple>();
 		if(! this.getPosition().toCoordinate().equals(destination)){
 			Path.add(new PathTuple(destination, 0));
@@ -524,6 +523,7 @@ public class Unit extends GameObject{
 		if (PathTuple.Contains(this.getPosition().toCoordinate(), Path)){
 			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
 			this.immediateTarget = immediateTarget.toPosition();
+			this.UltimateTarget = destination;
 		}
 	}
 	
@@ -2295,15 +2295,17 @@ public class Unit extends GameObject{
 				}catch(BadFSMStateException f){
 				}
 			}else if(result == 1){
-				this.shouldWork = true;
+				victim = (Unit) Utils.getRandomElement(this.getEnemiesInRange());
+				if (victim != null){
+					try {
+						this.attack(victim);
+					} catch (IllegalArgumentException e) {
+					} catch (BadFSMStateException e) {}
 			}else if (result == 2){
 				this.shouldRest = true;
 			} else {
-				victim = (Unit) Utils.getRandomElement(this.getEnemiesInRange());
-				try {
-					this.attack(victim);
-				} catch (IllegalArgumentException e) {
-				} catch (BadFSMStateException e) {}
+				this.shouldWork = true;
+				}
 			}
 		}
 	}

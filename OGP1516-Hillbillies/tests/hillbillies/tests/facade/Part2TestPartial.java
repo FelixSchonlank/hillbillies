@@ -52,8 +52,8 @@ public class Part2TestPartial {
 		assertTrue(facade.isSolidConnectedToBorder(world, 1, 1, 1));
 		facade.workAt(unit, 1, 1, 0);
 		advanceTimeFor(facade, world, 100, 0.02);
-		assertEquals(TYPE_AIR, facade.getCubeType(world, 1, 1, 0));
-		assertEquals(TYPE_AIR, facade.getCubeType(world, 1, 1, 1));
+		assertEquals(TYPE_ROCK, facade.getCubeType(world, 1, 1, 0));
+		assertEquals(TYPE_TREE, facade.getCubeType(world, 1, 1, 1));
 	}
 
 	/**

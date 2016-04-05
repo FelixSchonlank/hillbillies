@@ -136,7 +136,7 @@ public abstract class GameObject implements IAdvanceable{
 	/**
 	 * Variable registering the Position of this GameObject.
 	 */
-	private Position position;
+	protected Position position;
 	
 	/**
 	 * Sets the previous position of this GameObject to the given Position.
