@@ -113,13 +113,8 @@ public class Utils {
 	 * 		null itself.
 	 */
 	public static <T> Object getRandomElement(Set<T> set) {
-<<<<<<< HEAD
-		if (set != null && set.size() != 0) {
-			int n = randomInt(0, set.size() + 1);
-=======
 		if (set != null && set.size() > 0) {
 			int n = randomInt(0, set.size());
->>>>>>> cf09de1f4565b085b9b66eacd2cc15d3b3a6b254
 			int i = 0;
 			for (Object object : set) {
 				if (i == n) {
