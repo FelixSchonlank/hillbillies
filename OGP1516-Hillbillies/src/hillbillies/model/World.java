@@ -646,9 +646,6 @@ public class World {
 			throw new IllegalArgumentException("Given terrain type is not valid: " + terrainType.toString());
 		}
 		
-		// Don't forget to inform the GUI
-		this.terrainChangeListener.notifyTerrainChanged(coordinate.getX(), coordinate.getY(), coordinate.getZ());
-		
 		// And update the ConnectedToBorder object
 		if (terrainType.isPassable() && !this.isPassableCube(coordinate)) {
 			this.connectedToBorder.changeSolidToPassable(
@@ -666,6 +663,9 @@ public class World {
 		
 		this.cubes.remove(coordinate);
 		this.cubes.put(coordinate, terrainType);
+
+		// Don't forget to inform the GUI
+		this.terrainChangeListener.notifyTerrainChanged(coordinate.getX(), coordinate.getY(), coordinate.getZ());
 	}
 	
 	/**

@@ -293,11 +293,9 @@ public class Unit extends GameObject{
 		
 		Faction faction = this.getFaction();
 		this.setFaction(null);
-		faction.removeUnit(this);
 		
 		World world = this.getWorld();
 		this.setWorld(null);
-		world.removeUnit(this);
 	}
 	
 	/**
@@ -879,7 +877,7 @@ public class Unit extends GameObject{
 			throw new IllegalArgumentException();
 		}
 		long newXP = this.getXP() + dXP;
-		if ((newXP % 10) > (this.getXP() % 10)){
+		if ((newXP / 10) > (this.getXP() / 10)){
 			int randomNum = Utils.randomInt(0, 3);
 			if (randomNum == 0){
 				this.setStrength(this.getStrength() + 1);
@@ -1523,7 +1521,9 @@ public class Unit extends GameObject{
 		this.world = world;
 		// ... and use that new reference so the new World will accept the
 		// connection
-		world.addUnit(this);
+		if (world != null) {
+			world.addUnit(this);	
+		}
 	}
 	
 	/**
@@ -1543,9 +1543,10 @@ public class Unit extends GameObject{
 	 * 			this unit belongs to
 	 * 		| result == (this.getWorld().hasAsFaction(this)
 	 */
+	// TODO documentation
 	@Raw
 	public boolean canHaveAsFaction(Faction faction) {
-		return this.getWorld().hasAsFaction(faction);
+		return (!this.isTerminated() || faction == null) && (this.isTerminated() || faction != null);
 	}
 	
 	/**
@@ -1585,14 +1586,25 @@ public class Unit extends GameObject{
 	 * 		if the unit is not terminated and the given argument is null
 	 * 		| faction == null && !this.isTerminted()		
 	 */
+	// TODO documentation
 	public void setFaction(Faction faction) throws IllegalArgumentException {
-		if (faction == null && !this.isTerminated()){
-			throw new IllegalArgumentException();
-		}else if (faction == null){
-			this.faction = null;
-		}else{
-			this.faction = faction;
-			faction.addUnit(this);
+		
+		if (! canHaveAsFaction(faction)){
+			throw new IllegalArgumentException("Given Faction is invalid: " + faction.toString());
+		}
+		Faction oldFaction = this.getFaction();
+		// Remove reference to old Faction ... 
+		this.faction = null;
+		// ... so that it will accept the disconnection
+		if (oldFaction != null) {
+			oldFaction.removeUnit(this);
+		}
+		// Then replace it with new reference ...
+		this.faction = faction;
+		// ... and use that new reference so the new Faction will accept the
+		// connection
+		if (faction != null) {
+			faction.addUnit(this);	
 		}
 	}
 	
@@ -1710,7 +1722,6 @@ public class Unit extends GameObject{
 			
 			// Connect item to this Unit's World
 			item.setWorld(this.getWorld());
-			world.addItem(item);
 			// Don't forget to set the Item's position
 			item.setPosition(this.getPosition());
 		}
@@ -1735,7 +1746,6 @@ public class Unit extends GameObject{
 		if (!this.hasItem() && item != null) {
 			// Disconnect item from its (and this Unit's) World
 			item.setWorld(null);
-			this.getWorld().removeItem(item);
 			
 			// Connect item to this Unit
 			item.setUnit(this);
@@ -2067,8 +2077,10 @@ public class Unit extends GameObject{
 	 * 		| result == 500/this.getStrength()
 	 */
 	@Basic 
+	// TODO replace this
 	private double getWorkingTime(){
-		return 500/this.getStrength();
+		return 1;
+		//return 500/this.getStrength();
 	}
 	
 	/**
@@ -2534,7 +2546,7 @@ public class Unit extends GameObject{
 			return null;
 		}
 		for (Item item: this.getWorld().getItems()){
-			if (item.getPosition().toCoordinate() == this.workCube){
+			if (item.getPosition().toCoordinate().equals(this.workCube)){
 				return item;
 			}
 		}return null;
