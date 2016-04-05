@@ -548,7 +548,7 @@ public class Unit extends GameObject{
 		}
 	}
 
-	
+
 	/* Sprinting */
 	
 	/**
@@ -2315,7 +2315,7 @@ public class Unit extends GameObject{
 		if (this.getHP() == Unit.getMinHP()) {
 			this.terminate();
 		} else if (!this.aroundSolid()) {
-			this.setImmediateTarget(null);
+			this.UltimateTarget = null;
 			this.transitionToFalling();
 		} else if(reachedImmediateTarget()){
 			if(this.hasUltimateTarget()){
@@ -2361,7 +2361,7 @@ public class Unit extends GameObject{
 			try{
 				this.setPosition(Position.add(position, deltaPosition));
 			}catch(IllegalArgumentException e){
-				System.out.print("");
+				this.position = Position.add(position, deltaPosition);
 			}
 			
 			if(this.sprinting){
