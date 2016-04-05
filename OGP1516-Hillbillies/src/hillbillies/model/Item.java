@@ -29,7 +29,8 @@ public class Item extends GameObject{
 	 * that starts by being attached to a given World.
 	 */
 	public Item( World world, Position position) {
-		super(world, position);
+		this.setWorld(world);
+		this.setPosition(position);
 		this.weight = Utils.randomInt(getMinWeight(), getMaxWeight());
 		this.state = ItemState.NOTHING;
 	}
@@ -271,7 +272,7 @@ public class Item extends GameObject{
 	 * 		If
 	 */
 	public void advanceTime(double dt) throws IllegalArgumentException {
-		if (dt >= getMaxDT()) {
+		if (dt > getMaxDT()) {
 			throw new IllegalArgumentException("dt went over its maximum of " + getMaxDT() + ". dt: " + dt);
 		}
 		if (this.hasWorld()) {
