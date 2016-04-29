@@ -1,4 +1,4 @@
-package hillbillies.part2;
+package hillbillies.part3;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,15 +8,15 @@ import java.util.stream.Collectors;
 
 import hillbillies.common.internal.HillbilliesApplication;
 import hillbillies.common.internal.controller.GameController;
-import hillbillies.part2.facade.Facade;
-import hillbillies.part2.facade.IFacade;
+import hillbillies.part3.facade.Facade;
+import hillbillies.part3.facade.IFacade;
 import hillbillies.part2.internal.Part2Options;
-import hillbillies.part2.internal.controller.GameControllerPart2;
 import hillbillies.part2.internal.map.GameMap;
 import hillbillies.part2.internal.map.GameMapReader;
-import hillbillies.part2.internal.ui.HillbilliesViewPart2;
 import hillbillies.part2.internal.ui.IHillbilliesView2;
-import hillbillies.part2.internal.ui.ViewProviders2;
+import hillbillies.part3.internal.controller.GameControllerPart3;
+import hillbillies.part3.internal.ui.HillbilliesViewPart3;
+import hillbillies.part3.internal.ui.ViewProviders3;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -25,7 +25,7 @@ import javafx.scene.layout.VBox;
 import ogp.framework.util.ModelException;
 import ogp.framework.util.internal.ResourceUtils;
 
-public class Part2 extends HillbilliesApplication<Part2Options, IFacade, IHillbilliesView2> {
+public class Part3 extends HillbilliesApplication<Part2Options, IFacade, IHillbilliesView2> {
 
 	private static final String LEVEL_FILE_EXTENSION = ".wrld";
 	private static final String LEVELS_PATH = "resources/";
@@ -36,18 +36,18 @@ public class Part2 extends HillbilliesApplication<Part2Options, IFacade, IHillbi
 
 	@Override
 	protected String getTitle() {
-		return super.getTitle() + " - Part 2";
+		return super.getTitle() + " - Part 3";
 	}
 
 	@Override
-	protected GameControllerPart2 createController(IFacade facade, Part2Options options) throws ModelException {
+	protected GameControllerPart3 createController(IFacade facade, Part2Options options) throws ModelException {
 		GameMap map = null;
 		try {
 			map = new GameMapReader().readFromResource(LEVELS_PATH + levelFilename);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return new GameControllerPart2(facade, options, map);
+		return new GameControllerPart3(facade, options, map);
 	}
 
 	private String levelFilename = null;
@@ -94,7 +94,7 @@ public class Part2 extends HillbilliesApplication<Part2Options, IFacade, IHillbi
 
 	@Override
 	protected IHillbilliesView2 createView(GameController<IHillbilliesView2> controller, Part2Options options) {
-		return new HillbilliesViewPart2((ViewProviders2) controller.createViewProviders(), options);
+		return new HillbilliesViewPart3((ViewProviders3) controller.createViewProviders(), options);
 	}
 
 }
