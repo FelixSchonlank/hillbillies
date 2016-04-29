@@ -191,7 +191,7 @@ public class Unit extends GameObject{
 		setHP(getMaxHP());
 		setStamina(getMaxStamina());
 		this.setXP(Unit.getMinXP());
-		
+		this.position = (new Coordinate(initialCoordinates)).toPosition();
 		
 		this.immediateTarget = null;
 		this.previousPosition = this.getPosition();
@@ -509,19 +509,20 @@ public class Unit extends GameObject{
 		if(!this.getWorld().withinBounds(destination)){
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
-		this.UltimateTarget = destination;
 		Queue<PathTuple> Path = new LinkedList<PathTuple>();
-		if(! this.getPosition().toCoordinate().equals(destination)){
+		while(! this.getPosition().toCoordinate().equals(destination)){
 			Path.add(new PathTuple(destination, 0));
 			while(! PathTuple.Contains(this.getPosition().toCoordinate(), Path) && PathTuple.hasNext(Path)){
 				PathTuple next = PathTuple.getNext(Path);
 				search(next, Path);
 				next.hasBeenChecked = true;
 			}
+			break;
 		}
 		if (PathTuple.Contains(this.getPosition().toCoordinate(), Path)){
 			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
 			this.immediateTarget = immediateTarget.toPosition();
+			this.UltimateTarget = destination;
 		}
 	}
 	
@@ -529,42 +530,25 @@ public class Unit extends GameObject{
 	 * The search function as defined in the pdf
 	 * @param next
 	 * @param Path
+	 * @effect Every neighboring cube of next that is pasable and aroundSolid
+	 * 		is added as w PathTuple in Path weight one higher then the weight 
+	 * 		of next. 
 	 */
 	private void search(PathTuple next, Queue<PathTuple> Path) {
 		List<Coordinate> neighbors = new LinkedList<Coordinate>();
-		List<Coordinate> neighborsToRemove = new LinkedList<Coordinate>(); 
-		neighbors.addAll(this.getWorld().getNeighbors(next.getCube()));
-		for (Coordinate neighbor: neighbors){//remove all Coordinates that are already in Path with a smaller weight
-			if (Path.contains(neighbor)){
-				PathTuple tmp = PathTuple.getPathTuple(neighbor, Path);
-				if (tmp.getWeight() <= next.getWeight()){
-					neighborsToRemove.add(neighbor);
-				}
-			}else if (! this.getWorld().isPassableCube(neighbor)){//remove all non solid neighbors
-				neighborsToRemove.add(neighbor);
-			}else if (! this.hasSolidNeighbor( neighbor, next.getCube())){// remove all neighbors that are not adjacent to a solid cube
-				neighborsToRemove.add(neighbor);
-			}else{
+		for (Coordinate neighbor: this.getWorld().getNeighbors(next.getCube())){
+			if(! (PathTuple.Contains(neighbor, Path) && PathTuple.getPathTuple(neighbor, Path).getWeight() <= next.getWeight())){
+				neighbors.add(neighbor);
+			}
+		}
+		for (Coordinate neighbor: neighbors){
+			if (this.getWorld().isPassableCube(neighbor) && this.getWorld().isAroundSolid(neighbor)){
 				Path.add(new PathTuple(neighbor, next.getWeight() + 1));
 			}
 		}
 	}
-	
-	/**
-	 * Check whether a given cube has a solid neighbor that is not the previous
-	 * @param cube
-	 * @return
-	 */
-	private boolean hasSolidNeighbor(Coordinate cube, Coordinate next){
-		for (Coordinate neighbor: this.getWorld().getNeighbors(cube)){
-			if (neighbor == next){
-			}else if (! this.getWorld().isPassableCube(neighbor)){
-				return true;
-			}
-		} return false;
-	}
 
-	
+
 	/* Sprinting */
 	
 	/**
@@ -2307,15 +2291,17 @@ public class Unit extends GameObject{
 				}catch(BadFSMStateException f){
 				}
 			}else if(result == 1){
-				this.shouldWork = true;
+				victim = (Unit) Utils.getRandomElement(this.getEnemiesInRange());
+				if (victim != null){
+					try {
+						this.attack(victim);
+					} catch (IllegalArgumentException e) {
+					} catch (BadFSMStateException e) {}
 			}else if (result == 2){
 				this.shouldRest = true;
 			} else {
-				victim = (Unit) Utils.getRandomElement(this.getEnemiesInRange());
-				try {
-					this.attack(victim);
-				} catch (IllegalArgumentException e) {
-				} catch (BadFSMStateException e) {}
+				this.shouldWork = true;
+				}
 			}
 		}
 	}
@@ -2329,6 +2315,7 @@ public class Unit extends GameObject{
 		if (this.getHP() == Unit.getMinHP()) {
 			this.terminate();
 		} else if (!this.aroundSolid()) {
+			this.UltimateTarget = null;
 			this.transitionToFalling();
 		} else if(reachedImmediateTarget()){
 			if(this.hasUltimateTarget()){
@@ -2374,7 +2361,7 @@ public class Unit extends GameObject{
 			try{
 				this.setPosition(Position.add(position, deltaPosition));
 			}catch(IllegalArgumentException e){
-				System.out.print("");
+				this.position = Position.add(position, deltaPosition);
 			}
 			
 			if(this.sprinting){

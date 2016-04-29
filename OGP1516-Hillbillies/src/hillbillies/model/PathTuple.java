@@ -31,10 +31,8 @@ public class PathTuple {
 		Set<Coordinate> neighbours = world.getNeighbors(current);
 		LinkedList<PathTuple> neighboursInPath = new LinkedList<PathTuple>();
 		for (Coordinate cube: neighbours){
-			for (PathTuple block: path){
-				if (block.getCube().equals(cube)){
-					neighboursInPath.add(block);
-				}
+			if (Contains(cube, path)){
+				neighboursInPath.add(getPathTuple(cube, path));
 			}
 		}
 		return smallestWeight(neighboursInPath).getCube();
@@ -92,12 +90,13 @@ public class PathTuple {
 	 * @return
 	 */
 	public static PathTuple getNext(Queue<PathTuple> Path){
+		LinkedList<PathTuple> Path_NotChecked = new LinkedList<PathTuple>();
 		for (PathTuple tuple: Path){
 			if (! tuple.hasBeenChecked){
-				return tuple;
+				Path_NotChecked.add(tuple);
 			}
 		}
-		return null;
+		return smallestWeight(Path_NotChecked);
 	}
 	
 	/**
@@ -124,7 +123,7 @@ public class PathTuple {
 	 */
 	public static PathTuple getPathTuple(Coordinate cube, Queue<PathTuple> Q){
 		for (PathTuple tuple: Q){
-			if (tuple.getCube() == cube){
+			if (tuple.getCube().equals(cube)){
 				return tuple;
 			}
 		}
