@@ -1,0 +1,39 @@
+
+* the class scheduler
+
+** Constants
+
+- Faction (A variable referensing the faction this schedular belongs to)
+- tasks (a set containing all the tasks of this scheduler 
+
+** methods 
+
+- addTask(Task)
+
+- removeTask(Task)
+
+- replaceTask(Task,Task)
+  
+  if( Task is being executed ){
+     stop the task
+  }
+  removeTask(Task)
+  addTask(newTask)
+
+- isPartOf(Task)
+
+- arePartOf(set<Task>)
+
+- getMostImportandTask()
+
+- getScheduledTasks()
+
+- ?getTasksThat(Condition)
+
+- iterator()
+
+- setTaskToBeScheduled()
+
+- resetTask(Task)
+
+ 
