@@ -1,5 +1,5 @@
 
-* the class scheduler
+* the class scheduler                           :defensive|total:
 
 ** Constants
 
@@ -36,4 +36,17 @@
 
 - resetTask(Task)
 
- 
+* 
+* 
+* 
+  
+
+* the class Task
+
+** Varriables
+
+- name (Varriable referensing the name of a task
+
+- priorty 
+
+- Activities (varriable referensing the activities of this Task)
