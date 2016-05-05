@@ -1,5 +1,6 @@
 package hillbillies.model;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
@@ -14,6 +15,99 @@ import be.kuleuven.cs.som.annotate.Raw;
  *       | isValidFaction(getFaction())
  */
 public class Scheduler {
+	
+	/**
+	 * replace a given task with another task
+	 * @param task
+	 * 		| the task to remove
+	 * @param newTask
+	 * 		| the task to add
+	 * @effect if the task is being scheduled it is first stopt
+	 * 		| resetTask(task)
+	 * @post if task is part of this scheduler and newTask is not task is removed
+	 * 			and newTask is added else nothing changes
+	 * 		| if this.hasAsTask(Task) && ! this.hasAsTask(newTask) then 
+	 * 		| 	!new.hasAsTask(Task) &&  this.hasAsTask(newTask)
+	 */
+	public void replaceTask(Task task, Task newTask){
+		this.resetTask(task);
+		if (this.hasAsTask(task) && ! this.hasAsTask(newTask)) {
+			this.removeTask(task);
+			this.addTask(newTask);
+		}
+	}
+	
+	/**
+	 * Check whether a given collection of tasks is part of this scheduler
+	 * @param tasks
+	 * 		| the collection of tasks to check
+	 * @return true iff this scheduler has all the tasks of this scheduler as
+	 * 			 one of its tasks
+	 * 		| for each task in tasks
+	 * 		|	this.hasAsTask(task)
+	 */
+	public boolean hasAsTasks(Collection<Task> tasks){
+		for(Task task : tasks){
+			if (!this.hasAsTask(task)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * return and remove the task with the highest priority that is not scheduled
+	 * @return the task with the highest priority in the priorityQueue
+	 * 		| result == tasks.poll
+	 */
+	public Task getMostImportandTask(){
+		return this.tasks.poll();
+	}
+	
+	/**
+	 * return all the tasks that are scheduled
+	 * @return a new linkedList that contains all the  scheduledTasks
+	 * 			| result.containsAll(this.scheduledTasks)
+	 */
+	public LinkedList<Task> getScheduledTasks(){
+		LinkedList<Task> result = new LinkedList<Task>();
+		for(Task task : scheduledTasks){
+			result.add(task);
+		}
+		return result;
+	}
+	
+	/**
+	 * Assign a task to a given unit
+	 * @param unit
+	 * 		| the unit to give the task to 
+	 * @effect if the unit does not yet have a task the task with the highest 
+	 * 			priority is assigned to the given unit
+	 * 		|if (!unit.hasTask()) then 
+	 * 		|	getMostImportandTask().setUnit(unit)	 
+	 */
+	public void setTaskToBeScheduled(Unit unit){
+		Task task = this.getMostImportandTask();
+		task.setUnit(unit);
+		this.scheduledTasks.add(task);
+	} 
+	
+	/**
+	 * Reset a scheduled task 
+	 * @param task
+	 * 		| The task to be reset
+	 * @post if the given task is scheduled the task is set to unscheduled
+	 * 		| if (this.isScheduled(task)) then 
+	 * 		|	!new.isScheduled(task)
+	 */
+	public void resetTask(Task task){
+		if (this.isScheduled(task)) {
+			task.removeUnit();
+			this.removeTask(task);
+			this.addTask(task);
+		}
+	}
+
 	
 	/* Tasks */ 
 	
@@ -128,6 +222,16 @@ public class Scheduler {
 	 *       |     (task.hasUnit()) )
 	 */
 	private final LinkedList<Task> scheduledTasks = new LinkedList<Task>();
+	
+	/**
+	 * Check whether a given task is scheduled
+	 * @param task
+	 * @return true iff the given task is part of scheduledTasks
+	 * 		| result == (return scheduledTasks.contains(task))
+	 */
+	public boolean isScheduled(Task task){
+		return scheduledTasks.contains(task);
+	}
 	
 	/**
 	 * Gives back all the tasks in this scheduler.

@@ -14,7 +14,9 @@ import hillbillies.model.World.TerrainType;
 /**
  * 
  * @author Willem Seynaeve and Felix Schönlank
- * 
+ * @Invar  The Task of each Unit must be a valid Task for any
+ *         Unit.
+ *       | isValidTask(getTask())
  * @Invar  The position of each Unit must be a valid position for any
  *         Unit.
  *       | isValidPosition(getPosition())
@@ -809,6 +811,63 @@ public class Unit extends GameObject{
 	public boolean isWorking() {
 		return this.getState() == State.WORKING;
 	}
+
+	/**
+	 * check whether this unit has a task
+	 * @return true if and only if the task of this unit is not null
+	 * 		| result == (this.getTask() != null)
+	 */
+	public boolean hasTask(){
+		return this.getTask() != null;
+	}
+
+	/**
+	 * Return the Task of this Unit.
+	 */
+	@Basic @Raw
+	public Task getTask() {
+		return this.task;
+	}
+	
+	/**
+	 * Check whether the given Task is a valid Task for
+	 * this Unit.
+	 *  
+	 * @param  Task
+	 *         The Task to check.
+	 * @return true iff the given task has this unit as its unit or if the given
+	 * 		 task is null 
+	 *       | result == (task.getUnit() == this) || task == null
+	*/
+	public boolean cabHaveAsTask(Task task) {
+		return task.getUnit() == this || task == null;
+	}
+	
+	/**
+	 * Set the Task of this Unit to the given Task.
+	 * 
+	 * @param  task
+	 *         The new Task for this Unit.
+	 * @post   The Task of this new Unit is equal to
+	 *         the given Task.
+	 *       | new.getTask() == task
+	 * @throws IllegalArgumentException
+	 *         The given Task is not a valid Task for any
+	 *         Unit.
+	 *       | ! isValidTask(getTask())
+	 */
+	@Raw
+	public void setTask(Task task) 
+			throws IllegalArgumentException {
+		if (! cabHaveAsTask(task))
+			throw new IllegalArgumentException();
+		this.task = task;
+	}
+	
+	/**
+	 * Variable registering the Task of this Unit.
+	 */
+	private Task task;
 	
 	/* XP */
 
