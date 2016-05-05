@@ -4,7 +4,7 @@
 ** Constants
 
 - Faction (A variable referensing the faction this schedular belongs to)
-- tasks (a set containing all the tasks of this scheduler 
+- tasks (a set containing all the tasks of this scheduler )
 
 ** methods 
 
@@ -36,10 +36,7 @@
 
 - resetTask(Task)
 
-* 
-* 
-* 
-  
+ 
 
 * the class Task
 

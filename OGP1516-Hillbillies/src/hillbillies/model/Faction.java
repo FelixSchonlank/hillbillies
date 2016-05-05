@@ -9,10 +9,12 @@ import be.kuleuven.cs.som.annotate.Raw;
 /**
  * @Invar Each faction must have proper units.
  * 		| this.hasProperUnits()
+ * @Invar Each faction must have a valid scheduler 
+ * 		| this.canHaveAsScheduler(this.getScheduler())
  */
 public class Faction {
 
-	/* Faction */
+	/* Unit */
 	
 	/**
 	 * Check whether this faction has the given unit as one of its
@@ -148,4 +150,46 @@ public class Faction {
 	 * A variable referencing the maximum units a faction can have 
 	 */
 	private static final int MaxUnits = 50;
+	
+	/* Scheduler */
+	
+	/**
+	 * Check whether this faction can have a given scheduler as its scheduler 
+	 * @param scheduler
+	 * 		| the scheduler to check
+	 * @return true if and only iff the given scheduler has this Faction as its Faction
+	 * 		| result == (scheduler.getFaction() == this)
+	 */
+	public boolean canHaveAsScheduler(Scheduler scheduler){
+		return  scheduler.getFaction() == this;
+	}
+	
+	/**
+	 * Set the scheduler of this unit to a given scheduler
+	 * @param scheduler
+	 * 		| the scheduler to set the scheduler to
+	 * @post the scheduler of this Faction is set to the given scheduler 
+	 * 		| this.getScheduler() == scheduler
+	 * @throws IllegalArgumentException if this Faction can not have the given 
+	 * 		Scheduler as its scheduler
+	 * 		| !this.canHaveAsScheduler(scheduler)
+	 */
+	public void setScheduler(Scheduler scheduler) throws IllegalArgumentException{
+		if (!this.canHaveAsScheduler(scheduler)){
+			throw new IllegalArgumentException();
+		}
+		this.scheduler = scheduler;
+	}
+	
+	/**
+	 * return the scheduler of this Faction
+	 */
+	public Scheduler getScheduler(){
+		return this.scheduler;
+	}
+	
+	/**
+	 * A variable referencing the scheduler of this faction 
+	 */
+	public Scheduler scheduler;
 }
