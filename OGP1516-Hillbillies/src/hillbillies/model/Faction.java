@@ -143,7 +143,7 @@ public class Faction {
 	}
 	
 	public int getMaxUnits(){
-		return this.MaxUnits;
+		return Faction.MaxUnits;
 	}
 	
 	/**
