@@ -48,22 +48,92 @@
 
     control should start at the very first Statement in the activities List. There should be a method in Task ~void executeStatements (int num)~ which executes maximally num sequential statements. This method is called by Unit on its Task, with num equal to the number of statements to be executed (one stament per 0.001s of dt). Internally, Task handles it as follows.
       : while (num > 0 && control != null) {
-      :     if (control.execute()) {
-      :         control = control.getNext();
-      :         num -= 1;
-      :     } else {
-      :         break; // (or return)
+      :     if (! control.execute()) {
+      :         break;
       :     }
+      :     control = control.getNext();
+      :     num -= 1;
       : }
-    Some explanation: this loop executes (at most) num Statements in the Task. ~boolean Statement.execute ()~ is a method that executes the Statement, obviously. More concretely put (in pseudocode):
-    - assignment :: The pair (~this.variableName~ : String, ~(Object) this.expression.determineValue()~ : Boolean/Position/Unit-->Object) is stored in the Map in the Task. Returns true.
-    - while loop :: Nothing happens. Returns true.
-    - if statement :: Nothing happens. Returns true.
-    - break :: Nothing happens. Returns true.
-    - print :: ~this.message~ gets printed. Returns true.
-    - sequence :: 
-    - moveTo :: Runs method ~this.getTask().getUnit().moveTo(this.expression.determineValue())~. Returns *false*.
-    - work :: Runs method ~this.getTask().getUnit().workAt(this.expression.determineValue())~. Returns *false*.
-    - follow :: I don't know this one yet _TODO_ . Returns *false*.
-    - attack :: Runs method ~this.getTask().getUnit().attack(this.expression.determineValue())~. Returns *false*.
-    Importantly: while loops and if (else) statements /are/ Statements, but their execute just simply returns true without doing anything.
+    Some explanation: this loop executes (at most) num Statements in the Task. ~boolean Statement.execute ()~ is a method that executes the Statement, obviously. Returning true means that the execution of Statements can be continued; returning false means that the execution should be suspended. The method ~Statement Statement.getNext()~ returns the next Statement to be executed after the current one. All Statements hold a ~next~ field, which indicates the (or sometimes one of several possible, like with while and if) next Statement.
+    - assignment
+      - execute :: The pair (~this.variableName~ : String, ~(Object) this.expression.determineValue()~ : Boolean/Position/Unit-->Object) is stored in the Map in the Task. Returns true.
+      - getNext :: Returns ~this.next~.
+    - while loop
+      - Holds a field expression : Expression<Boolean>.
+      - Holds a field body : Statement (most likely a sequence, but not for certain).
+      - execute :: Nothing happens. Returns true.
+      - getNext :: Depends: if ~this.expression.determineValue()~ is true, returns ~this.body~, else returns ~this.next~.
+    - if statement
+      - Holds a field expression : Expression<Boolean>.
+      - Holds fields ifBody and elseBody : Statement (most likely a sequence, but not for certain).
+      - execute :: Nothing happens. Returns true.
+      - getNext :: Depends: if ~this.expression.determineValue()~ is true, returns ~this.ifBody~, else returns ~this.elseBody~ unless it is null, then it returns ~this.next~.
+    - break
+      - execute :: Nothing happens. Returns true.
+      - getNext :: Returns ~this.next~.
+    - print
+      - execute :: ~this.message~ gets printed (_TODO_ I don't know how. To the console or to the GUI?). Returns true.
+      - getNext :: Returns ~this.next~.
+    - sequence
+      - execute :: Nothing happens. Returns true.
+      - getNext :: Returns ~this.next~.
+    - moveTo
+      - execute :: Runs method ~this.getTask().getUnit().moveTo(this.expression.determineValue())~. Returns *false*.
+      - getNext :: Returns ~this.next~.
+    - work
+      - execute :: Runs method ~this.getTask().getUnit().workAt(this.expression.determineValue())~. Returns *false*.
+      - getNext :: Returns ~this.next~.
+    - follow
+      - execute :: I don't know this one yet _TODO_ . Returns *false*.
+      - getNext :: Returns ~this.next~.
+    - attack
+      - execute :: Runs method ~this.getTask().getUnit().attack(this.expression.determineValue())~. Returns *false*.
+      - getNext :: Returns ~this.next~.
+
+    Important notes:
+    - The ~next~ field gets set in one of several ways.
+      - Any Statement defaultly gives theirself null as next-value.
+      - A sequence Statement gives every sub-Statement the next sub-Statement in the List. The last one keeps its null.
+      - A while loop reaches into its body, and gives it itself (the while loop itself) as next-value, or gives it too the last sub-Statement of it if the while loop's body is a sequence. Quite messy, but inevitable, I think.
+      - An if statement does more or less the same: it gives its next-value. _TODO_ No wait it can't. I'm too tired to work this shit out now (it's 03:37), but I'll explain it briefly for myself. If can't give its ifBody and elseBody its own next-value as next-value, because at instantiation of the If that will be null, and maybe later on the If gets a new next, and that of its body's wont get updated. My first intuitive solution was making objects for the next pointing, however, I don't know /how/ to go about that; it just felt good. The better option, to me, looks like having a method Statement.setNext. Normal Statements would just have their next-field set by it, but while and if could propagate to their children.
+    - while loops and if (else) statements /are/ Statements, but their execute just simply returns true without doing anything. The same goes for sequences by the way. It throws away some Statement calls and decreases num more than necessary, but it is quite a clean solution in my opinion.
+
+* Expression
+
+A generic class in T: ~public class Expression <T>~. The hierarchy is as such:
+
+- Expression
+  - BooleanExpression
+    - True
+    - False
+    - And
+    - Or
+    - Not
+    - IsSolid
+    - IsPassable
+    - IsFriend
+    - IsEnemy
+    - IsAlive
+    - CarriesItem
+  - PositionExpression
+    - Here
+    - Log
+    - Boulder
+    - Workshop
+    - Literal
+    - NextTo
+    - PositionOf
+    - Selected
+  - UnitExpression
+    - This
+    - Friend
+    - Enemy
+    - Any
+  - ObjectExpression
+    - ReadVariable
+
+The ReadVariable Expression seems to not fit in this list, because it can return any of the three types. _TODO_ I don't know how to deal with this yet. I want the 17 grade, so I feel inclined to handle this like a pro. I'll think about this later.
+
+It has only one method that I can think of right now: ~public T Expression.determineValue()~, which gets overridden by every single child in an at least semi-obvious way. Also: We shouldn't necessarily make the four children of Expression; we could also just make all those classes direct children as such:
+: public class IsPassableExpression extends Expression<Boolean>
+
