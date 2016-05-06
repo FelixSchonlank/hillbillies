@@ -60,6 +60,6 @@ public abstract class Expression<T> {
 	/**
 	 * Return a Position, boolean or Unit depending on the type of Expression
 	 */
-	public T evaluateExpression;
-			
+	public abstract T evaluate();
+		
 }

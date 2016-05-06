@@ -1,13 +1,13 @@
 package hillbillies.model;
 
-public class IsSolid extends Expression<Boolean> {
+public class IsPassable extends Expression<Boolean> {
 	
-	IsSolid(Expression<Position> position){
+	IsPassable(Expression<Position> position){
 		this.setPosition(position);
 	}
 	
 	public Boolean evaluate(){
-		return !this.getTask().getScheduler().getFaction().getRandomUnit().getWorld().isPassableCube(((Position) position.evaluate()).toCoordinate());
+		return this.getTask().getScheduler().getFaction().getRandomUnit().getWorld().isPassableCube(((Position) position.evaluate()).toCoordinate());
 	}
 	
 	public void setPosition(Expression<Position> position){
@@ -26,4 +26,5 @@ public class IsSolid extends Expression<Boolean> {
 	}
 	
 	private Expression<Position> position;
+
 }
