@@ -321,4 +321,13 @@ public class Task {
 	 */
 	private final Set<Scheduler> schedulers = new HashSet<Scheduler>();
 
+	/**
+	 * Return one of the schedulers this task belongs to
+	 * @return schedulers
+	 */
+	public Scheduler getScheduler(){
+		for (Scheduler element : this.schedulers){
+			return element;
+		}return null;
+	}
 }

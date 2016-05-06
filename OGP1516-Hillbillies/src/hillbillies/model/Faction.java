@@ -147,6 +147,17 @@ public class Faction {
 	}
 	
 	/**
+	 * Returns the first Unit of this faction
+	 * @return
+	 */
+	public Unit getRandomUnit(){
+		for (Unit unit : this.units){
+			return unit;
+		}
+		return null;
+	}
+	
+	/**
 	 * A variable referencing the maximum units a faction can have 
 	 */
 	private static final int MaxUnits = 50;
