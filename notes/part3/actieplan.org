@@ -1,0 +1,69 @@
+
+* Scheduler                           :defensive|total:
+
+** constants
+
+- faction (A variable referensing the faction this schedular belongs to)
+- tasks (a set containing all the tasks of this scheduler )
+
+** methods 
+
+- addTask(Task)
+- removeTask(Task)
+- replaceTask(Task,Task)
+    : if (Task is being executed) {
+    :     stop the task
+    : }
+    : removeTask(Task)
+    : addTask(newTask)
+- isPartOf(Task)
+- arePartOf(set<Task>)
+- getMostImportandTask()
+- getScheduledTasks()
+- ?getTasksThat(Condition)
+- iterator()
+- setTaskToBeScheduled()
+- resetTask(Task)  
+
+* Task
+
+** variables
+
+- name : String
+  Variable referencing the name of a Task.
+- priority : int
+- activities : List<Statement>
+  Variable referencing the activities of this Task.
+- selected : Position
+  The Position of the cube that was selected at the creation of this Task.
+- variables : Map<Object>
+  A (Hash)Map containing the variables that have been declared in the Task program, mapped to their values. Sadly, they must be stored as Objects, and recast later on.
+
+
+** control
+
+   Task should keep a private variable called *control*, that keeps track of the current location of control in the Task/program. It is a pointer to the next Statement to execute, and thus *is of type Statement*.
+
+*** control flow
+
+    control should start at the very first Statement in the activities List. There should be a method in Task ~void executeStatements (int num)~ which executes maximally num sequential statements. This method is called by Unit on its Task, with num equal to the number of statements to be executed (one stament per 0.001s of dt). Internally, Task handles it as follows.
+      : while (num > 0 && control != null) {
+      :     if (control.execute()) {
+      :         control = control.getNext();
+      :         num -= 1;
+      :     } else {
+      :         break; // (or return)
+      :     }
+      : }
+    Some explanation: this loop executes (at most) num Statements in the Task. ~boolean Statement.execute ()~ is a method that executes the Statement, obviously. More concretely put (in pseudocode):
+    - assignment :: The pair (~this.variableName~ : String, ~(Object) this.expression.determineValue()~ : Boolean/Position/Unit-->Object) is stored in the Map in the Task. Returns true.
+    - while loop :: Nothing happens. Returns true.
+    - if statement :: Nothing happens. Returns true.
+    - break :: Nothing happens. Returns true.
+    - print :: ~this.message~ gets printed. Returns true.
+    - sequence :: 
+    - moveTo :: Runs method ~this.getTask().getUnit().moveTo(this.expression.determineValue())~. Returns *false*.
+    - work :: Runs method ~this.getTask().getUnit().workAt(this.expression.determineValue())~. Returns *false*.
+    - follow :: I don't know this one yet _TODO_ . Returns *false*.
+    - attack :: Runs method ~this.getTask().getUnit().attack(this.expression.determineValue())~. Returns *false*.
+    Importantly: while loops and if (else) statements /are/ Statements, but their execute just simply returns true without doing anything.

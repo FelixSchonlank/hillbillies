@@ -1,0 +1,6 @@
+
+* Remarks
+
+part3's IFacade looks quite easy. ITaskFactory looks a whole lot more troublesome.
+
+- [ ] ITaskFactory.createTasks suggests that the new GUI will allow you to select multiple cubes before adding a Task to a Faction or something along that line. createTasks then returns a List of Tasks: one for every element of the passed selectedCubes (which is then used as the _selected_ cube in the Task). I do not know what happens when a Task contains a selected, but no cube was passed by the GUI. We're not allowed to throw exceptions, so that bothers me.
