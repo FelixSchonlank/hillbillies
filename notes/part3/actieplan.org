@@ -38,6 +38,8 @@
   The Position of the cube that was selected at the creation of this Task.
 - variables : Map<Object>
   A (Hash)Map containing the variables that have been declared in the Task program, mapped to their values. Sadly, they must be stored as Objects, and recast later on.
+- isWellFormed : Boolean
+  A flag that is set by a checking method.
 
 
 ** control
@@ -54,49 +56,114 @@
       :     control = control.getNext();
       :     num -= 1;
       : }
-    Some explanation: this loop executes (at most) num Statements in the Task. ~boolean Statement.execute ()~ is a method that executes the Statement, obviously. Returning true means that the execution of Statements can be continued; returning false means that the execution should be suspended. The method ~Statement Statement.getNext()~ returns the next Statement to be executed after the current one. All Statements hold a ~next~ field, which indicates the (or sometimes one of several possible, like with while and if) next Statement.
-    - assignment
-      - execute :: The pair (~this.variableName~ : String, ~(Object) this.expression.determineValue()~ : Boolean/Position/Unit-->Object) is stored in the Map in the Task. Returns true.
-      - getNext :: Returns ~this.next~.
-    - while loop
-      - Holds a field expression : Expression<Boolean>.
-      - Holds a field body : Statement (most likely a sequence, but not for certain).
-      - execute :: Nothing happens. Returns true.
-      - getNext :: Depends: if ~this.expression.determineValue()~ is true, returns ~this.body~, else returns ~this.next~.
-    - if statement
-      - Holds a field expression : Expression<Boolean>.
-      - Holds fields ifBody and elseBody : Statement (most likely a sequence, but not for certain).
-      - execute :: Nothing happens. Returns true.
-      - getNext :: Depends: if ~this.expression.determineValue()~ is true, returns ~this.ifBody~, else returns ~this.elseBody~ unless it is null, then it returns ~this.next~.
-    - break
-      - execute :: Nothing happens. Returns true.
-      - getNext :: Returns ~this.next~.
-    - print
-      - execute :: ~this.message~ gets printed (_TODO_ I don't know how. To the console or to the GUI?). Returns true.
-      - getNext :: Returns ~this.next~.
-    - sequence
-      - execute :: Nothing happens. Returns true.
-      - getNext :: Returns ~this.next~.
-    - moveTo
-      - execute :: Runs method ~this.getTask().getUnit().moveTo(this.expression.determineValue())~. Returns *false*.
-      - getNext :: Returns ~this.next~.
-    - work
-      - execute :: Runs method ~this.getTask().getUnit().workAt(this.expression.determineValue())~. Returns *false*.
-      - getNext :: Returns ~this.next~.
-    - follow
-      - execute :: I don't know this one yet _TODO_ . Returns *false*.
-      - getNext :: Returns ~this.next~.
-    - attack
-      - execute :: Runs method ~this.getTask().getUnit().attack(this.expression.determineValue())~. Returns *false*.
-      - getNext :: Returns ~this.next~.
+    Some explanation: this loop executes (at most) num Statements in the Task. ~boolean Statement.execute ()~ is a method that executes the Statement, obviously. Returning true means that the execution of Statements can be continued; returning false means that the execution should be suspended. The method ~Statement Statement.getNextStatement()~ returns the next Statement to be executed after the current one.
 
-    Important notes:
-    - The ~next~ field gets set in one of several ways.
-      - Any Statement defaultly gives theirself null as next-value.
-      - A sequence Statement gives every sub-Statement the next sub-Statement in the List. The last one keeps its null.
+
+* Statement
+  
+  All Statements hold a ~next~ field, which indicates the (or sometimes one of several possible, like with while and if) next Statement.
+  
+  Most will also have some kind of expression field, or multiple like If. Only Break doesn't have any Expressions.
+
+** Hierarchy
+
+   - ~abstract Statement~
+     - ~Assignment~
+     - ~While~
+     - ~If~
+       - Maybe we could break this one up into
+	 - ~abstract If~
+	   - ~IfThen~
+	   - ~IfThenElse~
+	 but I'm not sure about that. Implementation details.
+     - ~Break~
+     - ~Print~
+     - ~Sequence~
+     - ~MoveTo~
+     - ~Work~
+     - ~Follow~
+     - ~Attack~
+   
+** Methods
+   
+   ~boolean Statement.execute ()~ is a method that executes the Statement, obviously. Returning true means that the execution of Statements can be continued; returning false means that the execution should be suspended. The method ~Statement Statement.getNextStatement()~ returns the next Statement to be executed after the current one.
+
+   - ~boolean execute ()~ :: A method that executes the Statement, obviously. Returning true means that the execution of Statements can be continued (for all non-actions). Returning false means that the execution should be suspended (for actions only).
+   - ~Statement getNextStatement ()~ :: Returns the next Statement to be executed after this one. Not necessarily equal to ~this.next~.
+   - ~void setNext (Statement value)~ :: Some Statements just set ~this.next~ to the given ~value~. However, If, While, and Sequence make things more complicated.
+   
+** Summary
+   
+*** assignment
+    - execute :: The pair (~this.variableName~ : String, ~(Object) this.expression.determineValue()~ : Boolean/Position/Unit-->Object) is stored in the Map in the Task. Returns true.
+    - getNextStatement :: Returns ~this.next~.
+    - setNext :: Sets this' next field.
+
+*** while loop
+    - Holds a field expression : Expression<Boolean>.
+    - Holds a field body : Statement (most likely a sequence, but not for certain).
+    - execute :: Nothing happens. Returns true.
+    - getNextStatement :: Depends: if ~this.expression.determineValue()~ is true, returns ~this.body~, else returns ~this.next~.
+    - setNext :: Sets this' next field.
+
+*** if statement
+    - Holds a field expression : Expression<Boolean>.
+    - Holds fields ifBody and elseBody : Statement (most likely a sequence, but not for certain).
+    - execute :: Nothing happens. Returns true.
+    - getNextStatement :: Depends: if ~this.expression.determineValue()~ is true, returns ~this.ifBody~, else returns ~this.elseBody~ unless it is null, then it returns ~this.next~.
+    - setNext :: Sets this's next field, and also calls ~this.ifBody.setNext(givenValue)~ and ~this.elseBody.setNext(givenValue)~ (if applicable).
+
+*** break
+    - The next field of a break Statement is set by a method that passes over an entire program after it has been constructed. Alls break Statements have their next fields set to the next of the directly enclosing while loop. If there is no enclosing while loop, I think we can abort and set this Task's isWellFormed to false.
+    - execute :: Nothing happens. Returns true.
+    - getNextStatement :: Returns ~this.next~.
+    - setNext :: Sets this' next field.
+
+*** print
+    - execute :: ~this.message~ gets printed (_TODO_ I don't know how. To the console or to the GUI?). Returns true.
+    - getNextStatement :: Returns ~this.next~.
+    - setNext :: Sets this' next field.
+
+*** sequence
+    - Holds a List<Statement> field called body.
+    - execute :: Nothing happens. Returns true.
+    - getNextStatement :: Returns the first element in the List, or ~this.next~ if the List is empty.
+    - setNext :: Sets this' next field, and also calls setNext on each element of body in a chaining fashion, so conceptually ~firstElem.setNext(secondElem); secondElem.setNext(thirdElem); ... ; lastElem.setNext(this.next)~.
+
+*** moveTo
+    - execute :: Runs method ~this.getTask().getUnit().moveTo(this.expression.determineValue())~. Returns *false*.
+    - getNextStatement :: Returns ~this.next~.
+    - setNext :: Sets this' next field.
+
+*** work
+    - execute :: Runs method ~this.getTask().getUnit().workAt(this.expression.determineValue())~. Returns *false*.
+    - getNextStatement :: Returns ~this.next~.
+    - setNext :: Sets this' next field.
+
+*** follow
+    - I'm actually thinking of replacing every ~follow unit~ with
+      : u:= unit;
+      : while (!are_adjacent(position_of(this), position_of(u)) do
+      :   moveTo(position_of(u));
+      so that the follow Statement doesn't actually exist, but always gets replaced by this thing. It does require us to create the Boolean Expression ~are_adjacent~, that uses two parameters, but since it only gets used in this bit of code, we don't need to write a parser for it.
+      If we choose to do this, then the following bullet points are obsolete.
+      - execute :: I don't know this one yet _TODO_ . Returns *false*.
+      - getNextStatement :: Returns ~this.next~.
+      - setNext :: Sets this' next field.
+
+*** attack
+    
+    - execute :: Runs method ~this.getTask().getUnit().attack(this.expression.determineValue())~. Returns *false*.
+    - getNextStatement :: Returns ~this.next~.
+    - setNext :: Sets this' next field.
+
+** Notes
+  - The ~next~ field gets set in one of several ways.
+    - Any Statement defaultly gives theirself null as next-value at construction.
+    - A sequence Statement gives every sub-Statement the next sub-Statement in the List. The last one keeps its null.
       - A while loop reaches into its body, and gives it itself (the while loop itself) as next-value, or gives it too the last sub-Statement of it if the while loop's body is a sequence. Quite messy, but inevitable, I think.
-      - An if statement does more or less the same: it gives its next-value. _TODO_ No wait it can't. I'm too tired to work this shit out now (it's 03:37), but I'll explain it briefly for myself. If can't give its ifBody and elseBody its own next-value as next-value, because at instantiation of the If that will be null, and maybe later on the If gets a new next, and that of its body's wont get updated. My first intuitive solution was making objects for the next pointing, however, I don't know /how/ to go about that; it just felt good. The better option, to me, looks like having a method Statement.setNext. Normal Statements would just have their next-field set by it, but while and if could propagate to their children.
-    - while loops and if (else) statements /are/ Statements, but their execute just simply returns true without doing anything. The same goes for sequences by the way. It throws away some Statement calls and decreases num more than necessary, but it is quite a clean solution in my opinion.
+      - An if statement does more or less the same: it gives its ~next-value. _TODO_ No wait it can't. I'm too tired to work this shit out now (it's 03:37), but I'll explain it briefly for myself. If can't give its ifBody and elseBody its own next-value as next-value, because at instantiation of the If that will be null, and maybe later on the If gets a new next, and that of its body's wont get updated. My first intuitive solution was making objects for the next pointing, however, I don't know /how/ to go about that; it just felt good. The better option, to me, looks like having a method Statement.setNext. Normal Statements would just have their next-field set by it, but while and if could propagate to their children.
+  - while loops and if (else) statements /are/ Statements, but their execute just simply returns true without doing anything. The same goes for sequences by the way. It throws away some Statement calls and decreases num more than necessary, but it is quite a clean solution in my opinion.
 
 * Expression
 
