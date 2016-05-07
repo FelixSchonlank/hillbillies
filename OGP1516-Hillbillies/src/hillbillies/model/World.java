@@ -1243,7 +1243,12 @@ public class World {
 		return smallestFaction;
 	}
 	
-	
+	/**
+	 * Return the set of faction of this World
+	 */
+	public Set<Faction> getFactions(){
+		return this.listAllFactions();
+	}
 	
 	/* FIELDS */
 	

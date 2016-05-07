@@ -158,6 +158,14 @@ public class Faction {
 	}
 	
 	/**
+	 * Return the list of units of this faction not a copy but the actual list
+	 */
+	@Basic
+	public Set<Unit> getAllUnits(){
+		return this.listAllUnits();
+	}
+	
+	/**
 	 * A variable referencing the maximum units a faction can have 
 	 */
 	private static final int MaxUnits = 50;
