@@ -199,8 +199,19 @@ A generic class in T: ~public class Expression <T>~. The hierarchy is as such:
   - ObjectExpression
     - ReadVariable
 
-The ReadVariable Expression seems to not fit in this list, because it can return any of the three types. _TODO_ I don't know how to deal with this yet. I want the 17 grade, so I feel inclined to handle this like a pro. I'll think about this later.
-
 It has only one method that I can think of right now: ~public T Expression.determineValue()~, which gets overridden by every single child in an at least semi-obvious way. Also: We shouldn't necessarily make the four children of Expression; we could also just make all those classes direct children as such:
 : public class IsPassableExpression extends Expression<Boolean>
 
+** Note about type-safety
+
+The pdf want us to /not/ make a method to check the type-safety of the Task program, which is really easy when using generics. However: there's also ReadVariableExpression, and when that gets created it has no way of knowing what type that variable will be, because the ITaskFactory.createReadVariable gets called without access to a Map<String, (Boolean|Position|Unit)>. Also, we really can't loosen up our demand that the ~destination~ field of a MoveToStatement for example /has/ to be of type ~Expression<Position>~. That Position has to be there, otherwise we won't get a 17, and we want that goddamn prime score apparently. All too bad eh?
+
+Well, not really. I thought of the following: let's take the example of MoveToStatement again. Our implementation of ITaskFactory, TaskFactory, will just have to do the following in ~Statement createMoveToStatement (Expression expression, SourceLocation sourceLocation)~. If the given ~expression~ is *not* instanceof ~ReadVariableExpression~, it is simple: a new MoveToStatement object is constructed and the given expression is passed through as an argument. If it is, however, then a new object of type ReadPositionVariableExpression is made (Position because it move_to should have a Position) is constructed, which takes over the variable name to return from. ReadPositionVariableExpression is just the same as ReadVariableExpression, except that it typecasts the result it got from the Task's Map into a Position before returning it. Its return type is thus Position. It also implements/inherits from Expression<Position>. Now this ReadPositionVariableExpression gets passed as the Expression<Position> to the constructor of MoveToStatement, so it still gets an Expression<Position>.
+
+The problem with this is that to do this, our implementation TaskFactory should have a method ~createMoveToStatement (Expression<?> expression, ...)~. Note that Expression<?> has a wildcard, since it should be accepting Expression<Position> (obviously), and Expression<Object> because else ReadVariableExpression (which would extend Expression<Object>) could not be passed to it in the first place. The solution (I think): we make *two* methods!
+- ~createMoveToStatement (Expression<Position> expression, ...)~
+  Offers normal behavior.
+- ~createMoveToStatement (ReadVariableStatement expression, ...)~
+  Offers the special typecasting shit.
+
+Ok apparently that doesn't work because the two methods have the same /Erasure/ whatever the hell that may be, but also, and more confusingly, they don't actually override the interface's methods, because those only specify the parameters as Expressions. That is the *raw type*, friendos, and those are doubleplusungood! This has a major impact on our project, since this means that even the ReadVariables aside we can't make that compile time check like they asked us to. We /must/ accept Expression as a raw type parameter in all the methods in our TaskFactory implementation, and that bugs me. Remind me we book a consultation for this shit. Maybe first read up on generics and Liskov though.
