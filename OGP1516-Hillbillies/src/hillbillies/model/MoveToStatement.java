@@ -9,7 +9,10 @@ public class MoveToStatement extends Statement {
 	}
 	
 	public boolean execute () {
-		this.getTask().getUnit().moveTo(this.destination.evaluate());
+		try {
+			this.getTask().getUnit().moveTo(this.destination.evaluate().toCoordinate());
+		} catch (IllegalArgumentException | BadFSMStateException e) {
+		}
 		return false;
 	}
 	

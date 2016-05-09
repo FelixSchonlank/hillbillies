@@ -1,3 +1,4 @@
+
 package hillbillies.model;
 
 public class WorkStatement extends Statement {
@@ -9,7 +10,10 @@ public class WorkStatement extends Statement {
 	}
 	
 	public boolean execute () {
-		this.getTask().getUnit().workAt(this.condition.evaluate());
+		try {
+			this.getTask().getUnit().work(this.condition.evaluate().toCoordinate());
+		} catch (BadFSMStateException e) {
+		}
 		return false;
 	}
 	

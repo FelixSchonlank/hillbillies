@@ -9,7 +9,10 @@ public class AttackStatement extends Statement {
 	}
 	
 	public boolean execute () {
-		this.getTask().getUnit().attack(this.victim.evaluate());
+		try {
+			this.getTask().getUnit().attack(this.victim.evaluate());
+		} catch (IllegalArgumentException | BadFSMStateException e) {
+		}
 		return false;
 	}
 	
