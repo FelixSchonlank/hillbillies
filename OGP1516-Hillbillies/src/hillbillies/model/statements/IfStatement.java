@@ -2,6 +2,7 @@ package hillbillies.model.statements;
 
 import hillbillies.model.BadFSMStateException;
 import hillbillies.model.Expression;
+import hillbillies.model.Task;
 import hillbillies.model.statements.Statement;
 
 public class IfStatement extends Statement {
@@ -32,6 +33,15 @@ public class IfStatement extends Statement {
 		this.ifBody.setNext(next);
 		if (elseBody != null) {
 			this.elseBody.setNext(next);
+		}
+	}
+	
+	@Override
+	public void setTask (Task task) {
+		super.setTask(task);
+		this.ifBody.setTask(task);
+		if (this.elseBody != null) {
+			this.elseBody.setTask(task);
 		}
 	}
 

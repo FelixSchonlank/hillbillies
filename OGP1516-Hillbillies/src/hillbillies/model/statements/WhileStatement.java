@@ -1,6 +1,7 @@
 package hillbillies.model.statements;
 
 import hillbillies.model.Expression;
+import hillbillies.model.Task;
 
 public class WhileStatement extends Statement {
 	
@@ -20,6 +21,12 @@ public class WhileStatement extends Statement {
 		} else {
 			return this.getNext();
 		}
+	}
+	
+	@Override
+	public void setTask (Task task) {
+		super.setTask(task);
+		this.body.setTask(task);
 	}
 	
 	@Override
