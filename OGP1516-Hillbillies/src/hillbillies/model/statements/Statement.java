@@ -7,7 +7,7 @@ import hillbillies.model.World;
 
 public abstract class Statement {
 	
-	protected Statement next;
+	private Statement next;
 	private Task task;
 	private static final boolean shouldContinueExecution = true;
 	
@@ -49,9 +49,7 @@ public abstract class Statement {
 	/**
 	 * Executes this Statement. Sometimes this doesn't do anything.
 	 */
-	public void execute () throws BadFSMStateException {
-		
-	}
+	public abstract void execute () throws BadFSMStateException;
 	
 	/**
 	 * Tells whether the execution of Statements in the Task should be
