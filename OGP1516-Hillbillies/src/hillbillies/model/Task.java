@@ -11,7 +11,7 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.expressions.ReadVarriable;
-import hillbillies.model.statements.AttackStatement;
+import hillbillies.model.statements.*;
 import hillbillies.model.statements.Statement;
 
 /** 
@@ -622,12 +622,65 @@ public class Task {
 	public boolean isWelFormed(){
 		Set<String> statements = new HashSet<String>();
 		for(Statement statement : this.activities){
-			if (statement instanceof AttackStatement){
-				if((((AttackStatement) statement).getVictim().isVarriable())){
-					if(! statements.contains(((ReadVarriable) ((AttackStatement) statement).getVictim()).getName())
-				}
+			if (! checkStatement(false, statement, statements)){
+				return false;
 			}
 		}
+		return true;
+	}
+
+	private boolean checkSequence(boolean inBodyOfWhile, SequenceStatement Sequence, Set<String> statements){
+		for(Statement statement : Sequence.getBody() ){
+			if (! checkStatement(inBodyOfWhile, statement, statements)){
+				return false;
+			}
+		}
+		return true;
 	}
 	
+	private boolean checkStatement(boolean inBodyOfWhile, Statement statement, Set<String> statements){
+		
+		if(statement instanceof AssignmentStatement){
+			statements.add(((AssignmentStatement) statement).getName());
+		}else if (statement instanceof AttackStatement){
+			//TODO
+		}else if (statement instanceof BreakStatement){
+			if(! inBodyOfWhile){
+				return false;
+			}
+		}else if (statement instanceof MoveToStatement){
+			//TODO
+		}else if (statement instanceof SequenceStatement){
+			if (! this.checkSequence(inBodyOfWhile, (SequenceStatement) statement, statements)){
+				return false;
+			}
+		}else if (statement instanceof WhileStatement){
+			inBodyOfWhile = true;
+			if (! this.checkStatement(false, ((WhileStatement) statement).getBody(), statements)){
+				return false;
+			}
+			inBodyOfWhile = false;
+		}else if (statement instanceof WorkStatement){
+			//TODO
+		}else if (statement instanceof IfStatement){
+			return checkStatementInIf(inBodyOfWhile, ((IfStatement) statement).getIfBody(), ((IfStatement) statement).getElseBody(), statements);
+		}
+		return true;
+	}
+	
+	private boolean checkStatementInIf(boolean inBodyOfWhile, Statement ifStatement, Statement elseStatement , Set<String> statements){
+		Set<String> ifAssignments = new HashSet<String>();
+		Set<String> elseAssignments = new HashSet<String>();
+		if (! checkStatement(inBodyOfWhile,  ifStatement, ifAssignments)){
+			return false;
+		}else if (! checkStatement(inBodyOfWhile,  elseStatement, elseAssignments)){
+			return false;
+		}
+		for (String element : ifAssignments){
+			if (elseAssignments.contains(element)){
+				statements.add(element);
+			}
+		}
+		return true;
+	}
 }

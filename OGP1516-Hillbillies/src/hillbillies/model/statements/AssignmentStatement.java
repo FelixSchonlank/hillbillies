@@ -5,6 +5,11 @@ import hillbillies.model.expressions.*;
 public class AssignmentStatement extends Statement {
 
 	private final String variableName;
+	
+	public String getName(){
+		return this.variableName;
+	}
+	
 	private final Expression<?> expression; // TODO make sure we use the right generics, and no raw types.
 	
 	public AssignmentStatement (String variableName, Expression expression) {

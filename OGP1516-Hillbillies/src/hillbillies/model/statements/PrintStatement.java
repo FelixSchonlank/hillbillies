@@ -1,8 +1,12 @@
 package hillbillies.model.statements;
 
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;;
 
 public class PrintStatement extends Statement {
+	
+	public Expression<?> getExpression(){
+		return this.expression;
+	}
 	
 	private final Expression<?> expression;
 	

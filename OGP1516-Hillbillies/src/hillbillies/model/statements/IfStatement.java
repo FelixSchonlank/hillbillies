@@ -1,7 +1,7 @@
 package hillbillies.model.statements;
 
 import hillbillies.model.BadFSMStateException;
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;
 import hillbillies.model.Task;
 import hillbillies.model.statements.Statement;
 
@@ -9,6 +9,14 @@ public class IfStatement extends Statement {
 	
 	private final Expression<Boolean> condition;
 	private final Statement ifBody, elseBody;
+	
+	public Statement getIfBody(){
+		return this.ifBody;
+	}
+	
+	public Statement getElseBody(){
+		return this.elseBody;
+	}	
 	
 	public IfStatement (Expression<Boolean> condition, Statement ifBody, Statement elseBody) {
 		this.condition = condition;
