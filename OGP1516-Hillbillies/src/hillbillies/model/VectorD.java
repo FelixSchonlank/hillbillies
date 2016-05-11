@@ -155,4 +155,17 @@ public class VectorD extends Vector3<Double> {
 		// Type cast will always be possible
 		return new Double[] {this.getX(), this.getY(), this.getZ()};
 	}
+	
+	/**
+	 * Returns the Euclidean distance between this VectorD and another one.
+	 * @param other
+	 * 		The other VectorD
+	 * @return
+	 * 		The Euclidean distance between the two
+	 */
+	public double distance (VectorD other) {
+		return (this.getX() - other.getX()) * (this.getX() - other.getX()) + 
+				(this.getY() - other.getY()) * (this.getY() - other.getY()) + 
+				(this.getZ() - other.getZ()) * (this.getZ() - other.getZ());
+	}
 }

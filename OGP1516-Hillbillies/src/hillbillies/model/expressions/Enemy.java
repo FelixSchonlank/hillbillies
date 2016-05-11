@@ -8,13 +8,20 @@ public class Enemy extends Expression<Unit> {
 	
 	@Override
 	public Unit evaluate() {
-		Faction enemyFaction = null;
-		for(Faction element : this.getTask().getUnit().getWorld().getFactions() ){
-			if(element != this.getTask().getUnit().getFaction()){
-				enemyFaction = element;
-			}
-		}
-		return enemyFaction.getRandomUnit();
+		return
+				this
+				.getTask()
+				.getUnit()
+				.getWorld()
+				.getFactions()
+				.stream()
+				.filter(
+						(Faction f)
+						-> f != this.getTask().getUnit().getFaction()
+						)
+				.findAny()
+				.get()
+				.getRandomUnit();
 	}
 
 }

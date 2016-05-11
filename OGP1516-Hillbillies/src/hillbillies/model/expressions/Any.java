@@ -12,10 +12,15 @@ public class Any extends Expression<Unit> {
 		
 		@Override
 		public Unit evaluate() {
-			Set<Unit> units = new HashSet<Unit>();
-			for(Faction element : this.getTask().getUnit().getWorld().getFactions() ){
-					units.add(element.getRandomUnit());
-			}
-			return (Unit) Utils.getRandomElement(units);
+			return
+					this
+					.getTask()
+					.getUnit()
+					.getWorld()
+					.listAllFactions()
+					.stream()
+					.findAny()
+					.get()
+					.getRandomUnit();
 		}	
 }

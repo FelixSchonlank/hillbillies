@@ -11,9 +11,8 @@ public class PrintStatement extends Statement {
 	}
 	
 	@Override
-	public boolean execute () {
+	public void execute () {
 		System.out.println(this.expression.evaluate().toString());
-		return true;
 	}
 	
 }

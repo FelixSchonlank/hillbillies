@@ -1,4 +1,9 @@
-package hillbillies.model;
+package hillbillies.model.statements;
+
+import hillbillies.model.BadFSMStateException;
+import hillbillies.model.Expression;
+import hillbillies.model.Task;
+import hillbillies.model.statements.Statement;
 
 public class IfStatement extends Statement {
 	
@@ -10,7 +15,8 @@ public class IfStatement extends Statement {
 		this.ifBody = ifBody;
 		this.elseBody = elseBody;
 	}
-		
+	
+	@Override
 	public Statement getNextStatement () {
 		if (this.condition.evaluate()) {
 			return ifBody;
@@ -21,12 +27,27 @@ public class IfStatement extends Statement {
 		}
 	}
 	
+	@Override
 	public void setNext (Statement next) {
-		this.next = next;
+		super.setNext(next);
 		this.ifBody.setNext(next);
 		if (elseBody != null) {
 			this.elseBody.setNext(next);
 		}
+	}
+	
+	@Override
+	public void setTask (Task task) {
+		super.setTask(task);
+		this.ifBody.setTask(task);
+		if (this.elseBody != null) {
+			this.elseBody.setTask(task);
+		}
+	}
+
+	@Override
+	public void execute() throws BadFSMStateException {
+		
 	}
 	
 }

@@ -1,13 +1,15 @@
 package hillbillies.model.statements;
 
+import hillbillies.model.BadFSMStateException;
 import hillbillies.model.Task;
 import hillbillies.model.Unit;
 import hillbillies.model.World;
 
 public abstract class Statement {
 	
-	protected Statement next;
+	private Statement next;
 	private Task task;
+	private static final boolean shouldContinueExecution = true;
 	
 	public Task getTask () {
 		return this.task;
@@ -46,11 +48,15 @@ public abstract class Statement {
 	
 	/**
 	 * Executes this Statement. Sometimes this doesn't do anything.
-	 * @return
-	 * 		True iff execution should continue after this Statement.
 	 */
-	public boolean execute () {
-		return true;
+	public abstract void execute () throws BadFSMStateException;
+	
+	/**
+	 * Tells whether the execution of Statements in the Task should be
+	 * continued after this method.
+	 */
+	public boolean shouldContinueExecution () {
+		return shouldContinueExecution;
 	}
 	
 
