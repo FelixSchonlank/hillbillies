@@ -5,7 +5,7 @@ import hillbillies.model.BadFSMStateException;
 import hillbillies.model.Expression;
 import hillbillies.model.Position;
 
-public class WorkStatement extends Statement {
+public class WorkStatement extends ActionStatement {
 	
 	public final Expression<Position> condition;
 	
@@ -13,12 +13,8 @@ public class WorkStatement extends Statement {
 		this.condition = expression;
 	}
 	
-	public boolean execute () {
-		try {
-			this.getTask().getUnit().work(this.condition.evaluate().toCoordinate());
-		} catch (BadFSMStateException e) {
-		}
-		return false;
+	public void execute () throws BadFSMStateException {
+		this.getTask().getUnit().work(this.condition.evaluate().toCoordinate());
 	}
 	
 }

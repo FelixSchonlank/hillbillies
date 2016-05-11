@@ -1,4 +1,7 @@
-package hillbillies.model;
+package hillbillies.model.statements;
+
+import hillbillies.model.Expression;
+import hillbillies.model.statements.Statement;
 
 public class IfStatement extends Statement {
 	
@@ -10,7 +13,7 @@ public class IfStatement extends Statement {
 		this.ifBody = ifBody;
 		this.elseBody = elseBody;
 	}
-		
+	
 	public Statement getNextStatement () {
 		if (this.condition.evaluate()) {
 			return ifBody;

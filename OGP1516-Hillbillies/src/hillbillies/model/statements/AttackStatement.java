@@ -4,7 +4,7 @@ import hillbillies.model.BadFSMStateException;
 import hillbillies.model.Expression;
 import hillbillies.model.Unit;
 
-public class AttackStatement extends Statement {
+public class AttackStatement extends ActionStatement {
 	
 	private final Expression<Unit> victim;
 	
@@ -12,12 +12,9 @@ public class AttackStatement extends Statement {
 		this.victim = expression;
 	}
 	
-	public boolean execute () {
-		try {
-			this.getTask().getUnit().attack(this.victim.evaluate());
-		} catch (IllegalArgumentException | BadFSMStateException e) {
-		}
-		return false;
+	@Override
+	public void execute () throws BadFSMStateException {
+		this.getTask().getUnit().attack(this.victim.evaluate());
 	}
 	
 }
