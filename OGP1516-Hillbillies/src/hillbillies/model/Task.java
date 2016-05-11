@@ -620,9 +620,12 @@ public class Task {
 	/* isWelFormed */
 	
 	public boolean isWelFormed(){
+		Set<String> statements = new HashSet<String>();
 		for(Statement statement : this.activities){
 			if (statement instanceof AttackStatement){
-				if(((AttackStatement) statement).getVictim() instanceof ReadVarriable)
+				if((((AttackStatement) statement).getVictim().isVarriable())){
+					if(! statements.contains(((ReadVarriable) ((AttackStatement) statement).getVictim()).getName())
+				}
 			}
 		}
 	}

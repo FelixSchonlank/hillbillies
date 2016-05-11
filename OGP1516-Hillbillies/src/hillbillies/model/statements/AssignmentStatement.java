@@ -1,6 +1,6 @@
 package hillbillies.model.statements;
 
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;
 
 public class AssignmentStatement extends Statement {
 

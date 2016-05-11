@@ -63,4 +63,7 @@ public abstract class Expression<T> {
 	 */
 	public abstract T evaluate();
 		
+	public boolean isVarriable(){
+		return false;
+	}
 }

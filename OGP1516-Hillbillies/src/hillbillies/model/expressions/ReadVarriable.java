@@ -2,10 +2,14 @@ package hillbillies.model.expressions;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;;
 
-public class ReadVarriable extends Expression<Object>{
-
+public class ReadVarriable extends Expression<?>{
+	
+	@Override
+	public boolean isVarriable(){
+		return true;
+	}
 	
 	/**
 	 * Initialize this new ReadVarriable with given name.

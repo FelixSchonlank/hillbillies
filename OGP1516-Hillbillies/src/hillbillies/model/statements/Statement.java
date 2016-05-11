@@ -53,4 +53,8 @@ public abstract class Statement {
 		return true;
 	}
 	
+
+	public boolean isVarriable(){
+		return false;
+	}
 }
