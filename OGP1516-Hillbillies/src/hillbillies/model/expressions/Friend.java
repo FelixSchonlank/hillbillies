@@ -7,13 +7,19 @@ public class Friend extends Expression<Unit> {
 
 	@Override
 	public Unit evaluate() {
-		Unit thisUnit = this.getTask().getUnit();
-		for( Unit unit : thisUnit.getFaction().getAllUnits()){
-			if(unit != this.getTask().getUnit()){
-				return unit;
-			}
-		}
-		return null;
+		return
+				this
+				.getTask()
+				.getUnit()
+				.getFaction()
+				.getAllUnits()
+				.stream()
+				.filter(
+						(Unit u)
+						-> u != this.getTask().getUnit()
+						)
+				.findAny()
+				.get();
 	}
 	
 }
