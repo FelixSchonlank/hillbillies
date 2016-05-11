@@ -2,7 +2,7 @@
 package hillbillies.model.statements;
 
 import hillbillies.model.BadFSMStateException;
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 
 public class WorkStatement extends ActionStatement {

@@ -4,7 +4,7 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.expressions.*;;
 
-public class ReadVarriable extends Expression<?>{
+public class ReadVarriable extends Expression<Object>{
 	
 	@Override
 	public boolean isVarriable(){

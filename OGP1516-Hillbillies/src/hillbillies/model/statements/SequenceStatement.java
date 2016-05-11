@@ -6,6 +6,9 @@ import hillbillies.model.Task;
 
 public class SequenceStatement extends Statement {
 	
+	public List<Statement> getBody(){
+		return this.body;
+	}
 	private final List<Statement> body;
 	
 	public SequenceStatement (List<Statement> body) {
