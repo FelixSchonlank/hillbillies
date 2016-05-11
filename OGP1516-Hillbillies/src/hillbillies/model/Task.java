@@ -620,9 +620,9 @@ public class Task {
 	/* isWelFormed */
 	
 	public boolean isWelFormed(){
-		Set<String> statements = new HashSet<String>();
+		Set<String> assignments = new HashSet<String>();
 		for(Statement statement : this.activities){
-			if (! checkStatement(false, statement, statements)){
+			if (! checkStatement(false, statement, assignments)){
 				return false;
 			}
 		}
@@ -638,10 +638,9 @@ public class Task {
 		return true;
 	}
 	
-	private boolean checkStatement(boolean inBodyOfWhile, Statement statement, Set<String> statements){
-		
+	private boolean checkStatement(boolean inBodyOfWhile, Statement statement, Set<String> assignments){
 		if(statement instanceof AssignmentStatement){
-			statements.add(((AssignmentStatement) statement).getName());
+			assignments.add(((AssignmentStatement) statement).getName());
 		}else if (statement instanceof AttackStatement){
 			//TODO
 		}else if (statement instanceof BreakStatement){
@@ -651,34 +650,34 @@ public class Task {
 		}else if (statement instanceof MoveToStatement){
 			//TODO
 		}else if (statement instanceof SequenceStatement){
-			if (! this.checkSequence(inBodyOfWhile, (SequenceStatement) statement, statements)){
+			if (! this.checkSequence(inBodyOfWhile, (SequenceStatement) statement, assignments)){
 				return false;
 			}
 		}else if (statement instanceof WhileStatement){
-			inBodyOfWhile = true;
-			if (! this.checkStatement(false, ((WhileStatement) statement).getBody(), statements)){
+			if (! this.checkStatement(true, ((WhileStatement) statement).getBody(), assignments)){
 				return false;
 			}
-			inBodyOfWhile = false;
 		}else if (statement instanceof WorkStatement){
 			//TODO
 		}else if (statement instanceof IfStatement){
-			return checkStatementInIf(inBodyOfWhile, ((IfStatement) statement).getIfBody(), ((IfStatement) statement).getElseBody(), statements);
+			return checkStatementInIf(inBodyOfWhile, ((IfStatement) statement).getIfBody(), ((IfStatement) statement).getElseBody(), assignments);
 		}
 		return true;
 	}
 	
-	private boolean checkStatementInIf(boolean inBodyOfWhile, Statement ifStatement, Statement elseStatement , Set<String> statements){
+	private boolean checkStatementInIf(boolean inBodyOfWhile, Statement ifStatement, Statement elseStatement , Set<String> assignments){
 		Set<String> ifAssignments = new HashSet<String>();
+		ifAssignments.addAll(assignments);
 		Set<String> elseAssignments = new HashSet<String>();
+		elseAssignments.addAll(assignments);
 		if (! checkStatement(inBodyOfWhile,  ifStatement, ifAssignments)){
 			return false;
 		}else if (! checkStatement(inBodyOfWhile,  elseStatement, elseAssignments)){
 			return false;
 		}
 		for (String element : ifAssignments){
-			if (elseAssignments.contains(element)){
-				statements.add(element);
+			if (elseAssignments.contains(element) && ! assignments.contains(element)){
+				assignments.add(element);
 			}
 		}
 		return true;
