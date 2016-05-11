@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import hillbillies.part2.listener.TerrainChangeListener;
 import ogp.framework.util.Util;
 
 import java.util.*;
@@ -22,24 +23,25 @@ public class TestUnit {
 
 	@Before
 	public void setUp() throws Exception {
-		int[] position = {3, 4, 5};
-		Baas = new Unit ("WillieW" , position , 75 , 50, 50, 50, false);
-		victim = new Unit ("ViezeFur" , position , 75 , 50, 50, 50, false);
+		int[][][] terrain = new int[3][3][3];
+		
+		for(int i = 0; i<3; i++){
+			for(int j = 0; j<3; j++){
+				for(int k = 0; k<3; k++){
+					terrain[i][j][k] = 0;
+				}
+			}
+		}
+		terrain[0][0][0] = 1;
+		TerrainChangeListener terrainChangeListener = new TerrainChangeListener(); 
+		
+		willem = new World(terrain, terrainChangeListener);
+		Baas = new Unit (willem, true);
+		victim = new Unit (willem, false);
 	}
 
 	/* Constructor */
 	
-	@Test
-	public void testConstructor_legalCase(){
-		int[] position = {3, 4, 5};
-		new Unit ("WillieW" , position , 75 , 50, 50, 50, false);
-	}
-	
-	@Test (expected = IllegalArgumentException.class)
-	public void testConstructor_illegalName_short(){
-		int[] position = {3, 4, 5};
-		new Unit ("W" , position , 75 , 50, 50, 50, false);
-	}
 	
 	@Test (expected = IllegalArgumentException.class)
 	public void testConstructor_illegalName_NotUpper(){
@@ -279,14 +281,14 @@ public class TestUnit {
 	}
 
 	@Test
-	public void testDefend_legalCase() {
+	public void testDefend_legalCase() throws IllegalArgumentException, BadFSMStateException {
 		int oldHP = victim.getHP();
 		victim.defend(Baas);
 		assertTrue( victim.getHP() == oldHP - Baas.getStrength() / 10 || victim.getHP() == oldHP );
 	}
 
 	@Test (expected = IllegalArgumentException.class)	
-	public void testDefend_nullAttackert(){
+	public void testDefend_nullAttackert() throws BadFSMStateException{
 		victim.defend(null);
 	}
 
@@ -307,7 +309,7 @@ public class TestUnit {
 	@Test (expected = BadFSMStateException.class)
 	public void testWork_BadState() throws BadFSMStateException{
 		Baas.setState(State.RESTING_INIT);
-		Baas.work();
+		Baas.work(new Position(1, 1, 1)));
 	}
 
 	@Test

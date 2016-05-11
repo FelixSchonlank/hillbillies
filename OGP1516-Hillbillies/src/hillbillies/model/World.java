@@ -206,7 +206,7 @@ public class World {
 	 */
 	public boolean hasProperCubes() {
 		for (Coordinate cube : cubes.keySet()) {
-			if (!isValidCoordinate(cube)) {
+			if (!canHaveAsCoordinate(cube)) {
 				return false;
 			}
 			if (!isValidTerrainType(cubes.get(cube))) {
@@ -224,7 +224,7 @@ public class World {
 	 * @return
 	 * 		True iff the given coordinate is within the World bounds.
 	 */
-	public boolean isValidCoordinate(Coordinate coordinate) {
+	public boolean canHaveAsCoordinate(Coordinate coordinate) {
 		return withinBounds(coordinate);
 	}
 	
@@ -235,7 +235,7 @@ public class World {
 	 * 		True iff the given position's coordinate is valid.
 	 */
 	public boolean isValidPosition(Position position) {
-		return isValidCoordinate(position.toCoordinate());
+		return canHaveAsCoordinate(position.toCoordinate());
 	}
 	
 	/**
@@ -430,10 +430,10 @@ public class World {
 	 * 		If at least one of the given Coordinates is out of bounds.
 	 */
 	public boolean areAdjacentCubes(Coordinate cube1, Coordinate cube2) throws IllegalArgumentException {
-		if(!isValidCoordinate(cube1)){
+		if(!canHaveAsCoordinate(cube1)){
 			throw new IllegalArgumentException("First cube is not valid: " + cube1.toString());
 		}
-		if(!isValidCoordinate(cube2)){
+		if(!canHaveAsCoordinate(cube2)){
 			throw new IllegalArgumentException("Second cube is not valid: " + cube2.toString());
 		}
 		
@@ -451,7 +451,7 @@ public class World {
 	 * 		| !withinBounds(coordinate)
 	 */
 	public Position cubeCenter(Coordinate coordinate) throws IllegalArgumentException {
-		if(!isValidCoordinate(coordinate)){
+		if(!canHaveAsCoordinate(coordinate)){
 			throw new IllegalArgumentException("Coordinate is not valid: " + coordinate.toString());
 		}
 		return coordinate.toPosition();
@@ -496,10 +496,10 @@ public class World {
 	 * 		If at least one of the given Coordinates is out of bounds.
 	 */
 	public boolean areSameCube(Coordinate coord1, Coordinate coord2) throws IllegalArgumentException {
-		if (!isValidCoordinate(coord1)) {
+		if (!canHaveAsCoordinate(coord1)) {
 			throw new IllegalArgumentException("First Coordinate is not valid: " + coord1.toString());
 		}
-		if (!isValidCoordinate(coord2)) {
+		if (!canHaveAsCoordinate(coord2)) {
 			throw new IllegalArgumentException("Second Coordinate is not valid: " + coord2.toString());
 		}
 		return coord1.equals(coord2);
@@ -531,7 +531,7 @@ public class World {
 	 * 		If the given Coordinate is out of bounds.
 	 */
 	public Set<Coordinate> getNeighbors(Coordinate coordinate) throws IllegalArgumentException {
-		if (!isValidCoordinate(coordinate)) {
+		if (!canHaveAsCoordinate(coordinate)) {
 			throw new IllegalArgumentException("Coordinate is not valid: " + coordinate.toString());
 		}
 		Set<Coordinate> neighbors = coordinate.getNeighbors();
@@ -550,7 +550,7 @@ public class World {
 	 * 		If the given coordinate is not valid.
 	 */
 	public boolean isPassableCube(Coordinate coordinate) throws IllegalArgumentException {
-		if (!isValidCoordinate(coordinate)) {
+		if (!canHaveAsCoordinate(coordinate)) {
 			throw new IllegalArgumentException("Coordinate is not valid: " + coordinate.toString());
 		}
 		return cubes.get(coordinate).isPassable();
@@ -568,7 +568,7 @@ public class World {
 	 * 		If the given coordinate is not valid.
 	 */
 	public boolean isAroundSolid(Coordinate coordinate) throws IllegalArgumentException {
-		if (!isValidCoordinate(coordinate)) {
+		if (!canHaveAsCoordinate(coordinate)) {
 			throw new IllegalArgumentException("Given coordinate is not valid: " + coordinate.toString());
 		}
 		// Being above the ground counts too
@@ -595,7 +595,7 @@ public class World {
 	 * 		If the given coordinate is not valid.
 	 */
 	public boolean isAboveSolid(Coordinate coordinate) throws IllegalArgumentException {
-		if (!isValidCoordinate(coordinate)) {
+		if (!canHaveAsCoordinate(coordinate)) {
 			throw new IllegalArgumentException("Given coordinate is not valid: " + coordinate.toString());
 		}
 		// Being above the ground counts too
@@ -616,7 +616,7 @@ public class World {
 	 * 		If the given coordinate is not valid.
 	 */
 	public TerrainType getCubeAt(Coordinate coordinate) throws IllegalArgumentException {
-		if (!isValidCoordinate(coordinate)) {
+		if (!canHaveAsCoordinate(coordinate)) {
 			throw new IllegalArgumentException("Given cube coordinate is not valid: " + coordinate.toString());
 		}
 		return this.cubes.get(coordinate);
@@ -639,7 +639,7 @@ public class World {
 	 */
 	public void setCubeAt(Coordinate coordinate, TerrainType terrainType)
 			throws IllegalArgumentException {
-		if (!isValidCoordinate(coordinate)) {
+		if (!canHaveAsCoordinate(coordinate)) {
 			throw new IllegalArgumentException("Given cube coordinate is not valid: " + coordinate.toString());
 		}
 		if (!isValidTerrainType(terrainType)) {
@@ -707,7 +707,7 @@ public class World {
 	 * 		a shallow copy.
 	 */
 	public Set<GameObject> listGameObjectsInCube(Coordinate coordinate) {
-		if (!isValidCoordinate(coordinate)) {
+		if (!canHaveAsCoordinate(coordinate)) {
 			throw new IllegalArgumentException("Given coordinate is invalid: " + coordinate.toString());
 		}
 		Set<GameObject> result = new HashSet<GameObject>();
