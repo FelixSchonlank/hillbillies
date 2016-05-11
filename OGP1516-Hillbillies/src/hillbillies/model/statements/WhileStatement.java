@@ -18,8 +18,13 @@ public class WhileStatement extends Statement {
 		if (this.condition.evaluate()) {
 			return this.body;
 		} else {
-			return this.next;
+			return this.getNext();
 		}
+	}
+	
+	@Override
+	public void execute () {
+		
 	}
 	
 }
