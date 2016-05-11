@@ -34,7 +34,7 @@
 - priority : int
 - activities : List<Statement>
   Variable referencing the activities of this Task.
-- selected : Position
+- position : Position
   The Position of the cube that was selected at the creation of this Task.
 - variables : Map<Object>
   A (Hash)Map containing the variables that have been declared in the Task program, mapped to their values. Sadly, they must be stored as Objects, and recast later on.

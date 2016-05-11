@@ -7,8 +7,7 @@ public class SelectedPosition extends Expression<Position>{
 
 	@Override
 	public Position evaluate() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getTask().getPosition();
 	}
 
 }

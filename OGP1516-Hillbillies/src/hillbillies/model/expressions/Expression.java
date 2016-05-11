@@ -1,7 +1,8 @@
-package hillbillies.model;
+package hillbillies.model.expressions;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
+import hillbillies.model.Task;
 
 /**
 * @Invar  The Task of each Expression must be a valid Task for any

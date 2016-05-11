@@ -10,6 +10,9 @@ import java.util.Set;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
+import hillbillies.model.expressions.ReadVarriable;
+import hillbillies.model.statements.AttackStatement;
+import hillbillies.model.statements.Statement;
 
 /** 
  * @Invar  Each Task can have its name as name.
@@ -25,6 +28,9 @@ import be.kuleuven.cs.som.annotate.Raw;
  *       | isValidPriority(getPriority())
  * @Invar   Each Task must have proper Activities.
  *        | hasProperStatements()
+ * @Invar  The Position of each Task must be a valid Position for any
+ *         Task.
+ *       | isValidPosition(getPosition())
  */
 public class Task {
 
@@ -49,12 +55,18 @@ public class Task {
 	 * 		| A list with the activities of this task
 	 * @effect the activities of this task is set to the given activities
 	 * 		| this.activities.addAll(activities)
+	 * @param  position
+	 *         The Position for this new Task.
+	 * @effect The Position of this new Task is set to
+	 *         the given Position.
+	 *       | this.setPosition(position)
 	 */
-	public Task(String name, int priority, List<Statement> activities) throws IllegalArgumentException {
+	public Task(String name, int priority, Position position, List<Statement> activities) throws IllegalArgumentException {
 		if (! canHaveAsName(name))
 			throw new IllegalArgumentException();
 		this.name = name;
 		this.setPriority(priority);
+		this.setPosition(position);
 		for(Statement activity : activities){
 			this.addActivity(activity);
 		}
@@ -555,4 +567,64 @@ public class Task {
 			return element;
 		}return null;
 	}
+	
+	/* Position */
+	
+	/**
+	 * Return the Position of this Task.
+	 */
+	@Basic @Raw
+	public Position getPosition() {
+		return this.position;
+	}
+	
+	/**
+	 * Check whether the given Position is a valid Position for
+	 * any Task.
+	 *  
+	 * @param  Position
+	 *         The Position to check.
+	 * @return 
+	 *       | result == this.getScheduler().getFaction().getRandomUnit().getWorld().withinBounds(position.toCoordinate())
+	*/
+	public boolean canHaveAsPosition(Position position) {
+		return this.getScheduler().getFaction().getRandomUnit().getWorld().withinBounds(position.toCoordinate());
+	}
+	
+	/**
+	 * Set the Position of this Task to the given Position.
+	 * 
+	 * @param  position
+	 *         The new Position for this Task.
+	 * @post   The Position of this new Task is equal to
+	 *         the given Position.
+	 *       | new.getPosition() == position
+	 * @throws IllegalArgumentException
+	 *         The given Position is not a valid Position for any
+	 *         Task.
+	 *       | ! canHaveAsPosition(getPosition())
+	 */
+	@Raw
+	public void setPosition(Position position) 
+			throws IllegalArgumentException {
+		if (! canHaveAsPosition(position))
+			throw new IllegalArgumentException();
+		this.position = position;
+	}
+	
+	/**
+	 * Variable registering the Position of this Task.
+	 */
+	private Position position;
+		
+	/* isWelFormed */
+	
+	public boolean isWelFormed(){
+		for(Statement statement : this.activities){
+			if (statement instanceof AttackStatement){
+				if(((AttackStatement) statement).getVictim() instanceof ReadVarriable)
+			}
+		}
+	}
+	
 }
