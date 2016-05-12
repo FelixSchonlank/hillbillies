@@ -1,11 +1,11 @@
-package hillbillies.model;
+package hillbillies.model.expressions;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
+import hillbillies.model.Coordinate;
+import hillbillies.model.Unit;
 
-public class PositionOf extends Expression<Position>{
-
-	
+public class PositionOf extends Expression<Coordinate>{
 
 	/**
 	 * Initialize this new PositionOf with given Unit.
@@ -67,8 +67,8 @@ public class PositionOf extends Expression<Position>{
 	private Expression<Unit> unit;
 		
 	@Override
-	public Position evaluate() {
-		return this.getUnit().evaluate().getPosition();
+	public Coordinate evaluate() {
+		return this.getUnit().evaluate().getPosition().toCoordinate();
 	}
 	
 	
