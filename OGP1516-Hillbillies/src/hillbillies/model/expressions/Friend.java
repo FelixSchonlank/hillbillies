@@ -1,6 +1,6 @@
 package hillbillies.model.expressions;
 
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;
 import hillbillies.model.Unit;
 
 public class Friend extends Expression<Unit> {

@@ -1,6 +1,6 @@
 package hillbillies.model.expressions;
 
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 
 public class HerePosition extends Expression<Position> {

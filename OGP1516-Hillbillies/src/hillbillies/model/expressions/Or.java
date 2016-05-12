@@ -1,6 +1,6 @@
 package hillbillies.model.expressions;
 
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;
 
 public class Or  extends Expression<Boolean>{
 	public Or (Expression<Boolean> firstExpression ,Expression<Boolean> secondExpression){

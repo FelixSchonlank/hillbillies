@@ -2,7 +2,7 @@ package hillbillies.model.expressions;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 
 public class LiteralPosition extends Expression<Position> {

@@ -1,8 +1,10 @@
 package hillbillies.model.expressions;
 
-public class IsAlive extends BooleanExpression {
+import hillbillies.model.Unit;
+
+public class IsAlive extends Expression<Boolean> {
 	
-	public IsAlive(UnitExpression unit){
+	public IsAlive(Expression<Unit> unit){
 		this.setUnit(unit);
 	}
 	
@@ -10,21 +12,21 @@ public class IsAlive extends BooleanExpression {
 		return !this.getUnit().evaluate().isTerminated();
 	}
 	
-	public static boolean isValidUnit(UnitExpression unit){
+	public static boolean isValidUnit(Expression<Unit> unit){
 		return true;
 	} 
 	
-	public void setUnit(UnitExpression unit){
+	public void setUnit(Expression<Unit> unit){
 		if(!isValidUnit(unit)){
 			throw new IllegalArgumentException();
 		}
 		this.unit = unit;
 	}
 	
-	public UnitExpression getUnit(){
+	public Expression<Unit> getUnit(){
 		return this.unit;
 	}
 	
-	private UnitExpression unit;
+	private Expression<Unit> unit;
 
 }

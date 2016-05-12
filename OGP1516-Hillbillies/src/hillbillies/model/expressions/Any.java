@@ -3,7 +3,7 @@ package hillbillies.model.expressions;
 import java.util.HashSet;
 import java.util.Set;
 
-import hillbillies.model.Expression;
+import hillbillies.model.expressions.*;
 import hillbillies.model.Faction;
 import hillbillies.model.Unit;
 import hillbillies.model.Utils;
