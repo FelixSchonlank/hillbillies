@@ -6,7 +6,7 @@ import hillbillies.model.Coordinate;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 
-public class NextToPosition extends Expression<Position>{
+public class NextTo extends Expression<Position>{
 
 		
 	/**
@@ -20,7 +20,7 @@ public class NextToPosition extends Expression<Position>{
 	 *         Position.
 	 *       | new.getPosition() == position
 	 */
-	public NextToPosition(Expression<Position> position) {
+	public NextTo(Expression<Position> position) {
 		this.setPosition(position);
 	}
 	

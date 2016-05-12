@@ -2,7 +2,7 @@ package hillbillies.model.statements;
 
 import hillbillies.model.expressions.*;
 
-public class AssignmentStatement extends Statement {
+public class Assignment extends Statement {
 
 	private final String variableName;
 	
@@ -12,7 +12,7 @@ public class AssignmentStatement extends Statement {
 	
 	private final Expression<?> expression; // TODO make sure we use the right generics, and no raw types.
 	
-	public AssignmentStatement (String variableName, Expression expression) {
+	public Assignment (String variableName, Expression expression) {
 		this.variableName = variableName;
 		this.expression = expression;
 	}

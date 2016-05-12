@@ -4,7 +4,7 @@ import hillbillies.model.BadFSMStateException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Unit;
 
-public class AttackStatement extends ActionStatement {
+public class Attack extends Action {
 	
 	private final Expression<Unit> victim;
 	
@@ -12,7 +12,7 @@ public class AttackStatement extends ActionStatement {
 		return this.victim;
 	}
 	
-	public AttackStatement (Expression<Unit> expression) {
+	public Attack (Expression<Unit> expression) {
 		this.victim = expression;
 	}
 	

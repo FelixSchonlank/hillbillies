@@ -5,11 +5,11 @@ import hillbillies.model.BadFSMStateException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 
-public class WorkStatement extends ActionStatement {
+public class Work extends Action {
 	
 	public final Expression<Position> condition;
 	
-	public WorkStatement (Expression<Position> expression) {
+	public Work (Expression<Position> expression) {
 		this.condition = expression;
 	}
 	

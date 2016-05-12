@@ -5,7 +5,7 @@ import hillbillies.model.expressions.*;
 import hillbillies.model.Task;
 import hillbillies.model.statements.Statement;
 
-public class IfStatement extends Statement {
+public class If extends Statement {
 	
 	private final Expression<Boolean> condition;
 	private final Statement ifBody, elseBody;
@@ -18,7 +18,7 @@ public class IfStatement extends Statement {
 		return this.elseBody;
 	}	
 	
-	public IfStatement (Expression<Boolean> condition, Statement ifBody, Statement elseBody) {
+	public If (Expression<Boolean> condition, Statement ifBody, Statement elseBody) {
 		this.condition = condition;
 		this.ifBody = ifBody;
 		this.elseBody = elseBody;

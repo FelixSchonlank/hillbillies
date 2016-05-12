@@ -2,7 +2,7 @@ package hillbillies.model.statements;
 
 import hillbillies.model.expressions.*;;
 
-public class PrintStatement extends Statement {
+public class Print extends Statement {
 	
 	public Expression<?> getExpression(){
 		return this.expression;
@@ -10,7 +10,7 @@ public class PrintStatement extends Statement {
 	
 	private final Expression<?> expression;
 	
-	public PrintStatement (Expression<?> expression) {
+	public Print (Expression<?> expression) {
 		this.expression = expression;
 	}
 	

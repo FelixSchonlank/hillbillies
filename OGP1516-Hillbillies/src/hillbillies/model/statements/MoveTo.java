@@ -4,11 +4,11 @@ import hillbillies.model.BadFSMStateException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 
-public class MoveToStatement extends ActionStatement {
+public class MoveTo extends Action {
 
 	public final Expression<Position> destination;
 
-	public MoveToStatement (Expression<Position> expression) {
+	public MoveTo (Expression<Position> expression) {
 		this.destination = expression;
 	}
 

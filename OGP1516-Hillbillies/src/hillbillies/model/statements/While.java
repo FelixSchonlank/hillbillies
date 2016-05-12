@@ -3,12 +3,12 @@ package hillbillies.model.statements;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Task;
 
-public class WhileStatement extends Statement {
+public class While extends Statement {
 	
 	private final Expression<Boolean> condition;
 	private final Statement body;
 	
-	public WhileStatement (Expression<Boolean> expression, Statement statement) {
+	public While (Expression<Boolean> expression, Statement statement) {
 		this.condition = expression;
 		this.body = statement;
 		this.body.setNext(this);

@@ -4,14 +4,14 @@ import java.util.List;
 
 import hillbillies.model.Task;
 
-public class SequenceStatement extends Statement {
+public class Sequence extends Statement {
 	
 	public List<Statement> getBody(){
 		return this.body;
 	}
 	private final List<Statement> body;
 	
-	public SequenceStatement (List<Statement> body) {
+	public Sequence (List<Statement> body) {
 		this.body = body;
 		for (int i=0; i<this.body.size()-1; i++) {
 			this.body.get(i).setNext(this.body.get(i+1));

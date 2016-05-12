@@ -2,9 +2,9 @@ package hillbillies.model.statements;
 
 import hillbillies.model.BadFSMStateException;
 
-public class BreakStatement extends Statement {
+public class Break extends Statement {
 	
-	public BreakStatement () {
+	public Break () {
 		
 	}
 

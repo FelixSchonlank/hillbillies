@@ -3,7 +3,7 @@ package hillbillies.model.expressions;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 
-public class HerePosition extends Expression<Position> {
+public class Here extends Expression<Position> {
 	
 	@Override
 	public Position evaluate() {

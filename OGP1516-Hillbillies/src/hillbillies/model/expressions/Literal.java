@@ -5,7 +5,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 
-public class LiteralPosition extends Expression<Position> {
+public class Literal extends Expression<Position> {
 
 	
 	/**
@@ -21,7 +21,7 @@ public class LiteralPosition extends Expression<Position> {
 	 *       |   then new.getX() == X
 	 *       |   else new.getX() == 1
 	 */
-	public LiteralPosition(int X, int Y, int Z) {
+	public Literal(int X, int Y, int Z) {
 		this.setX(X);
 		this.setY(Y);
 		this.setZ(Z);
