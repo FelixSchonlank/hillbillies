@@ -620,9 +620,9 @@ public class Task {
 	/* isWelFormed */
 	
 	public boolean isWelFormed(){
-		Set<String> statements = new HashSet<String>();
+		Set<String> assignments = new HashSet<String>();
 		for(Statement statement : this.activities){
-			if (! checkStatement(false, statement, statements)){
+			if (! checkStatement(false, statement, assignments)){
 				return false;
 			}
 		}
@@ -638,10 +638,9 @@ public class Task {
 		return true;
 	}
 	
-	private boolean checkStatement(boolean inBodyOfWhile, Statement statement, Set<String> statements){
-		
+	private boolean checkStatement(boolean inBodyOfWhile, Statement statement, Set<String> assignments){
 		if(statement instanceof Assignment){
-			statements.add(((Assignment) statement).getName());
+			assignments.add(((Assignment) statement).getName());
 		}else if (statement instanceof Attack){
 			//TODO
 		}else if (statement instanceof Break){
@@ -651,34 +650,34 @@ public class Task {
 		}else if (statement instanceof MoveTo){
 			//TODO
 		}else if (statement instanceof Sequence){
-			if (! this.checkSequence(inBodyOfWhile, (Sequence) statement, statements)){
+			if (! this.checkSequence(inBodyOfWhile, (Sequence) statement, assignments)){
 				return false;
 			}
 		}else if (statement instanceof While){
-			inBodyOfWhile = true;
-			if (! this.checkStatement(false, ((While) statement).getBody(), statements)){
+			if (! this.checkStatement(true, ((While) statement).getBody(), assignments)){
 				return false;
 			}
-			inBodyOfWhile = false;
 		}else if (statement instanceof Work){
 			//TODO
 		}else if (statement instanceof If){
-			return checkStatementInIf(inBodyOfWhile, ((If) statement).getIfBody(), ((If) statement).getElseBody(), statements);
+			return checkStatementInIf(inBodyOfWhile, ((If) statement).getIfBody(), ((If) statement).getElseBody(), assignments);
 		}
 		return true;
 	}
 	
-	private boolean checkStatementInIf(boolean inBodyOfWhile, Statement ifStatement, Statement elseStatement , Set<String> statements){
+	private boolean checkStatementInIf(boolean inBodyOfWhile, Statement ifStatement, Statement elseStatement , Set<String> assignments){
 		Set<String> ifAssignments = new HashSet<String>();
+		ifAssignments.addAll(assignments);
 		Set<String> elseAssignments = new HashSet<String>();
+		elseAssignments.addAll(assignments);
 		if (! checkStatement(inBodyOfWhile,  ifStatement, ifAssignments)){
 			return false;
 		}else if (! checkStatement(inBodyOfWhile,  elseStatement, elseAssignments)){
 			return false;
 		}
 		for (String element : ifAssignments){
-			if (elseAssignments.contains(element)){
-				statements.add(element);
+			if (elseAssignments.contains(element) && ! assignments.contains(element)){
+				assignments.add(element);
 			}
 		}
 		return true;
