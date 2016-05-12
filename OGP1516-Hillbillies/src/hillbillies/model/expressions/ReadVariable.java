@@ -7,7 +7,7 @@ import hillbillies.model.expressions.*;
 public class ReadVariable extends Expression<Object>{
 	
 	@Override
-	public boolean isVarriable(){
+	public boolean isVariable(){
 		return true;
 	}
 	
