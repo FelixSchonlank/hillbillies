@@ -3,6 +3,7 @@ package hillbillies.model.expressions;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.Task;
+import hillbillies.model.WrongTypeException;
 
 /**
 * @Invar  The Task of each Expression must be a valid Task for any
@@ -61,9 +62,9 @@ public abstract class Expression<T> {
 	/**
 	 * Return a Position, boolean or Unit depending on the type of Expression
 	 */
-	public abstract T evaluate();
+	public abstract T evaluate() throws WrongTypeException;
 		
-	public boolean isVarriable(){
+	public boolean isVariable(){
 		return false;
 	}
 }
