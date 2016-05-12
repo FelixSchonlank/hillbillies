@@ -10,7 +10,7 @@ import java.util.Set;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
-import hillbillies.model.expressions.ReadVarriable;
+import hillbillies.model.expressions.ReadVariable;
 import hillbillies.model.statements.*;
 import hillbillies.model.statements.Statement;
 
@@ -629,7 +629,7 @@ public class Task {
 		return true;
 	}
 
-	private boolean checkSequence(boolean inBodyOfWhile, SequenceStatement Sequence, Set<String> statements){
+	private boolean checkSequence(boolean inBodyOfWhile, Sequence Sequence, Set<String> statements){
 		for(Statement statement : Sequence.getBody() ){
 			if (! checkStatement(inBodyOfWhile, statement, statements)){
 				return false;
@@ -640,30 +640,30 @@ public class Task {
 	
 	private boolean checkStatement(boolean inBodyOfWhile, Statement statement, Set<String> statements){
 		
-		if(statement instanceof AssignmentStatement){
-			statements.add(((AssignmentStatement) statement).getName());
-		}else if (statement instanceof AttackStatement){
+		if(statement instanceof Assignment){
+			statements.add(((Assignment) statement).getName());
+		}else if (statement instanceof Attack){
 			//TODO
-		}else if (statement instanceof BreakStatement){
+		}else if (statement instanceof Break){
 			if(! inBodyOfWhile){
 				return false;
 			}
-		}else if (statement instanceof MoveToStatement){
+		}else if (statement instanceof MoveTo){
 			//TODO
-		}else if (statement instanceof SequenceStatement){
-			if (! this.checkSequence(inBodyOfWhile, (SequenceStatement) statement, statements)){
+		}else if (statement instanceof Sequence){
+			if (! this.checkSequence(inBodyOfWhile, (Sequence) statement, statements)){
 				return false;
 			}
-		}else if (statement instanceof WhileStatement){
+		}else if (statement instanceof While){
 			inBodyOfWhile = true;
-			if (! this.checkStatement(false, ((WhileStatement) statement).getBody(), statements)){
+			if (! this.checkStatement(false, ((While) statement).getBody(), statements)){
 				return false;
 			}
 			inBodyOfWhile = false;
-		}else if (statement instanceof WorkStatement){
+		}else if (statement instanceof Work){
 			//TODO
-		}else if (statement instanceof IfStatement){
-			return checkStatementInIf(inBodyOfWhile, ((IfStatement) statement).getIfBody(), ((IfStatement) statement).getElseBody(), statements);
+		}else if (statement instanceof If){
+			return checkStatementInIf(inBodyOfWhile, ((If) statement).getIfBody(), ((If) statement).getElseBody(), statements);
 		}
 		return true;
 	}
