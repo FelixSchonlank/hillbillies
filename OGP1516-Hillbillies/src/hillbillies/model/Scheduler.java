@@ -207,7 +207,11 @@ public class Scheduler {
 	 *       |   ( (task != null) &&
 	 *       |     (! task.hasUnit()) )
 	 */
-	private final PriorityQueue<Task> tasks = new PriorityQueue<Task>(new Priority());
+	private final PriorityQueue<Task> tasks =
+			new PriorityQueue<Task>(
+					(Task t1, Task t2)
+					-> (t1.getPriority() < t2.getPriority()) ? (1) : (t1.getPriority() == t2.getPriority() ? 0 : -1)
+					);
 	
 	/**
 	 * Variable referencing a list collecting all the tasks
