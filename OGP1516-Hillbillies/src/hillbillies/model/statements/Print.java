@@ -1,5 +1,6 @@
 package hillbillies.model.statements;
 
+import hillbillies.model.WrongTypeException;
 import hillbillies.model.expressions.*;;
 
 public class Print extends Statement {
@@ -15,7 +16,7 @@ public class Print extends Statement {
 	}
 	
 	@Override
-	public void execute () {
+	public void execute () throws WrongTypeException {
 		System.out.println(this.expression.evaluate().toString());
 	}
 	

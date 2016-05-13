@@ -3,6 +3,7 @@ package hillbillies.model.statements;
 import hillbillies.model.BadFSMStateException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Task;
+import hillbillies.model.WrongTypeException;
 import hillbillies.model.statements.Statement;
 
 public class If extends Statement {
@@ -25,7 +26,7 @@ public class If extends Statement {
 	}
 	
 	@Override
-	public Statement getNextStatement () {
+	public Statement getNextStatement () throws WrongTypeException {
 		if (this.condition.evaluate()) {
 			return ifBody;
 		} else if (this.elseBody != null) {

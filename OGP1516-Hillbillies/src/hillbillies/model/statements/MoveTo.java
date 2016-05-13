@@ -3,6 +3,7 @@ package hillbillies.model.statements;
 import hillbillies.model.BadFSMStateException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
+import hillbillies.model.WrongTypeException;
 
 public class MoveTo extends Action {
 
@@ -13,7 +14,7 @@ public class MoveTo extends Action {
 	}
 
 	@Override
-	public void execute () throws BadFSMStateException {
+	public void execute () throws BadFSMStateException, WrongTypeException {
 		this.getTask().getUnit().moveTo(this.destination.evaluate().toCoordinate());
 	}
 	

@@ -2,6 +2,7 @@ package hillbillies.model.statements;
 
 import hillbillies.model.expressions.*;
 import hillbillies.model.Task;
+import hillbillies.model.WrongTypeException;
 
 public class While extends Statement {
 	
@@ -18,7 +19,7 @@ public class While extends Statement {
 		return this.getBody();
 	}
 	@Override
-	public Statement getNextStatement () {
+	public Statement getNextStatement () throws WrongTypeException {
 		if (this.condition.evaluate()) {
 			return this.body;
 		} else {

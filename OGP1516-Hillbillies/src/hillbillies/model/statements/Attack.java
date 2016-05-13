@@ -3,6 +3,7 @@ package hillbillies.model.statements;
 import hillbillies.model.BadFSMStateException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Unit;
+import hillbillies.model.WrongTypeException;
 
 public class Attack extends Action {
 	
@@ -17,7 +18,7 @@ public class Attack extends Action {
 	}
 	
 	@Override
-	public void execute () throws BadFSMStateException {
+	public void execute () throws BadFSMStateException, WrongTypeException {
 		this.getTask().getUnit().attack(this.victim.evaluate());
 	}
 	

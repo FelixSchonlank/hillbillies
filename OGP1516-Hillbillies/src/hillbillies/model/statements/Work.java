@@ -4,6 +4,7 @@ package hillbillies.model.statements;
 import hillbillies.model.BadFSMStateException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
+import hillbillies.model.WrongTypeException;
 
 public class Work extends Action {
 	
@@ -13,7 +14,7 @@ public class Work extends Action {
 		this.condition = expression;
 	}
 	
-	public void execute () throws BadFSMStateException {
+	public void execute () throws BadFSMStateException, WrongTypeException {
 		this.getTask().getUnit().work(this.condition.evaluate().toCoordinate());
 	}
 	
