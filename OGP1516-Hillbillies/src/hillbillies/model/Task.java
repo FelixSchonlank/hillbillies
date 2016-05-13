@@ -10,6 +10,7 @@ import java.util.Set;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
+import hillbillies.model.expressions.Convert;
 import hillbillies.model.expressions.ReadVariable;
 import hillbillies.model.statements.*;
 import hillbillies.model.statements.Statement;
@@ -558,6 +559,10 @@ public class Task {
 	 */
 	private final Set<Scheduler> schedulers = new HashSet<Scheduler>();
 
+	public Set<Scheduler> getScheulers(){
+		return this.schedulers;
+	}
+	
 	/**
 	 * Return one of the schedulers this task belongs to
 	 * @return schedulers
@@ -619,6 +624,14 @@ public class Task {
 		
 	/* isWelFormed */
 	
+	/**
+	 * Check whether this task is well formed
+	 * @return true iff every activity of this task is well formed
+	 * 		| for every statement in activities
+	 * 		| 	if ! checkStatement(false, statement, assignments)
+	 * 		| 	then result == false
+	 * 		| else result == true
+	 */
 	public boolean isWelFormed(){
 		Set<String> assignments = new HashSet<String>();
 		for(Statement statement : this.activities){
@@ -629,6 +642,22 @@ public class Task {
 		return true;
 	}
 
+	/**
+	 * Check whether a given sequence is well formed
+	 * @param inBodyOfWhile
+	 * 		| a boolean that returns true iff the given sequence is found in a 
+	 * 		| while loop
+	 * @param Sequence
+	 * 		| The sequence to check
+	 * @param statements
+	 * 		| A set containing all the variables that have been assigned before 
+	 * 		| this sequence
+	 * @return true if every statement in the body of the given sequence are well formed
+	 * 		| for every statement in sequence.getBody()
+	 * 		| 		if (! checkStatement(inBodyOfWhile, statement, statements))
+	 * 		| 			result == false
+	 * 		| else result == true
+	 */
 	private boolean checkSequence(boolean inBodyOfWhile, Sequence Sequence, Set<String> statements){
 		for(Statement statement : Sequence.getBody() ){
 			if (! checkStatement(inBodyOfWhile, statement, statements)){
@@ -638,17 +667,54 @@ public class Task {
 		return true;
 	}
 	
+	/**
+	 * Check whether a given statement is properly formed
+	 *  
+	 * @param inBodyOfWhile
+	 * 		| A boolean that is true iff the given statement is in a while
+	 * @param statement
+	 * 		|The statement to check
+	 * @param assignments
+	 * 		| A set containing all the variables that have been assignments 
+	 * 		| before this point in the program
+	 * @return True iff every ReadVariable in that is a statement of Attack, 
+	 * 		MoveTo or Work has been assigned, a break only occurs in the body 
+	 * 		of a while, sequences satisfy checkSequence, a the sequence of a 
+	 * 		while satisfies checkSequence and a If statement satisfies checkStatementInIf.
+	 *		| if(Statement is an AttackStatement and its expression is a ReadVarriable) 
+	 *		| 	then result == Statements.contaigns(ReadVarriable.getName())
+	 *		| else if(Statement is a Break statement) result == inBodyOfWhile
+	 *		| else if(Statement is a MoveTo statement and its expression is a ReadVarriable) 
+	 *		| 	result ==  Statements.contaigns(ReadVarriable.getName())
+	 *		| else if(statement is a SequenceStatement) 
+	 *		|	result == this.checkSequence(inBodyOfWhile, (Sequence) statement, assignments)
+	 *		| else if(statement is a while) then 
+	 *		|	result == this.checkStatement(true, ((While) statement).getBody(), assignments)
+	 *		| else if(statement is a work statement and its TODO condition is a readVarable) 
+	 *		| 	result == Statements.contaigns(condition.getName())
+	 *		| else if(statement is a If statement) then 
+	 *		| 	result == checkStatementInIf(inBodyOfWhile, ((If) statement).getIfBody(), ((If) statement).getElseBody(), assignments)
+	 *		| else result == true 
+	 */
 	private boolean checkStatement(boolean inBodyOfWhile, Statement statement, Set<String> assignments){
 		if(statement instanceof Assignment){
 			assignments.add(((Assignment) statement).getName());
 		}else if (statement instanceof Attack){
-			//TODO
+			if( ((Convert) ((Attack) statement).getVictim()).expression instanceof ReadVariable){
+				if (! assignments.contains((((ReadVariable) ((Convert) ((Attack) statement).getVictim()).expression).getName()))){
+					return false;
+				} 
+			}
 		}else if (statement instanceof Break){
 			if(! inBodyOfWhile){
 				return false;
 			}
 		}else if (statement instanceof MoveTo){
-			//TODO
+			if( ((Convert) ((MoveTo) statement).destination).expression instanceof ReadVariable){
+				if (! assignments.contains((((ReadVariable) ((Convert) ((MoveTo) statement).destination).expression).getName()))){
+					return false;
+				} 
+			}
 		}else if (statement instanceof Sequence){
 			if (! this.checkSequence(inBodyOfWhile, (Sequence) statement, assignments)){
 				return false;
@@ -658,13 +724,34 @@ public class Task {
 				return false;
 			}
 		}else if (statement instanceof Work){
-			//TODO
+			if( ((Convert) ((Work) statement).condition).expression instanceof ReadVariable){
+				if (! assignments.contains((((ReadVariable) ((Convert) ((MoveTo) statement).destination).expression).getName()))){
+					return false;
+				} 
+			}
 		}else if (statement instanceof If){
 			return checkStatementInIf(inBodyOfWhile, ((If) statement).getIfBody(), ((If) statement).getElseBody(), assignments);
 		}
 		return true;
 	}
 	
+	/**
+	 * Check whether the given if and else body are valid statements 
+	 * @param inBodyOfWhile
+	 * 		| a boolean that returns true iff the given sequence is found in a 
+	 * 		| while loop
+	 * @param ifStatement
+	 * 		| the ifBody to check
+	 * @param elseStatement
+	 * 		| the else body to check
+	 * @param assignments
+	 * 		| A set containing all the variables that have been assigned before 
+	 * 		| this sequence
+	 * @return true iff both the if and the while body is well formed
+	 * 		| result == checkStatement(inBodyOfWhile,  ifStatement, ifAssignments) 
+	 * 		| 	&& checkStatement(inBodyOfWhile,  elseStatement, elseAssignments)
+	 * @effect every assignment that occurs in both the if and the else body is added to the set of assignments
+	 */
 	private boolean checkStatementInIf(boolean inBodyOfWhile, Statement ifStatement, Statement elseStatement , Set<String> assignments){
 		Set<String> ifAssignments = new HashSet<String>();
 		ifAssignments.addAll(assignments);
