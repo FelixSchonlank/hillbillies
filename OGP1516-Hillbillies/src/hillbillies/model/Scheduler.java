@@ -23,7 +23,7 @@ public class Scheduler {
 	 * 		| the task to remove
 	 * @param newTask
 	 * 		| the task to add
-	 * @effect if the task is being scheduled it is first stopt
+	 * @effect if the task is being scheduled it is first stops
 	 * 		| resetTask(task)
 	 * @post if task is part of this scheduler and newTask is not task is removed
 	 * 			and newTask is added else nothing changes
@@ -235,6 +235,7 @@ public class Scheduler {
 					(Task t1, Task t2)
 					-> (t1.getPriority() < t2.getPriority()) ? (1) : (t1.getPriority() == t2.getPriority() ? 0 : -1)
 					);
+
 	
 	/**
 	 * Add a task that is has a unit but is still in tasks
@@ -252,6 +253,7 @@ public class Scheduler {
 			this.scheduledTasks.add(task);
 		}
 	}
+
 	
 	/**
 	 * Variable referencing a list collecting all the tasks
