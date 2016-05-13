@@ -27,7 +27,7 @@ public class Scheduler {
 	 * 		| the task to remove
 	 * @param newTask
 	 * 		| the task to add
-	 * @effect if the task is being scheduled it is first stopt
+	 * @effect if the task is being scheduled it is first stops
 	 * 		| resetTask(task)
 	 * @post if task is part of this scheduler and newTask is not task is removed
 	 * 			and newTask is added else nothing changes
@@ -90,11 +90,17 @@ public class Scheduler {
 	 * 			priority is assigned to the given unit
 	 * 		|if (!unit.hasTask()) then 
 	 * 		|	getMostImportandTask().setUnit(unit)	 
+	 * @effect the Task is set to scheduled in all its factions
+	 * 		| for every scheduler in getScheulers()
+	 * 		|		scheduler.addScheduledTask(task)
 	 */
 	public void setTaskToBeScheduled(Unit unit){
 		Task task = this.getMostImportandTask();
 		task.setUnit(unit);
 		this.scheduledTasks.add(task);
+		for(Scheduler scheduler : task.getScheulers()){
+			scheduler.addScheduledTask(task);
+		}
 	} 
 	
 	/**
@@ -112,6 +118,22 @@ public class Scheduler {
 			this.addTask(task);
 		}
 	}
+	
+	/**
+	 * Set a task that has no Unit as unscheduled
+	 * @param task
+	 * 		| the task to unscheduls
+	 * @Post if the given task has no unit and is a task of this scheduler the 
+	 * 		task no is no longer part of this.scheduledTaks
+	 * 		|  if(this.hasAsTask(task) && ! task.hasUnit()
+	 * 		|		! this.isScheduled(task)
+	 */
+	public void unschedleTask(@Raw Task task){
+		if(this.hasAsTask(task) && ! task.hasUnit()){
+			this.removeTask(task);
+			this.addTask(task);
+		}
+	} 
 
 	
 	/* Tasks */ 
@@ -212,8 +234,24 @@ public class Scheduler {
 	 *       |   ( (task != null) &&
 	 *       |     (! task.hasUnit()) )
 	 */
-	private final PriorityQueue<Task> tasks =
-			new PriorityQueue<Task>(new TaskPriorityComparator());
+	private final PriorityQueue<Task> tasks = new PriorityQueue<Task>(new TaskPriorityComparator());
+	
+	/**
+	 * Add a task that is has a unit but is still in tasks
+	 * @param task
+	 * 		| the task to add to scheduledTasks
+	 * @Post if the task is a task of this scheduler and the task is scheduled 
+	 * 			tasks no longer contains task and scheduledTasks does
+	 * 		| if(task.hasUnit() && this.tasks.contains(task))
+	 * 		|	! tasks.contains(task) && scheduledTasks.contains(task)
+	 */
+	@Raw
+	public void addScheduledTask(@Raw Task task){
+		if(task.hasUnit() && this.tasks.contains(task)){
+			this.tasks.remove(task);
+			this.scheduledTasks.add(task);
+		}
+	}
 	
 	/**
 	 * Variable referencing a list collecting all the tasks
@@ -261,7 +299,7 @@ public class Scheduler {
 	}
 	
 	/**
-	 * A variable referencing the maximum units a faction can have 
+	 * A variable referencing the minimum Tasks a scheduler can have 
 	 */
 	private static final int MinTasks = 1;
 	

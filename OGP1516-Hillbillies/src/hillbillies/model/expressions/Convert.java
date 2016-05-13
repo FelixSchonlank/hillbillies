@@ -4,7 +4,7 @@ import hillbillies.model.WrongTypeException;
 
 public class Convert<T> extends Expression<T> {
 
-	private final Expression<?> expression;
+	public final Expression<?> expression;
 	private final Class<T> clazz;
 	
 	/**
