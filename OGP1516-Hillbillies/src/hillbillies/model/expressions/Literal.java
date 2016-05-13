@@ -3,9 +3,10 @@ package hillbillies.model.expressions;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.expressions.*;
+import hillbillies.model.Coordinate;
 import hillbillies.model.Position;
 
-public class Literal extends Expression<Position> {
+public class Literal extends Expression<Coordinate> {
 
 	
 	/**
@@ -161,8 +162,8 @@ public class Literal extends Expression<Position> {
 	/* Evaluate */
 	
 	@Override
-	public Position evaluate() {
-		return new Position(this.getX(), this.getY(), this.getZ());
+	public Coordinate evaluate() {
+		return new Coordinate(this.getX(), this.getY(), this.getZ());
 	}
 
 }

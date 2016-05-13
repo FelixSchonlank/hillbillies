@@ -512,6 +512,21 @@ public class Unit extends GameObject{
 			throw new IllegalArgumentException("destination out of bounds.");
 		}
 		Queue<PathTuple> Path = new LinkedList<PathTuple>();
+		Path = calculatePath(destination);
+		if (PathTuple.Contains(this.getPosition().toCoordinate(), Path)){
+			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
+			this.immediateTarget = immediateTarget.toPosition();
+			this.UltimateTarget = destination;
+		}
+	}
+	
+	/**
+	 * Method is part of moveTo
+	 * @param destination
+	 * @return
+	 */
+	private Queue<PathTuple> calculatePath(Coordinate destination){
+		Queue<PathTuple> Path = new LinkedList<PathTuple>();
 		while(! this.getPosition().toCoordinate().equals(destination)){
 			Path.add(new PathTuple(destination, 0));
 			while(! PathTuple.Contains(this.getPosition().toCoordinate(), Path) && PathTuple.hasNext(Path)){
@@ -521,11 +536,7 @@ public class Unit extends GameObject{
 			}
 			break;
 		}
-		if (PathTuple.Contains(this.getPosition().toCoordinate(), Path)){
-			Coordinate immediateTarget = PathTuple.getSmallestAdjacentWeight(this.getPosition().toCoordinate(), Path, this.getWorld());
-			this.immediateTarget = immediateTarget.toPosition();
-			this.UltimateTarget = destination;
-		}
+		return Path;
 	}
 	
 	/**
@@ -550,7 +561,21 @@ public class Unit extends GameObject{
 		}
 	}
 
-
+	/**
+	 * Check whether a given cube is reachable for this unit 
+	 * @param destination
+	 * 		| the cube to check
+	 * @return true iff the cube is reachable for this unit 
+	 */
+	public boolean isReachable(Coordinate destination){
+		if(!this.getWorld().withinBounds(destination)){
+			return false;
+		}
+		Queue<PathTuple> Path = new LinkedList<PathTuple>();
+		Path = calculatePath(destination);
+		return PathTuple.Contains(this.getPosition().toCoordinate(), Path);
+	}
+	
 	/* Sprinting */
 	
 	/**

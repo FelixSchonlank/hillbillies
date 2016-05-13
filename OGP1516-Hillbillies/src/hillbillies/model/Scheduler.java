@@ -112,13 +112,16 @@ public class Scheduler {
 			task.removeUnit();
 			this.removeTask(task);
 			this.addTask(task);
+			for(Scheduler scheduler : task.getScheulers()){
+				scheduler.unschedleTask(task);
+			}
 		}
 	}
 	
 	/**
 	 * Set a task that has no Unit as unscheduled
 	 * @param task
-	 * 		| the task to unscheduls
+	 * 		| the task to be unscheduled
 	 * @Post if the given task has no unit and is a task of this scheduler the 
 	 * 		task no is no longer part of this.scheduledTaks
 	 * 		|  if(this.hasAsTask(task) && ! task.hasUnit()

@@ -63,7 +63,7 @@ public class Task {
 	 *         the given Position.
 	 *       | this.setPosition(position)
 	 */
-	public Task(String name, int priority, Position position, List<Statement> activities) throws IllegalArgumentException {
+	public Task(String name, int priority, Coordinate position, List<Statement> activities) throws IllegalArgumentException {
 		if (! canHaveAsName(name))
 			throw new IllegalArgumentException();
 		this.name = name;
@@ -580,7 +580,7 @@ public class Task {
 	 * Return the Position of this Task.
 	 */
 	@Basic @Raw
-	public Position getPosition() {
+	public Coordinate getPosition() {
 		return this.position;
 	}
 	
@@ -593,8 +593,8 @@ public class Task {
 	 * @return 
 	 *       | result == this.getScheduler().getFaction().getRandomUnit().getWorld().withinBounds(position.toCoordinate())
 	*/
-	public boolean canHaveAsPosition(Position position) {
-		return this.getScheduler().getFaction().getRandomUnit().getWorld().withinBounds(position.toCoordinate());
+	public boolean canHaveAsPosition(Coordinate position) {
+		return this.getScheduler().getFaction().getRandomUnit().getWorld().withinBounds(position);
 	}
 	
 	/**
@@ -611,7 +611,7 @@ public class Task {
 	 *       | ! canHaveAsPosition(getPosition())
 	 */
 	@Raw
-	public void setPosition(Position position) 
+	public void setPosition(Coordinate position) 
 			throws IllegalArgumentException {
 		if (! canHaveAsPosition(position))
 			throw new IllegalArgumentException();
@@ -621,7 +621,7 @@ public class Task {
 	/**
 	 * Variable registering the Position of this Task.
 	 */
-	private Position position;
+	private Coordinate position;
 		
 	/* isWelFormed */
 	
@@ -659,7 +659,7 @@ public class Task {
 	 * 		| 			result == false
 	 * 		| else result == true
 	 */
-	private boolean checkSequence(boolean inBodyOfWhile, Sequence Sequence, Set<String> statements){
+	private static boolean checkSequence(boolean inBodyOfWhile, Sequence Sequence, Set<String> statements){
 		for(Statement statement : Sequence.getBody() ){
 			if (! checkStatement(inBodyOfWhile, statement, statements)){
 				return false;
@@ -697,7 +697,7 @@ public class Task {
 	 *		| 	result == checkStatementInIf(inBodyOfWhile, ((If) statement).getIfBody(), ((If) statement).getElseBody(), assignments)
 	 *		| else result == true 
 	 */
-	private boolean checkStatement(boolean inBodyOfWhile, Statement statement, Set<String> assignments){
+	private static boolean checkStatement(boolean inBodyOfWhile, Statement statement, Set<String> assignments){
 		if(statement instanceof Assignment){
 			assignments.add(((Assignment) statement).getName());
 		}else if (statement instanceof Attack){
@@ -717,11 +717,11 @@ public class Task {
 				} 
 			}
 		}else if (statement instanceof Sequence){
-			if (! this.checkSequence(inBodyOfWhile, (Sequence) statement, assignments)){
+			if (! checkSequence(inBodyOfWhile, (Sequence) statement, assignments)){
 				return false;
 			}
 		}else if (statement instanceof While){
-			if (! this.checkStatement(true, ((While) statement).getBody(), assignments)){
+			if (! checkStatement(true, ((While) statement).getBody(), assignments)){
 				return false;
 			}
 		}else if (statement instanceof Work){
@@ -753,7 +753,7 @@ public class Task {
 	 * 		| 	&& checkStatement(inBodyOfWhile,  elseStatement, elseAssignments)
 	 * @effect every assignment that occurs in both the if and the else body is added to the set of assignments
 	 */
-	private boolean checkStatementInIf(boolean inBodyOfWhile, Statement ifStatement, Statement elseStatement , Set<String> assignments){
+	private static boolean checkStatementInIf(boolean inBodyOfWhile, Statement ifStatement, Statement elseStatement , Set<String> assignments){
 		Set<String> ifAssignments = new HashSet<String>();
 		ifAssignments.addAll(assignments);
 		Set<String> elseAssignments = new HashSet<String>();

@@ -9,14 +9,14 @@ import hillbillies.model.Position;
 import hillbillies.model.World;
 import hillbillies.model.World.TerrainType;
 
-public class Workshop extends Expression<Position>{
+public class Workshop extends Expression<Coordinate>{
 
 	@Override
-	public Position evaluate() {
-		return getClosestWorkShop(this.getTask().getUnit().getPosition());
+	public Coordinate evaluate() {
+		return getClosestWorkShop(this.getTask().getUnit().getPosition().toCoordinate());
 	}
 
-	public Position getClosestWorkShop(Position position) {
+	public Coordinate getClosestWorkShop(Coordinate position) {
 		return
 				this
 				.getTask()
@@ -29,6 +29,6 @@ public class Workshop extends Expression<Position>{
 						-> (int) w1.getPosition().distance(w2.getPosition())
 						)
 				.get()
-				.getPosition();
+				.getPosition().toCoordinate();
 	}
 }
