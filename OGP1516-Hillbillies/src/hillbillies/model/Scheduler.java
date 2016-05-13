@@ -2,6 +2,7 @@ package hillbillies.model;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -229,7 +230,11 @@ public class Scheduler {
 	 *       |   ( (task != null) &&
 	 *       |     (! task.hasUnit()) )
 	 */
-	private final PriorityQueue<Task> tasks = new PriorityQueue<Task>(new Priority());
+	private final PriorityQueue<Task> tasks =
+			new PriorityQueue<Task>(
+					(Task t1, Task t2)
+					-> (t1.getPriority() < t2.getPriority()) ? (1) : (t1.getPriority() == t2.getPriority() ? 0 : -1)
+					);
 	
 	/**
 	 * Add a task that is has a unit but is still in tasks
@@ -363,6 +368,10 @@ public class Scheduler {
 	private Faction faction;
 	
 	
-		
-		
+	/* Iterator */
+	
+	public Iterator<Task> taskIterator () {
+		return new TaskIterator(this.tasks);
+	}
+	
 }

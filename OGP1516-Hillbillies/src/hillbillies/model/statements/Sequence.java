@@ -36,6 +36,15 @@ public class Sequence extends Statement {
 	}
 	
 	@Override
+	public void setLinearNext (Statement linearNext) {
+		super.setLinearNext(this.body.get(0));
+		for (int i=0; i<this.body.size()-1; i++) {
+			this.body.get(i).setLinearNext(this.body.get(i+1));
+		}
+		this.body.get(this.body.size()-1).setLinearNext(linearNext);
+	}
+	
+	@Override
 	public void setTask (Task task) {
 		super.setTask(task);
 		for (Statement subStatement : this.body) {

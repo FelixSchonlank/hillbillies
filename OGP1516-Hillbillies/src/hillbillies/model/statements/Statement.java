@@ -9,6 +9,11 @@ import hillbillies.model.WrongTypeException;
 public abstract class Statement {
 	
 	private Statement next;
+	/**
+	 * This field is used to store what Statement should be returned when we
+	 * want to walk through every Statement in the Task in a linear fashion.
+	 */
+	private Statement linearNext;
 	private Task task;
 	private static final boolean shouldContinueExecution = true;
 	
@@ -35,8 +40,20 @@ public abstract class Statement {
 		this.next = next;
 	}
 	
-	protected Statement getNext () {
+	public Statement getNext () {
 		return this.next;
+	}
+	
+	/**
+	 * Sets the linearNext field of this Statement
+	 * @param linearNext
+	 */
+	public void setLinearNext (Statement linearNext) {
+		this.linearNext = linearNext;
+	}
+	
+	public Statement getLinearNext () {
+		return this.linearNext;
 	}
 	
 	/**

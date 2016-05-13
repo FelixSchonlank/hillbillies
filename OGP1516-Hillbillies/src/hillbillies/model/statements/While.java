@@ -28,6 +28,12 @@ public class While extends Statement {
 	}
 	
 	@Override
+	public void setLinearNext (Statement linearNext) {
+		super.setLinearNext(this.body);
+		this.body.setLinearNext(linearNext);
+	}
+	
+	@Override
 	public void setTask (Task task) {
 		super.setTask(task);
 		this.body.setTask(task);
