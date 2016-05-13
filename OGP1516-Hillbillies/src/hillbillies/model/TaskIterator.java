@@ -2,13 +2,14 @@ package hillbillies.model;
 
 import java.util.Iterator;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 public class TaskIterator implements Iterator<Task> {
 	
 	private PriorityQueue<Task> queue;
 	
-	public TaskIterator (PriorityQueue<Task> queue) {
-		for (Task task : queue) {
+	public TaskIterator (Set<Task> set) {
+		for (Task task : set) {
 			this.queue.add(task);
 		}
 	}
