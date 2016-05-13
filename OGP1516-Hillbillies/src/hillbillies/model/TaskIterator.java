@@ -9,6 +9,7 @@ public class TaskIterator implements Iterator<Task> {
 	private PriorityQueue<Task> queue;
 	
 	public TaskIterator (Set<Task> set) {
+		this.queue = new PriorityQueue<Task>(new TaskPriorityComparator());
 		for (Task task : set) {
 			this.queue.add(task);
 		}
