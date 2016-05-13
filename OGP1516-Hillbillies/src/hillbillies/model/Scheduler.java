@@ -1,11 +1,15 @@
 package hillbillies.model;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
@@ -233,12 +237,7 @@ public class Scheduler {
 	 *       |   ( (task != null) &&
 	 *       |     (! task.hasUnit()) )
 	 */
-	private final PriorityQueue<Task> tasks =
-			new PriorityQueue<Task>(
-					(Task t1, Task t2)
-					-> (t1.getPriority() < t2.getPriority()) ? (1) : (t1.getPriority() == t2.getPriority() ? 0 : -1)
-					);
-
+	private final PriorityQueue<Task> tasks = new PriorityQueue<Task>(new TaskPriorityComparator());
 	
 	/**
 	 * Add a task that is has a unit but is still in tasks
@@ -256,7 +255,6 @@ public class Scheduler {
 			this.scheduledTasks.add(task);
 		}
 	}
-
 	
 	/**
 	 * Variable referencing a list collecting all the tasks
@@ -376,7 +374,12 @@ public class Scheduler {
 	/* Iterator */
 	
 	public Iterator<Task> taskIterator () {
-		return new TaskIterator(this.tasks);
+		return new TaskIterator(this.listAllTasks());
 	}
+
+	/* Random condition method that we'll never use */
 	
+	public Collection<Task> getTasksThat (Predicate<? super Task> predicate) {
+		return this.listAllTasks().stream().filter(predicate).collect(Collectors.toList());
+	}
 }
