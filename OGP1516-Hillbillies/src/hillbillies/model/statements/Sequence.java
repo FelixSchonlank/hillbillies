@@ -36,7 +36,7 @@ public class Sequence extends Statement {
 	}
 	
 	@Override
-	protected void setLinearNext (Statement linearNext) {
+	public void setLinearNext (Statement linearNext) {
 		super.setLinearNext(this.body.get(0));
 		for (int i=0; i<this.body.size()-1; i++) {
 			this.body.get(i).setLinearNext(this.body.get(i+1));

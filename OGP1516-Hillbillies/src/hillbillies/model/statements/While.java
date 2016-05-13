@@ -28,7 +28,7 @@ public class While extends Statement {
 	}
 	
 	@Override
-	protected void setLinearNext (Statement linearNext) {
+	public void setLinearNext (Statement linearNext) {
 		super.setLinearNext(this.body);
 		this.body.setLinearNext(linearNext);
 	}

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
@@ -681,5 +682,40 @@ public class Task {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Sets the next field of all Break Statements in this Task. When a Break
+	 * is not inside a while loop, it is not altered, and no sign of 
+	 * unwell-formedness is given, although obvious.
+	 * @pre
+	 * 		All Statements in this Task should have had their next and their
+	 * 		linearNext set already (although not perfectly yet as for Breaks).
+	 * 		| this.getStatement().setNext() has been called
+	 * 		| this.getStatement().setLinearNext() has been called
+	 * @post
+	 * 		All Break Statements in this Task that are located within a While
+	 * 		loop will have their next field set to their directly enclosing
+	 * 		While loop.
+	 * 		| foreach (Statement break in allStatementsInThisTask) {
+	 * 		|     if (break instanceof Break && breakHasDirectlyEnclosingWhileLoop) {
+	 * 		|         break.getNextStatement() == break.getNext() == breaksDirectlyEnclosingWhileLoop
+	 * 		|     }
+	 * 		| }
+	 */
+	private void setBreaksNextStatement () {
+		Stack<Statement> stack = new Stack<Statement>();
+		Statement current = this.getStatement();
+		do {
+			if (current instanceof While) {
+				stack.push(current);
+			} else if (current instanceof Break) {
+				current.setNext(stack.isEmpty()?null:stack.peek());
+			}
+			if (!stack.isEmpty() && current.getLinearNext() == stack.peek().getNext()) {
+				stack.pop();
+			}
+			current = current.getLinearNext();
+		} while (current.getLinearNext() != null);
 	}
 }

@@ -46,7 +46,7 @@ public class If extends Statement {
 	}
 	
 	@Override
-	protected void setLinearNext (Statement linearNext) {
+	public void setLinearNext (Statement linearNext) {
 		super.setLinearNext(this.getIfBody());
 		if (this.getElseBody() != null) {
 			this.getIfBody().setLinearNext(this.getElseBody());

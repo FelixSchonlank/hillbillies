@@ -36,11 +36,11 @@ public abstract class Statement {
 	/**
 	 * Sets the next field of this Statement
 	 */
-	protected void setNext (Statement next) {
+	public void setNext (Statement next) {
 		this.next = next;
 	}
 	
-	protected Statement getNext () {
+	public Statement getNext () {
 		return this.next;
 	}
 	
@@ -48,11 +48,11 @@ public abstract class Statement {
 	 * Sets the linearNext field of this Statement
 	 * @param linearNext
 	 */
-	protected void setLinearNext (Statement linearNext) {
+	public void setLinearNext (Statement linearNext) {
 		this.linearNext = linearNext;
 	}
 	
-	protected Statement getLinearNext () {
+	public Statement getLinearNext () {
 		return this.linearNext;
 	}
 	
