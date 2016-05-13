@@ -46,6 +46,17 @@ public class If extends Statement {
 	}
 	
 	@Override
+	protected void setLinearNext (Statement linearNext) {
+		super.setLinearNext(this.getIfBody());
+		if (this.getElseBody() != null) {
+			this.getIfBody().setLinearNext(this.getElseBody());
+			this.getElseBody().setLinearNext(linearNext);
+		} else {
+			this.getIfBody().setLinearNext(linearNext);
+		}
+	}
+	
+	@Override
 	public void setTask (Task task) {
 		super.setTask(task);
 		this.ifBody.setTask(task);
