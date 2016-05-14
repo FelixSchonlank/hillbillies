@@ -72,6 +72,14 @@ public class PositionOf extends Expression<Coordinate>{
 		return this.getUnit().evaluate().getPosition().toCoordinate();
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		return this.getUnit().isWellTyped();
+	}
 	
+	@Override
+	public Class<?> getReturningClass () {
+		return Coordinate.class;
+	}
 	
 }

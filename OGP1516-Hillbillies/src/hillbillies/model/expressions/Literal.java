@@ -7,7 +7,6 @@ import hillbillies.model.Coordinate;
 import hillbillies.model.Position;
 
 public class Literal extends Expression<Coordinate> {
-
 	
 	/**
 	 * Initialize this new LiteralPosition with given X.
@@ -164,6 +163,16 @@ public class Literal extends Expression<Coordinate> {
 	@Override
 	public Coordinate evaluate() {
 		return new Coordinate(this.getX(), this.getY(), this.getZ());
+	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Coordinate.class;
 	}
 
 }

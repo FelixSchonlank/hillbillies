@@ -1,6 +1,7 @@
 package hillbillies.model.expressions;
 
 import hillbillies.model.Unit;
+import hillbillies.model.WrongTypeException;
 
 public class IsAlive extends Expression<Boolean> {
 	
@@ -8,7 +9,7 @@ public class IsAlive extends Expression<Boolean> {
 		this.setUnit(unit);
 	}
 	
-	public Boolean evaluate(){
+	public Boolean evaluate() throws WrongTypeException {
 		return !this.getUnit().evaluate().isTerminated();
 	}
 	
@@ -29,4 +30,14 @@ public class IsAlive extends Expression<Boolean> {
 	
 	private Expression<Unit> unit;
 
+	@Override
+	public boolean isWellTyped () {
+		return this.getUnit().isWellTyped();
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Boolean.class;
+	}
+	
 }

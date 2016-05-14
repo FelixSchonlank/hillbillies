@@ -22,4 +22,14 @@ public class Friend extends Expression<Unit> {
 				.get();
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Unit.class;
+	}
+	
 }

@@ -29,7 +29,18 @@ public class Log extends Expression<Coordinate>{
 						-> (int) l1.getPosition().distance(l2.getPosition())
 						)
 				.get()
-				.getPosition().toCoordinate();
+				.getPosition()
+				.toCoordinate();
+	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Coordinate.class;
 	}
 	
 }

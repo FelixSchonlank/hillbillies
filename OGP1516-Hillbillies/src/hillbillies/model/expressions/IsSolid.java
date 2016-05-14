@@ -31,4 +31,15 @@ public class IsSolid extends Expression<Boolean> {
 	}
 	
 	private Expression<Coordinate> position;
+	
+	@Override
+	public boolean isWellTyped () {
+		return this.getPosition().isWellTyped();
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Boolean.class;
+	}
+	
 }

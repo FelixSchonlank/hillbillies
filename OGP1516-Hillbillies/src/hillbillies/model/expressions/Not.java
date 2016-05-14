@@ -1,5 +1,6 @@
 package hillbillies.model.expressions;
 
+import hillbillies.model.WrongTypeException;
 import hillbillies.model.expressions.*;
 
 public class Not extends Expression<Boolean>{
@@ -19,8 +20,18 @@ public class Not extends Expression<Boolean>{
 	private Expression<Boolean> expression;
 	
 	@Override
-	public Boolean evaluate() {
+	public Boolean evaluate() throws WrongTypeException {
 		return ! this.getExpression().evaluate();
+	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return this.getExpression().isWellTyped();
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Boolean.class;
 	}
 	
 }

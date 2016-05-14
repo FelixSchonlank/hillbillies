@@ -10,5 +10,15 @@ public class Here extends Expression<Coordinate> {
 	public Coordinate evaluate() {
 		return this.getTask().getUnit().getPosition().toCoordinate();
 	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Coordinate.class;
+	}
 
 }

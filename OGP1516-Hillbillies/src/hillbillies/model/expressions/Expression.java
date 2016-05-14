@@ -67,4 +67,7 @@ public abstract class Expression<T> {
 	public boolean isVariable(){
 		return false;
 	}
+	
+	public abstract boolean isWellTyped ();
+	public abstract Class<?> getReturningClass ();
 }

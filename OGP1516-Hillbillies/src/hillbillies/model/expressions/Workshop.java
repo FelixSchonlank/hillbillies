@@ -31,4 +31,14 @@ public class Workshop extends Expression<Coordinate>{
 				.get()
 				.getPosition().toCoordinate();
 	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Coordinate.class;
+	}
 }

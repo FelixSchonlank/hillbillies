@@ -74,5 +74,15 @@ public class ReadVariable extends Expression<Object>{
 	public  Object evaluate() {
 		return this.getTask().getValue(this.getName());
 	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Object.class;
+	}
 
 }

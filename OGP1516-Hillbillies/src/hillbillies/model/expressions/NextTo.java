@@ -8,7 +8,6 @@ import hillbillies.model.Position;
 import hillbillies.model.WrongTypeException;
 
 public class NextTo extends Expression<Coordinate>{
-
 		
 	/**
 	 * Initialize this new NextToPosition with given Position.
@@ -76,5 +75,14 @@ public class NextTo extends Expression<Coordinate>{
 		}return null;
 	}
 
+	@Override
+	public boolean isWellTyped () {
+		return this.getPosition().isWellTyped();
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Coordinate.class;
+	}
 	
 }

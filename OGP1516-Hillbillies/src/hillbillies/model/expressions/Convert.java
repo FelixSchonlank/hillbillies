@@ -33,5 +33,19 @@ public class Convert<T> extends Expression<T> {
 	    	throw new WrongTypeException(e);
 	    }
 	}
+	
+	@Override
+	public boolean isWellTyped () {
+		// TODO I'm not even sure if this works
+		return this.expression.isWellTyped()
+				&& (this.expression instanceof ReadVariable
+						|| this.expression.getReturningClass().equals(this.clazz)
+						);
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return this.clazz;
+	}
 
 }

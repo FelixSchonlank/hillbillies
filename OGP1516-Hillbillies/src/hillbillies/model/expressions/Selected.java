@@ -10,5 +10,15 @@ public class Selected extends Expression<Coordinate>{
 	public Coordinate evaluate() {
 		return this.getTask().getPosition();
 	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Coordinate.class;
+	}
 
 }

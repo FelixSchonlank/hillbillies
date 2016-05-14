@@ -8,5 +8,15 @@ public class True extends Expression<Boolean>{
 	public Boolean evaluate() {
 		return true;
 	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Boolean.class;
+	}
 
 }

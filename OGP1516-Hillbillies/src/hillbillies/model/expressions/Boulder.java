@@ -9,14 +9,14 @@ import hillbillies.model.Position;
 import hillbillies.model.World;
 import hillbillies.model.World.TerrainType;
 
-public class Boulder extends Expression<Position>{
-
+public class Boulder extends Expression<Coordinate>{
+	
 	@Override
-	public Position evaluate() {
+	public Coordinate evaluate() {
 		return getClosestBoulder(this.getTask().getUnit().getPosition());
 	}
 
-	public Position getClosestBoulder(Position position) {
+	public Coordinate getClosestBoulder(Position position) {
 		return 
 				this
 				.getTask()
@@ -29,6 +29,18 @@ public class Boulder extends Expression<Position>{
 						-> (int) b1.getPosition().distance(b2.getPosition())
 						)
 				.get()
-				.getPosition();
+				.getPosition()
+				.toCoordinate();
 	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Coordinate.class;
+	}
+	
 }

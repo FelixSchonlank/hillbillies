@@ -10,17 +10,28 @@ import hillbillies.model.Utils;
 
 public class Any extends Expression<Unit> {
 		
-		@Override
-		public Unit evaluate() {
-			return
-					this
-					.getTask()
-					.getUnit()
-					.getWorld()
-					.listAllFactions()
-					.stream()
-					.findAny()
-					.get()
-					.getRandomUnit();
-		}	
+	@Override
+	public Unit evaluate() {
+		return
+				this
+				.getTask()
+				.getUnit()
+				.getWorld()
+				.listAllFactions()
+				.stream()
+				.findAny()
+				.get()
+				.getRandomUnit();
+	}
+	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
+	@Override
+	public Class<?> getReturningClass () {
+		return Unit.class;
+	}
+	
 }
