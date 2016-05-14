@@ -20,4 +20,9 @@ public class Print extends Statement {
 		System.out.println(this.expression.evaluate().toString());
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
 }

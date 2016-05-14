@@ -13,4 +13,9 @@ public class Break extends Statement {
 		
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
 }

@@ -44,4 +44,9 @@ public class While extends Statement {
 		
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		return this.getBody().isWellTyped();
+	}
+	
 }

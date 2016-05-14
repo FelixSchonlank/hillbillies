@@ -77,8 +77,9 @@ public abstract class Statement {
 		return shouldContinueExecution;
 	}
 	
-
-	public boolean isVarriable(){
+	public boolean isVariable(){
 		return false;
 	}
+	
+	public abstract boolean isWellTyped ();
 }

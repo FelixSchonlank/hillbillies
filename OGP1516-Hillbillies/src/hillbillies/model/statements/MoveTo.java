@@ -18,4 +18,9 @@ public class MoveTo extends Action {
 		this.getTask().getUnit().moveTo(this.destination.evaluate().toCoordinate());
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		return this.destination.isWellTyped();
+	}
+	
 }

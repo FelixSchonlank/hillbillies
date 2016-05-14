@@ -14,8 +14,14 @@ public class Work extends Action {
 		this.condition = expression;
 	}
 	
+	@Override
 	public void execute () throws BadFSMStateException, WrongTypeException {
 		this.getTask().getUnit().work(this.condition.evaluate().toCoordinate());
+	}
+	
+	@Override
+	public boolean isWellTyped () {
+		this.condition.isWellTyped();
 	}
 	
 }

@@ -22,4 +22,9 @@ public class Attack extends Action {
 		this.getTask().getUnit().attack(this.victim.evaluate());
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		return this.victim.isWellTyped();
+	}
+	
 }

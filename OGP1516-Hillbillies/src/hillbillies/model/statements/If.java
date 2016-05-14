@@ -70,4 +70,9 @@ public class If extends Statement {
 		
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		return this.getIfBody().isWellTyped() && this.getElseBody().isWellTyped();
+	}
+	
 }

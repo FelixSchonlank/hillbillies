@@ -57,4 +57,14 @@ public class Sequence extends Statement {
 		
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		for (Statement statement : this.body) {
+			if (!statement.isWellTyped()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 }
