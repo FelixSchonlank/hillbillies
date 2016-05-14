@@ -5,7 +5,7 @@ import hillbillies.model.expressions.*;
 
 public class Or extends Expression<Boolean>{
 	
-	public Or (Expression<Boolean> firstExpression ,Expression<Boolean> secondExpression){
+	public Or (Expression<Boolean> firstExpression, Expression<Boolean> secondExpression){
 	 this.setFirstExpression(firstExpression);
 	 this.setSecondExpression(secondExpression);
     }

@@ -7,7 +7,7 @@ import hillbillies.model.WrongTypeException;
 
 public class IsSolid extends Expression<Boolean> {
 	
-	IsSolid(Expression<Coordinate> position){
+	public IsSolid(Expression<Coordinate> position){
 		this.setPosition(position);
 	}
 	

@@ -7,7 +7,7 @@ import hillbillies.model.WrongTypeException;
 
 public class IsPassable extends Expression<Boolean> {
 	
-	IsPassable(Expression<Coordinate> position){
+	public IsPassable(Expression<Coordinate> position){
 		this.setPosition(position);
 	}
 	

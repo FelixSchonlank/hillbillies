@@ -2,26 +2,26 @@
 package hillbillies.model.statements;
 
 import hillbillies.model.BadFSMStateException;
+import hillbillies.model.Coordinate;
 import hillbillies.model.expressions.*;
-import hillbillies.model.Position;
 import hillbillies.model.WrongTypeException;
 
 public class Work extends Action {
 	
-	public final Expression<Position> condition;
+	public final Expression<Coordinate> condition;
 	
-	public Work (Expression<Position> expression) {
+	public Work (Expression<Coordinate> expression) {
 		this.condition = expression;
 	}
 	
 	@Override
 	public void execute () throws BadFSMStateException, WrongTypeException {
-		this.getTask().getUnit().work(this.condition.evaluate().toCoordinate());
+		this.getTask().getUnit().work(this.condition.evaluate());
 	}
 	
 	@Override
 	public boolean isWellTyped () {
-		this.condition.isWellTyped();
+		return this.condition.isWellTyped();
 	}
 	
 }
