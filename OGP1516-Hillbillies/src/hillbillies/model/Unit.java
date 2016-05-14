@@ -2360,34 +2360,27 @@ public class Unit extends GameObject{
 			}
 			this.setState(State.MOVING);
 			this.setFlagsLow();
-		}else if(this.shouldRest){
-			this.transitionToRestingInit();
-		}else if(this.shouldWork){
-			this.transitionToWorking();
-		}else if(this.shouldAttack){
-			this.transitionToAttacking();
-		}else if(this.getDefaultBehaviorEnabled()){
-			int result = Utils.randomInt(0, 4);
-			if(result == 0){
-				try{
-					this.moveTo(this.getWorld().getRandomCoordinate());
-				}catch(IllegalArgumentException e){
-				}catch(BadFSMStateException f){
-				}
-			}else if(result == 1){
-				victim = (Unit) Utils.getRandomElement(this.getEnemiesInRange());
-				if (victim != null){
+			}else if(this.shouldRest){
+				this.transitionToRestingInit();
+			}else if(this.shouldWork){
+				this.transitionToWorking();
+			}else if(this.shouldAttack){
+				this.transitionToAttacking();
+			}else if(this.getDefaultBehaviorEnabled()){
+				if (this.hasTask()){
+					this.getTask().execute((int) dt / 1000);
+				}else if(! this.hasTask() && (this.getFaction().getScheduler().getNbTasks() > 0)){
+					this.getFaction().getScheduler().setTaskToBeScheduled(this);
+					this.getTask().execute((int)dt / 1000);
+				}else{
+				int result = Utils.randomInt(0, 4);
+				if(result == 0){
 					try {
-						this.attack(victim);
-					} catch (IllegalArgumentException e) {
+						this.moveTo(this.getWorld().getRandomCoordinate());
 					} catch (BadFSMStateException e) {}
-			}else if (result == 2){
-				this.shouldRest = true;
-			} else {
-				this.shouldWork = true;
+				}
 				}
 			}
-		}
 	}
 
 	/**
@@ -2426,7 +2419,11 @@ public class Unit extends GameObject{
 				}catch(IllegalArgumentException e){}
 				this.increaseXP(1);
 				immediateTarget = null;
-				this.transitionToNothing();
+				if(this.hasTask()){
+					this.getTask().execute((int) dt / 1000);
+				}else{
+					this.transitionToNothing();
+				}
 			}
 		}else{
 			if(this.defaultBehaviorEnabled){

@@ -14,7 +14,6 @@ import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.expressions.Convert;
 import hillbillies.model.expressions.ReadVariable;
 import hillbillies.model.statements.*;
-import hillbillies.model.statements.Statement;
 
 /** 
  * @Invar  Each Task can have its name as name.
@@ -28,8 +27,8 @@ import hillbillies.model.statements.Statement;
  * @Invar  The Priority of each Task must be a valid Priority for any
  *         Task.
  *       | isValidPriority(getPriority())
- * @Invar   Each Task must have proper Activities.
- *        | hasProperStatements()
+ * @Invar   the activity of a Task must be a valid activity for any task
+ * 		| isValidActivity(activity)
  * @Invar  The Position of each Task must be a valid Position for any
  *         Task.
  *       | isValidPosition(getPosition())
@@ -38,7 +37,7 @@ public class Task {
 
 	
 	/**
-	 * Initialize this new Task with given name, priority and a given set of activities
+	 * Initialize this new Task with given name, priority and a given activity
 	 * 
 	 * @param  name
 	 *         The name for this new Task.
@@ -53,26 +52,30 @@ public class Task {
 	 * @effect The Priority of this new Task is set to
 	 *         the given Priority.
 	 *       | this.setPriority(priority)
-	 * @param activities
-	 * 		| A list with the activities of this task
-	 * @effect the activities of this task is set to the given activities
-	 * 		| this.activities.addAll(activities)
+	 * @param  activity
+	 *         The activity for this new Task.
+	 * @effect The activity of this new Task is set to
+	 *         the given activity.
+	 *       | this.setActivity(activity) 
 	 * @param  position
 	 *         The Position for this new Task.
 	 * @effect The Position of this new Task is set to
 	 *         the given Position.
 	 *       | this.setPosition(position)
 	 */
-	public Task(String name, int priority, Coordinate position, List<Statement> activities) throws IllegalArgumentException {
+	public Task(String name, int priority, Coordinate position, Statement activity) throws IllegalArgumentException {
 		if (! canHaveAsName(name))
 			throw new IllegalArgumentException();
 		this.name = name;
 		this.setPriority(priority);
 		this.setPosition(position);
-		for(Statement activity : activities){
-			this.addActivity(activity);
-		}
+		this.setActivity(activity);
 	}
+	
+	public void execute(int nb){
+		//TODO execute this task
+	}
+
 	
 	/* Variables */
 	
@@ -104,193 +107,53 @@ public class Task {
 	 * Map with the name (String) of a variable as key and its value (Object) as Value
 	 */
 	private Map<String, Object> variables;
+
+	/**
+	 * Return the activity of this Task.
+	 */
+	@Basic @Raw
+	public Statement getActivity() {
+		return this.activity;
+	}
 	
-	/* Activities */
-
 	/**
-	 * Return the Activity associated with this Task at the
-	 * given index.
-	 * 
-	 * @param  index
-	 *         The index of the Activity to return.
-	 * @throws IndexOutOfBoundsException
-	 *         The given index is not positive or it exceeds the
-	 *         number of Activities for this Task.
-	 *       | (index < 1) || (index > getNbStatements())
-	 */
-	@Basic
-	@Raw
-	public Statement getActivityAt(int index) throws IndexOutOfBoundsException {
-		return activities.get(index - 1);
-	}
-
-	/**
-	 * Return the number of Activities associated with this Task.
-	 */
-	@Basic
-	@Raw
-	public int getNbActivities() {
-		return activities.size();
-	}
-
-	/**
-	 * Check whether this Task can have the given Activity
-	 * as one of its Activities.
-	 * 
+	 * Check whether the given activity is a valid activity for
+	 * any Task.
+	 *  
 	 * @param  activity
-	 *         The Activity to check.
-	 * @return True if and only if the given Activity is effective
-	 *         and that Activity can have this Task as its Task.
-	 *       | result ==
-	 *       |   (activity != null) &&
-	 *       |   Statement.isValidTask(this)
-	 */
-	@Raw
-	public boolean canHaveAsActivity(Statement activity) {
-		return (activity != null);
-	}
-
-	/**
-	 * Check whether this Task can have the given Activity
-	 * as one of its Activities at the given index.
-	 * 
-	 * @param  activity
-	 *         The Activity to check.
-	 * @return False if the given index is not positive or exceeds the
-	 *         number of Activities for this Task + 1.
-	 *       | if ( (index < 1) || (index > getNbStatements()+1) )
-	 *       |   then result == false
-	 *         Otherwise, false if this Task cannot have the given
-	 *         Activity as one of its Activities.
-	 *       | else if ( ! this.canHaveAsStatement(activity) )
-	 *       |   then result == false
-	 *         Otherwise, true if and only if the given Activity is
-	 *         not registered at another index than the given index.
-	 *       | else result ==
-	 *       |   for each I in 1..getNbStatements():
-	 *       |     (index == I) || (getStatementAt(I) != activity)
-	 */
-	@Raw
-	public boolean canHaveAsActivityAt(Statement activity, int index) {
-		if ((index < 1) || (index > getNbActivities() + 1))
-			return false;
-		if (!this.canHaveAsActivity(activity))
-			return false;
-		for (int i = 1; i < getNbActivities(); i++)
-			if ((i != index) && (getActivityAt(i) == activity))
-				return false;
+	 *         The activity to check.
+	 * @return 
+	 *       | result == true
+	*/
+	public static boolean isValidActivity(Statement activity) {
 		return true;
 	}
-
+	
 	/**
-	 * Check whether this Task has proper Activities attached to it.
-	 * 
-	 * @return True if and only if this Task can have each of the
-	 *         Activities attached to it as a Activitie at the given index,
-	 *         and if each of these Activities references this Task as
-	 *         the Task to which they are attached.
-	 *       | result ==
-	 *       |   for each I in 1..getNbStatements():
-	 *       |     ( this.canHaveAsStatementAt(getStatementAt(I) &&
-	 *       |       (getStatementAt(I).getTask() == this) )
-	 */
-	public boolean hasProperActivity() {
-		for (int i = 1; i <= getNbActivities(); i++) {
-			if (!canHaveAsActivityAt(getActivityAt(i), i))
-				return false;
-			if (getActivityAt(i).getTask() != this)
-				return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Check whether this Task has the given Activity as one of its
-	 * Activities.
+	 * Set the activity of this Task to the given activity.
 	 * 
 	 * @param  activity
-	 *         The Activity to check.
-	 * @return The given Activity is registered at some position as
-	 *         a Activity of this Task.
-	 *       | for some I in 1..getNbStatements():
-	 *       |   getStatementAt(I) == activity
-	 */
-	public boolean hasAsActivity(@Raw Statement activity) {
-		return activities.contains(activity);
-	}
-
-	/**
-	 * Add the given Activity to the list of Activities of this Task.
-	 * 
-	 * @param  activitie
-	 *         The Activity to be added.
-	 * @Pre    The given Activity is effective and already references
-	 *         this Task, and this Task does not yet have the given
-	 *         Activity as one of its Activities.
-	 *       | (activity != null) && (activitie.getTask() == this) &&
-	 *       | (! this.hasAsStatement(activity))
-	 * @post   The number of Activities of this Task is
-	 *         incremented by 1.
-	 *       | new.getNbStatements() == getNbStatements() + 1
-	 * @post   This Task has the given Activity as its very last Activity.
-	 *       | new.getStatementAt(getNbStatements()+1) == activity
-	 */
-	public void addActivity(@Raw Statement activity) {
-		assert (activity != null) && (activity.getTask() == this)
-				&& (!this.hasAsActivity(activity));
-		activities.add(activity);
-	}
-
-	/**
-	 * Remove the given Activity from the list of Activities of this Task.
-	 * 
-	 * @param  activity
-	 *         The Activity to be removed.
-	 * @Pre    The given Activity is effective, this Task has the
-	 *         given Activity as one of its Activities, and the given
-	 *         Activity does not reference any Task.
-	 *       | (activity != null) &&
-	 *       | this.hasAsStatement(activity) &&
-	 *       | (activitie.getTask() == null)
-	 * @post   The number of Activities of this Task is
-	 *         decremented by 1.
-	 *       | new.getNbStatements() == getNbStatements() - 1
-	 * @post   This Task no longer has the given Activity as
-	 *         one of its Activities.
-	 *       | ! new.hasAsStatement(activity)
-	 * @post   All Activities registered at an index beyond the index at
-	 *         which the given Activity was registered, are shifted
-	 *         one position to the left.
-	 *       | for each I,J in 1..getNbStatements():
-	 *       |   if ( (getStatementAt(I) == activity) and (I < J) )
-	 *       |     then new.getStatementAt(J-1) == getStatementAt(J)
+	 *         The new activity for this Task.
+	 * @post   The activity of this new Task is equal to
+	 *         the given activity.
+	 *       | new.getActivity() == activity
+	 * @throws IllegalArgumentException
+	 *         The given activity is not a valid activity for any
+	 *         Task.
+	 *       | ! isValidActivity(getActivity())
 	 */
 	@Raw
-	public void removeActivity(Statement activity) {
-		assert (activity != null) && this.hasAsActivity(activity)
-				&& (activity.getTask() == null);
-		activities.remove(activity);
+	public void setActivity(Statement activity) 
+			throws IllegalArgumentException {
+		if (! isValidActivity(activity))
+			throw new IllegalArgumentException();
+		this.activity = activity;
 	}
-
+	
 	/**
-	 * Variable referencing a list collecting all the Activities
-	 * of this Task.
-	 * 
-	 * @Invar  The referenced list is effective.
-	 *       | activities != null
-	 * @Invar  Each Activity registered in the referenced list is
-	 *         effective and not yet terminated.
-	 *       | for each activity in activities:
-	 *       |   ( (activity != null) &&
-	 *       |     (! activitie.isTerminated()) )
-	 * @Invar  No Activity is registered at several positions
-	 *         in the referenced list.
-	 *       | for each I,J in 0..activities.size()-1:
-	 *       |   ( (I == J) ||
-	 *       |     (activities.get(I) != activities.get(J))
+	 * Variable registering the activity of this Task.
 	 */
-	private final List<Statement> activities = new ArrayList<Statement>();
-
+	private Statement activity;
 	
 	/* priority */
 
@@ -628,19 +491,11 @@ public class Task {
 	/**
 	 * Check whether this task is well formed
 	 * @return true iff every activity of this task is well formed
-	 * 		| for every statement in activities
-	 * 		| 	if ! checkStatement(false, statement, assignments)
-	 * 		| 	then result == false
-	 * 		| else result == true
+	 * 		| result == checkSequence(false, (Sequence) this.activity, new Set<String>())
 	 */
 	public boolean isWelFormed(){
 		Set<String> assignments = new HashSet<String>();
-		for(Statement statement : this.activities){
-			if (! checkStatement(false, statement, assignments)){
-				return false;
-			}
-		}
-		return true;
+		return checkSequence(false, (Sequence) this.activity, assignments);
 	}
 
 	/**
@@ -792,7 +647,7 @@ public class Task {
 	 */
 	private void setBreaksNextStatement () {
 		Stack<Statement> stack = new Stack<Statement>();
-		Statement current = this.getStatement();
+		Statement current = this.getActivity();
 		do {
 			if (current instanceof While) {
 				stack.push(current);
