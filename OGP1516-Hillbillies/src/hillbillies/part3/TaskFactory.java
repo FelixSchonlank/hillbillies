@@ -6,6 +6,7 @@ import java.util.List;
 import hillbillies.model.Coordinate;
 import hillbillies.model.Task;
 import hillbillies.model.Unit;
+import hillbillies.model.VariableNameGenerator;
 import hillbillies.model.expressions.*;
 import hillbillies.model.statements.*;
 import hillbillies.part3.programs.ITaskFactory;
