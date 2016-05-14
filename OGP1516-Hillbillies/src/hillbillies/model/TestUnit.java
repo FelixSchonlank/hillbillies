@@ -228,26 +228,7 @@ public class TestUnit {
 	}
 	
 	/* attack */
-
-//	@Test
-//	public void testAttack_LegalCase() throws IllegalArgumentException, BadFSMStateException {
-//		Baas.setState(State.NOTHING);
-//		Baas.attack(victim);
-//		assertEquals(victim, Baas.getVictim());
-//		assertTrue(Baas.getShouldAttackFlag());
-//		Baas.setState(State.RESTING_HP);
-//		Baas.attack(victim);
-//		assertEquals(victim, Baas.getVictim());
-//		assertTrue(Baas.getShouldAttackFlag());
-//		Baas.setState(State.RESTING_STAMINA);
-//		Baas.attack(victim);
-//		assertEquals(victim, Baas.getVictim());
-//		assertTrue(Baas.getShouldAttackFlag());
-//		Baas.setState(State.WORKING);
-//		Baas.attack(victim);
-//		assertEquals(victim, Baas.getVictim());
-//		assertTrue(Baas.getShouldAttackFlag());
-//	}
+	
 	
 	@Test (expected = IllegalArgumentException.class)
 	public void testAttack_nullVictim() throws IllegalArgumentException, BadFSMStateException {
