@@ -1,21 +1,21 @@
 package hillbillies.model.statements;
 
 import hillbillies.model.BadFSMStateException;
+import hillbillies.model.Coordinate;
 import hillbillies.model.expressions.*;
-import hillbillies.model.Position;
 import hillbillies.model.WrongTypeException;
 
 public class MoveTo extends Action {
 
-	public final Expression<Position> destination;
+	public final Expression<Coordinate> destination;
 
-	public MoveTo (Expression<Position> expression) {
+	public MoveTo (Expression<Coordinate> expression) {
 		this.destination = expression;
 	}
 
 	@Override
 	public void execute () throws BadFSMStateException, WrongTypeException {
-		this.getTask().getUnit().moveTo(this.destination.evaluate().toCoordinate());
+		this.getTask().getUnit().moveTo(this.destination.evaluate());
 	}
 	
 	@Override

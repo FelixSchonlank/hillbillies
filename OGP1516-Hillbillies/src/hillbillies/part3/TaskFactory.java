@@ -1,14 +1,14 @@
 package hillbillies.part3;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.sun.javafx.fxml.expression.LiteralExpression;
 
 import hillbillies.model.Coordinate;
 import hillbillies.model.Task;
 import hillbillies.model.Unit;
+import hillbillies.model.VariableNameGenerator;
 import hillbillies.model.expressions.*;
-import hillbillies.model.statements.Statement;
+import hillbillies.model.statements.*;
 import hillbillies.part3.programs.ITaskFactory;
 import hillbillies.part3.programs.SourceLocation;
 
@@ -16,117 +16,128 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 
 	@Override
 	public List<Task> createTasks(String name, int priority, Statement activity, List<int[]> selectedCubes) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Task> list = new ArrayList<Task>();
+		for (int[] cube : selectedCubes) {
+			list.add(new Task(name, priority, new Coordinate(cube), activity));
+		}
+		return list;
 	}
 
 	@Override
 	public Statement createAssignment(String variableName, Expression<?> value, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Assignment(variableName, value);
 	}
 
 	@Override
 	public Statement createWhile(Expression<?> condition, Statement body, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new While(new Convert<Boolean>(condition, Boolean.class), body);
 	}
 
 	@Override
 	public Statement createIf(Expression<?> condition, Statement ifBody, Statement elseBody,
 			SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new If(new Convert<Boolean>(condition, Boolean.class), ifBody, elseBody);
 	}
 
 	@Override
 	public Statement createBreak(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Break();
 	}
 
 	@Override
 	public Statement createPrint(Expression<?> value, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Print(value);
 	}
 
 	@Override
 	public Statement createSequence(List<Statement> statements, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Sequence(statements);
 	}
 
 	@Override
 	public Statement createMoveTo(Expression<?> position, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new MoveTo(new Convert<Coordinate>(position, Coordinate.class));
 	}
 
 	@Override
 	public Statement createWork(Expression<?> position, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Work(new Convert<Coordinate>(position, Coordinate.class));
 	}
 
 	@Override
 	public Statement createFollow(Expression<?> unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Statement> statementList = new ArrayList<Statement>();
+		String variableName = VariableNameGenerator.getNext();
+		statementList.add(new Assignment(variableName, unit));
+		statementList.add(
+				new While(
+						new AreAdjacent(
+								new Here(), 
+								new PositionOf(
+										new Convert<Unit>(
+												unit, 
+												Unit.class
+												)
+										)
+								),
+						new MoveTo(
+								new PositionOf(
+										new Convert<Unit>(
+												new ReadVariable(
+														variableName
+														),
+												Unit.class
+												)
+										)
+								)
+						)
+				);
+		return new Sequence(statementList);
 	}
 
 	@Override
 	public Statement createAttack(Expression<?> unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Attack(new Convert<Unit>(unit, Unit.class));
 	}
 
 	@Override
 	public Expression<?> createReadVariable(String variableName, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ReadVariable(variableName);
 	}
 
 	@Override
 	public Expression<?> createIsSolid(Expression<?> position, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new IsSolid(new Convert<Coordinate>(position, Coordinate.class));
 	}
 
 	@Override
 	public Expression<?> createIsPassable(Expression<?> position, SourceLocation sourceLocation) {
-		Convert<Coordinate> unit1 =  new Convert<Coordinate>(position, Coordinate.class);
-		return null;
+		return new IsPassable(new Convert<Coordinate>(position, Coordinate.class));
 	}
 
 	@Override
 	public Expression<?> createIsFriend(Expression<?> unit, SourceLocation sourceLocation) {
-		Convert<Unit> unit1 =  new Convert<Unit>(unit, Unit.class);
-		return new IsAlive(unit1);
+		return new IsFriend(new Convert<Unit>(unit, Unit.class));
 	}
 
 	@Override
 	public Expression<?> createIsEnemy(Expression<?> unit, SourceLocation sourceLocation) {
-		Convert<Unit> unit1 =  new Convert<Unit>(unit, Unit.class);
-		return new IsEnemy(unit1);
+		return new IsEnemy(new Convert<Unit>(unit, Unit.class));
 	}
 
 	@Override
 	public Expression<?> createIsAlive(Expression<?> unit, SourceLocation sourceLocation) {
-		Convert<Unit> unit1 =  new Convert<Unit>(unit, Unit.class);
-		return new IsAlive(unit1);
+		return new IsAlive(new Convert<Unit>(unit, Unit.class));
 	}
 
 	@Override
 	public Expression<?> createCarriesItem(Expression<?> unit, SourceLocation sourceLocation) {
-		Convert<Unit> unit1 =  new Convert<Unit>(unit, Unit.class);
-		return new CarriesItem(unit1);
+		return new CarriesItem(new Convert<Unit>(unit, Unit.class));
 	}
 
 	@Override
 	public Expression<?> createNot(Expression<?> expression, SourceLocation sourceLocation) {
-		Convert<Boolean> exp =  new Convert<Boolean>(expression, Boolean.class);
-		return new Not(exp) ;
+		return new Not(new Convert<Boolean>(expression, Boolean.class));
 	}
 
 	@Override
@@ -138,9 +149,10 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 
 	@Override
 	public Expression<?> createOr(Expression<?> left, Expression<?> right, SourceLocation sourceLocation) {
-		Convert<Boolean> left1 =  new Convert<Boolean>(left, Boolean.class);
-		Convert<Boolean> right1 = new Convert<Boolean>(right, Boolean.class);
-		return new Or(left1, right1);
+		return new Or(
+				new Convert<Boolean>(left, Boolean.class), 
+				new Convert<Boolean>(right, Boolean.class)
+				);
 	}
 
 	@Override
@@ -150,14 +162,12 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 
 	@Override
 	public Expression<?> createLogPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Log();
 	}
 
 	@Override
 	public Expression<?> createBoulderPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Boulder();
 	}
 
 	@Override
@@ -178,8 +188,7 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 
 	@Override
 	public Expression<?> createPositionOf(Expression<?> unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new PositionOf(new Convert<Unit>(unit, Unit.class));
 	}
 
 	@Override
