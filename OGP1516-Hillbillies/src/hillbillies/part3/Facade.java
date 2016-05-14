@@ -61,56 +61,51 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean isSolidConnectedToBorder(World world, int x, int y, int z) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return world.isSolidConnectedToBorder(new Coordinate(x, y, z));
 	}
 
 	@Override
 	public Unit spawnUnit(World world, boolean enableDefaultBehavior) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.spawnUnit(enableDefaultBehavior);
 	}
 
 	@Override
 	public void addUnit(Unit unit, World world) throws ModelException {
-		// TODO Auto-generated method stub
-
+		world.addUnit(unit);
 	}
 
 	@Override
 	public Set<Unit> getUnits(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.listAllUnits();
 	}
 
 	@Override
 	public boolean isCarryingLog(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.isCarryingLog();
 	}
 
 	@Override
 	public boolean isCarryingBoulder(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return unit.isCarryingBoulder();
 	}
 
 	@Override
 	public boolean isAlive(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return false;
+		return ! unit.isTerminated();
 	}
 
 	@Override
 	public int getExperiencePoints(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int) unit.getXP();
 	}
 
 	@Override
 	public void workAt(Unit unit, int x, int y, int z) throws ModelException {
-		// TODO Auto-generated method stub
-
+		try {
+			unit.work(new Coordinate(x, y, z));
+		} catch (BadFSMStateException e) {
+			throw new ModelException();
+		}
 	}
 
 	@Override
@@ -121,38 +116,42 @@ public class Facade implements IFacade {
 
 	@Override
 	public Set<Unit> getUnitsOfFaction(Faction faction) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return faction.listAllUnits();
 	}
 
 	@Override
 	public Set<Faction> getActiveFactions(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.getFactions();
 	}
 
 	@Override
 	public double[] getPosition(Boulder boulder) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		Double[] pos = boulder.getPosition().toArray();
+		double[] result = new double[3];
+		result[0] = pos[0];
+		result[1] = pos[1];
+		result[2] = pos[2];
+		return result;
 	}
 
 	@Override
 	public Set<Boulder> getBoulders(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.listAllBoulders();
 	}
 
 	@Override
 	public double[] getPosition(Log log) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		Double[] pos = log.getPosition().toArray();
+		double[] result = new double[3];
+		result[0] = pos[0];
+		result[1] = pos[1];
+		result[2] = pos[2];
+		return result;
 	}
 
 	@Override
 	public Set<Log> getLogs(World world) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return world.listAllLogs();
 	}
 
 	@Override
@@ -164,14 +163,18 @@ public class Facade implements IFacade {
 
 	@Override
 	public double[] getPosition(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		Double[] pos = unit.getPosition().toArray();
+		double[] result = new double[3];
+		result[0] = pos[0];
+		result[1] = pos[1];
+		result[2] = pos[2];
+		return result;
 	}
 
 	@Override
 	public int[] getCubeCoordinate(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		//TODO
+		return null; 
 	}
 
 	@Override
