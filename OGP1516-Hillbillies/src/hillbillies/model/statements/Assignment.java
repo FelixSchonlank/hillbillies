@@ -23,4 +23,9 @@ public class Assignment extends Statement {
 		this.getTask().addVariable(variableName, this.expression.evaluate());
 	}
 	
+	@Override
+	public boolean isWellTyped () {
+		return true;
+	}
+	
 }

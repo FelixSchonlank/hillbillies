@@ -1,4 +1,4 @@
-package hillbillies.model;
+package hillbillies.part1.facade;
 
 import hillbillies.model.BadFSMStateException;
 import hillbillies.model.Coordinate;
