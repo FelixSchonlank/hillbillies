@@ -1,4 +1,4 @@
-package hillbillies.part3;
+package hillbillies.part3.facade;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -15,6 +15,7 @@ import hillbillies.model.Unit;
 import hillbillies.model.World;
 import hillbillies.model.World.TerrainType;
 import hillbillies.part2.listener.TerrainChangeListener;
+import hillbillies.part3.TaskFactory;
 import hillbillies.part3.facade.IFacade;
 import hillbillies.part3.programs.ITaskFactory;
 import ogp.framework.util.ModelException;
