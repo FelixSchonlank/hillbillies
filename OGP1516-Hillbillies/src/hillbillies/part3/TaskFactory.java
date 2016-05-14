@@ -128,97 +128,88 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 
 	@Override
 	public Expression<?> createAnd(Expression<?> left, Expression<?> right, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		Convert<Boolean> left1 =  new Convert<Boolean>(left, Boolean.class);
+		Convert<Boolean> right1 = new Convert<Boolean>(right, Boolean.class);
+		return new And(left1, right1);
 	}
 
 	@Override
 	public Expression<?> createOr(Expression<?> left, Expression<?> right, SourceLocation sourceLocation) {
-		return new Or(new Convert<Boolean>(left, Boolean.class), new Convert<Boolean>(right, Boolean.class));
+		return new Or(
+				new Convert<Boolean>(left, Boolean.class), 
+				new Convert<Boolean>(right, Boolean.class)
+				);
 	}
 
 	@Override
 	public Expression<?> createHerePosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Here();
 	}
 
 	@Override
 	public Expression<?> createLogPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Log();
 	}
 
 	@Override
 	public Expression<?> createBoulderPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Boulder();
 	}
 
 	@Override
 	public Expression<?> createWorkshopPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Workshop();
 	}
 
 	@Override
 	public Expression<?> createSelectedPosition(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Selected();
 	}
 
 	@Override
 	public Expression<?> createNextToPosition(Expression<?> position, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		Convert<Coordinate> cube =  new Convert<Coordinate>(position, Coordinate.class);
+		return new NextTo(cube);
 	}
 
 	@Override
 	public Expression<?> createPositionOf(Expression<?> unit, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new PositionOf(new Convert<Unit>(unit, Unit.class));
 	}
 
 	@Override
 	public Expression<?> createLiteralPosition(int x, int y, int z, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Literal(x, y, z);
 	}
 
 	@Override
 	public Expression<?> createThis(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new This();
 	}
 
 	@Override
 	public Expression<?> createFriend(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Friend();
 	}
 
 	@Override
 	public Expression<?> createEnemy(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Enemy();
 	}
 
 	@Override
 	public Expression<?> createAny(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Any();
 	}
 
 	@Override
 	public Expression<?> createTrue(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new True();
 	}
 
 	@Override
 	public Expression<?> createFalse(SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;
+		return new False();
 	}
 
 }
