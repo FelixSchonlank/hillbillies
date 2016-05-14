@@ -67,14 +67,27 @@ public class TaskFactory implements ITaskFactory<Expression<?>, Statement, Task>
 	@Override
 	public Statement createFollow(Expression<?> unit, SourceLocation sourceLocation) {
 		List<Statement> statementList = new ArrayList<Statement>();
-		statementList.add(new Assignment(VariableNameGenerator.getNext(), unit));
+		String variableName = VariableNameGenerator.getNext();
+		statementList.add(new Assignment(variableName, unit));
 		statementList.add(
 				new While(
 						new AreAdjacent(
-								new This(), 
-								new Convert<Unit>(
-										unit, 
-										Unit.class
+								new Here(), 
+								new PositionOf(
+										new Convert<Unit>(
+												unit, 
+												Unit.class
+												)
+										)
+								),
+						new MoveTo(
+								new PositionOf(
+										new Convert<Unit>(
+												new ReadVariable(
+														variableName
+														),
+												Unit.class
+												)
 										)
 								)
 						)
