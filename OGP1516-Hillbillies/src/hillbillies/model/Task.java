@@ -70,6 +70,9 @@ public class Task {
 		this.setPriority(priority);
 		this.setPosition(position);
 		this.setActivity(activity);
+		this.getActivity().setNext(null);
+		this.getActivity().setLinearNext(null);
+		this.setBreaksNextStatement();
 	}
 	
 	public void execute(int nb){
@@ -495,7 +498,7 @@ public class Task {
 	 */
 	public boolean isWelFormed(){
 		Set<String> assignments = new HashSet<String>();
-		return checkSequence(false, (Sequence) this.activity, assignments);
+		return checkSequence(false, (Sequence) this.activity, assignments) && this.isWellTyped();
 	}
 
 	/**
@@ -660,4 +663,11 @@ public class Task {
 			current = current.getLinearNext();
 		} while (current.getLinearNext() != null);
 	}
+
+	/* Well-typedness */
+	
+	private boolean isWellTyped () {
+		return this.getActivity().isWellTyped();
+	}
+	
 }
