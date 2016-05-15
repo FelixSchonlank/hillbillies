@@ -41,7 +41,7 @@ public class PositionOf extends Expression<Coordinate>{
 	 *       | result == true	
 	*/
 	public static boolean isValidUnit(Expression<Unit> unit) {
-		return false;
+		return true;
 	}
 	
 	/**

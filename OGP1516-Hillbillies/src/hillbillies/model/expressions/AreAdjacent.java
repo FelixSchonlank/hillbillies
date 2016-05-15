@@ -44,7 +44,7 @@ public class AreAdjacent extends Expression<Boolean>{
 	 *       | result == true
 	*/
 	public static boolean isValidSecond(Expression<Coordinate> second) {
-		return false;
+		return true;
 	}
 	
 	/**

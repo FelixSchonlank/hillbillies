@@ -16,7 +16,7 @@ public class While extends Statement {
 	}
 	
 	public Statement getBody(){
-		return this.getBody();
+		return this.body;
 	}
 	@Override
 	public Statement getNextStatement () throws WrongTypeException {

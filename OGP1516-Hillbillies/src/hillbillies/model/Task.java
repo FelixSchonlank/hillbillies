@@ -457,10 +457,11 @@ public class Task {
 	 * @param  Position
 	 *         The Position to check.
 	 * @return 
-	 *       | result == this.getScheduler().getFaction().getRandomUnit().getWorld().withinBounds(position.toCoordinate())
+	 *       | result == true
 	*/
 	public boolean canHaveAsPosition(Coordinate position) {
-		return this.getScheduler().getFaction().getRandomUnit().getWorld().withinBounds(position);
+		//return this.getScheduler().getFaction().getRandomUnit().getWorld().withinBounds(position);
+		return true;
 	}
 	
 	/**
@@ -661,7 +662,7 @@ public class Task {
 				stack.pop();
 			}
 			current = current.getLinearNext();
-		} while (current.getLinearNext() != null);
+		} while (current != null);
 	}
 
 	/* Well-typedness */
