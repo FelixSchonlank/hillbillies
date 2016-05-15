@@ -2,6 +2,7 @@ package hillbillies.model.statements;
 
 import hillbillies.model.BadFSMStateException;
 import hillbillies.model.Coordinate;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.WrongTypeException;
 
@@ -14,7 +15,7 @@ public class MoveTo extends Action {
 	}
 
 	@Override
-	public void execute () throws BadFSMStateException, WrongTypeException {
+	public void execute () throws BadFSMStateException, WrongTypeException, IllegalArgumentException, VariableNotAssignedException {
 		this.getTask().getUnit().moveTo(this.destination.evaluate());
 	}
 	

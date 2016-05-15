@@ -2,7 +2,6 @@ package hillbillies.model.expressions;
 
 import hillbillies.model.expressions.*;
 import hillbillies.model.Faction;
-import hillbillies.model.NoAccessibleCandidatesException;
 import hillbillies.model.Unit;
 
 public class Enemy extends Expression<Unit> {

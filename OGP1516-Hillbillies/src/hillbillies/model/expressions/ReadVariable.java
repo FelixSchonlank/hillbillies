@@ -2,6 +2,7 @@ package hillbillies.model.expressions;
 
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.expressions.*;
 
 public class ReadVariable extends Expression<Object>{
@@ -71,7 +72,7 @@ public class ReadVariable extends Expression<Object>{
 	private String name;
 	
 	@Override
-	public  Object evaluate() throws VariableNotAssigntException {
+	public  Object evaluate() throws VariableNotAssignedException {
 		return this.getTask().getValue(this.getName());
 	}
 	

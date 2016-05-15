@@ -2,6 +2,7 @@ package hillbillies.model.statements;
 
 import hillbillies.model.expressions.*;
 import hillbillies.model.Task;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 
 public class While extends Statement {
@@ -19,7 +20,7 @@ public class While extends Statement {
 		return this.body;
 	}
 	@Override
-	public Statement getNextStatement () throws WrongTypeException {
+	public Statement getNextStatement () throws WrongTypeException, VariableNotAssignedException {
 		if (this.condition.evaluate()) {
 			return this.body;
 		} else {

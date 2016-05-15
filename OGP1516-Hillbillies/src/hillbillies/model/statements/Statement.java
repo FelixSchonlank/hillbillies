@@ -3,6 +3,7 @@ package hillbillies.model.statements;
 import hillbillies.model.BadFSMStateException;
 import hillbillies.model.Task;
 import hillbillies.model.Unit;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.World;
 import hillbillies.model.WrongTypeException;
 
@@ -59,15 +60,17 @@ public abstract class Statement {
 	/**
 	 * Gives back the next statement to execute. This could be the _next_ field
 	 * or any other Statement, even null if you want the program to stop.
+	 * @throws VariableNotAssignedException 
 	 */
-	public Statement getNextStatement () throws WrongTypeException {
+	public Statement getNextStatement () throws WrongTypeException, VariableNotAssignedException {
 		return this.next;
 	}
 	
 	/**
 	 * Executes this Statement. Sometimes this doesn't do anything.
+	 * @throws VariableNotAssignedException 
 	 */
-	public abstract void execute () throws BadFSMStateException, WrongTypeException;
+	public abstract void execute () throws BadFSMStateException, WrongTypeException, VariableNotAssignedException;
 	
 	/**
 	 * Tells whether the execution of Statements in the Task should be

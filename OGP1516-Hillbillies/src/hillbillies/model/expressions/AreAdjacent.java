@@ -3,6 +3,7 @@ package hillbillies.model.expressions;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.Coordinate;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 
 public class AreAdjacent extends Expression<Boolean>{
@@ -119,7 +120,7 @@ public class AreAdjacent extends Expression<Boolean>{
 	/* Methods */
 	
 	@Override
-	public Boolean evaluate() throws WrongTypeException {
+	public Boolean evaluate() throws WrongTypeException, IllegalArgumentException, VariableNotAssignedException {
 		return this.getTask().getUnit().getWorld().areAdjacentCubes(this.first.evaluate(), this.second.evaluate());
 	}
 

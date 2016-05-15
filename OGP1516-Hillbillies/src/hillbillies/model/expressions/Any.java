@@ -5,7 +5,6 @@ import java.util.Set;
 
 import hillbillies.model.expressions.*;
 import hillbillies.model.Faction;
-import hillbillies.model.NoAccessibleCandidatesException;
 import hillbillies.model.Unit;
 import hillbillies.model.Utils;
 

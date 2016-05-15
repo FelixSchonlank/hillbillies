@@ -3,6 +3,7 @@ package hillbillies.model.expressions;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.Task;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 
 /**
@@ -62,7 +63,7 @@ public abstract class Expression<T> {
 	/**
 	 * Return a Position, boolean or Unit depending on the type of Expression
 	 */
-	public abstract T evaluate() throws WrongTypeException;
+	public abstract T evaluate() throws WrongTypeException, VariableNotAssignedException;
 		
 	public boolean isVariable(){
 		return false;

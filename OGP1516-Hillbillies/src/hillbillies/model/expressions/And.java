@@ -1,5 +1,6 @@
 package hillbillies.model.expressions;
 
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 import hillbillies.model.expressions.*;
 
@@ -31,7 +32,7 @@ public class And extends Expression<Boolean>{
 	private Expression<Boolean> secondExpression;
 	
 	@Override
-	public Boolean evaluate() throws WrongTypeException {
+	public Boolean evaluate() throws WrongTypeException, VariableNotAssignedException {
 		return this.getFirstExpression().evaluate() && this.getSecondExpression().evaluate();
 	}
 	

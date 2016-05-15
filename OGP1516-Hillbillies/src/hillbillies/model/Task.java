@@ -130,9 +130,9 @@ public class Task {
 	 * 		| if the given name is not found as a key in variables
 	 * 		| ! this.variables.containsKey(name)
 	 */
-	public Object getValue(String name) throws VariableNotAssigntException {
+	public Object getValue(String name) throws VariableNotAssignedException {
 		if (! this.variables.containsKey(name)){
-			throw new VariableNotAssigntException();
+			throw new VariableNotAssignedException();
 		}else{
 			return this.variables.get(name);
 		}

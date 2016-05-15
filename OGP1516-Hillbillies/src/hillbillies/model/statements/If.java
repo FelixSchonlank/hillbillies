@@ -3,6 +3,7 @@ package hillbillies.model.statements;
 import hillbillies.model.BadFSMStateException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Task;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 import hillbillies.model.statements.Statement;
 
@@ -26,7 +27,7 @@ public class If extends Statement {
 	}
 	
 	@Override
-	public Statement getNextStatement () throws WrongTypeException {
+	public Statement getNextStatement () throws WrongTypeException, VariableNotAssignedException {
 		if (this.condition.evaluate()) {
 			return ifBody;
 		} else if (this.elseBody != null) {

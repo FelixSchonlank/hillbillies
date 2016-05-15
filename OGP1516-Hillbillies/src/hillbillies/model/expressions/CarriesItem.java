@@ -2,6 +2,7 @@ package hillbillies.model.expressions;
 
 import hillbillies.model.expressions.*;
 import hillbillies.model.Unit;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 
 public class CarriesItem extends Expression<Boolean> {
@@ -10,7 +11,7 @@ public class CarriesItem extends Expression<Boolean> {
 		this.setUnit(unit);
 	}
 	
-	public Boolean evaluate() throws WrongTypeException {
+	public Boolean evaluate() throws WrongTypeException, VariableNotAssignedException {
 		return this.getUnit().evaluate().hasItem();
 	}
 	

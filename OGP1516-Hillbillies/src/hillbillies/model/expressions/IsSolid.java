@@ -3,6 +3,7 @@ package hillbillies.model.expressions;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Coordinate;
 import hillbillies.model.Position;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 
 public class IsSolid extends Expression<Boolean> {
@@ -11,7 +12,7 @@ public class IsSolid extends Expression<Boolean> {
 		this.setPosition(position);
 	}
 	
-	public Boolean evaluate() throws IllegalArgumentException, WrongTypeException{
+	public Boolean evaluate() throws IllegalArgumentException, WrongTypeException, VariableNotAssignedException{
 		return !this.getTask().getScheduler().getFaction().getRandomUnit().getWorld().isPassableCube(((Coordinate) position.evaluate()));
 	}
 	

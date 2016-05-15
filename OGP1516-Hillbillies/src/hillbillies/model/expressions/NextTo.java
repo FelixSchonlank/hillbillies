@@ -3,9 +3,9 @@ package hillbillies.model.expressions;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.Coordinate;
-import hillbillies.model.NoAccessibleCandidatesException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 
 public class NextTo extends Expression<Coordinate>{
@@ -70,7 +70,7 @@ public class NextTo extends Expression<Coordinate>{
 	private Expression<Coordinate> position;
 
 	@Override
-	public Coordinate evaluate() throws IllegalArgumentException, WrongTypeException{
+	public Coordinate evaluate() throws IllegalArgumentException, WrongTypeException, VariableNotAssignedException{
 		return this.getTask().getUnit().getWorld().getNeighbors(this.getPosition().evaluate()).stream()
 		.filter((Coordinate c) -> this.getTask().getUnit().isReachable(c)).findAny().get();
 	}

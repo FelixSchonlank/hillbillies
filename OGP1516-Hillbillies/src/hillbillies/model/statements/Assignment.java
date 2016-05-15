@@ -1,5 +1,6 @@
 package hillbillies.model.statements;
 
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 import hillbillies.model.expressions.*;
 
@@ -19,7 +20,7 @@ public class Assignment extends Statement {
 	}
 	
 	@Override
-	public void execute() throws WrongTypeException {
+	public void execute() throws WrongTypeException, VariableNotAssignedException {
 		this.getTask().addVariable(variableName, this.expression.evaluate());
 	}
 	

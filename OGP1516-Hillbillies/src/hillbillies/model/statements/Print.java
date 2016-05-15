@@ -1,5 +1,6 @@
 package hillbillies.model.statements;
 
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 import hillbillies.model.expressions.*;;
 
@@ -16,7 +17,7 @@ public class Print extends Statement {
 	}
 	
 	@Override
-	public void execute () throws WrongTypeException {
+	public void execute () throws WrongTypeException, VariableNotAssignedException {
 		System.out.println(this.expression.evaluate().toString());
 	}
 	

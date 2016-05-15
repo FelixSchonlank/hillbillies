@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import hillbillies.model.Coordinate;
-import hillbillies.model.NoAccessibleCandidatesException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 import hillbillies.model.World;

@@ -4,6 +4,7 @@ import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.Coordinate;
 import hillbillies.model.Unit;
+import hillbillies.model.VariableNotAssignedException;
 import hillbillies.model.WrongTypeException;
 
 public class PositionOf extends Expression<Coordinate>{
@@ -68,7 +69,7 @@ public class PositionOf extends Expression<Coordinate>{
 	private Expression<Unit> unit;
 		
 	@Override
-	public Coordinate evaluate() throws WrongTypeException {
+	public Coordinate evaluate() throws WrongTypeException, VariableNotAssignedException {
 		return this.getUnit().evaluate().getPosition().toCoordinate();
 	}
 	
