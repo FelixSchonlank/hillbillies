@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import hillbillies.model.Coordinate;
+import hillbillies.model.NoAccessibleCandidatesException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 import hillbillies.model.World;
@@ -17,13 +18,14 @@ public class Boulder extends Expression<Coordinate>{
 	}
 
 	public Coordinate getClosestBoulder(Position position) {
-		return 
+		return
 				this
 				.getTask()
 				.getUnit()
 				.getWorld()
 				.listAllBoulders()
 				.stream()
+				.filter((b) -> this.getTask().getUnit().isReachable(b.getPosition().toCoordinate()))
 				.min(
 						(b1, b2)
 						-> (int) b1.getPosition().distance(b2.getPosition())
@@ -31,6 +33,7 @@ public class Boulder extends Expression<Coordinate>{
 				.get()
 				.getPosition()
 				.toCoordinate();
+				
 	}
 	
 	@Override
