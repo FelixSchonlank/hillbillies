@@ -188,6 +188,7 @@ public class TestUnit {
 	public void testAdvanceTime() {
 		assertTrue("Not yet implemented", true);
 	}
+
 	
 	/* MoveToAdjacent */
 
@@ -285,4 +286,13 @@ public class TestUnit {
 		Baas.work(new Coordinate(1, 1, 1));
 		assertTrue(Baas.getShouldWorkFlag());
 	}
+	
+	/* Terminate */
+	
+	public void testTerminate(){
+		Baas.terminate();
+		assertTrue(Baas.isTerminated());
+		assertFalse(victim.isTerminated());
+	}
+	
 }
