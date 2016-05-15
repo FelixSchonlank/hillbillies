@@ -81,7 +81,7 @@ public class Task {
 	    while (num > 0 && this.current != null) {
 	    	try {
 				this.current.execute();
-			} catch (BadFSMStateException | WrongTypeException e) {
+			} catch (Exception e) {
 				this.setPriority(this.getPriority() - 1);
 				this.getScheduler().resetTask(this);
 			}
@@ -89,7 +89,7 @@ public class Task {
 	    		num -= 1;
 	    		try {
 					this.current = this.current.getNextStatement();
-				} catch (WrongTypeException e) {
+				} catch (Exception e) {
 					this.setPriority(this.getPriority() - 1);
 					this.getScheduler().resetTask(this);
 				} 
