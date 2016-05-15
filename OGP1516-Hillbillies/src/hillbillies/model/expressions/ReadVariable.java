@@ -71,7 +71,7 @@ public class ReadVariable extends Expression<Object>{
 	private String name;
 	
 	@Override
-	public  Object evaluate() {
+	public  Object evaluate() throws VariableNotAssigntException {
 		return this.getTask().getValue(this.getName());
 	}
 	

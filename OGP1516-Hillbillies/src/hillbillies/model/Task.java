@@ -14,6 +14,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.expressions.Convert;
 import hillbillies.model.expressions.ReadVariable;
 import hillbillies.model.statements.*;
+import hillbillies.model.*;
 
 /** 
  * @Invar  Each Task can have its name as name.
@@ -73,12 +74,49 @@ public class Task {
 		this.getActivity().setNext(null);
 		this.getActivity().setLinearNext(null);
 		this.setBreaksNextStatement();
+		this.current = this.getActivity();
 	}
 	
-	public void execute(int nb){
-		//TODO execute this task
+	public void execute (int num) {
+	    while (num > 0 && this.current != null) {
+	    	try {
+				this.current.execute();
+			} catch (BadFSMStateException | WrongTypeException e) {
+				this.setPriority(this.getPriority() - 1);
+				this.getScheduler().resetTask(this);
+			}
+	    	if (this.current.shouldContinueExecution()) {
+	    		num -= 1;
+	    		try {
+					this.current = this.current.getNextStatement();
+				} catch (WrongTypeException e) {
+					this.setPriority(this.getPriority() - 1);
+					this.getScheduler().resetTask(this);
+				} 
+	    	}else {
+	    		break;
+			}
+	    }
+	    if (this.taskIsDone()) {
+    		this.setPriority(this.getPriority() - 1);
+			this.getScheduler().resetTask(this);
+    	}
 	}
+	
 
+	/**
+	 * Check whether this task is done
+	 * @return
+	 */
+	public boolean taskIsDone () {
+	    return this.current == null;
+	}
+	
+
+	/**
+	 * The statement to execute first
+	 */
+	private Statement current;
 	
 	/* Variables */
 	
@@ -88,9 +126,16 @@ public class Task {
 	 * 		| The name of the variable
 	 * @return the value of name
 	 * 		| result == this.variables.get(name)
+	 * @throws VarriableNotAssigntException 
+	 * 		| if the given name is not found as a key in variables
+	 * 		| ! this.variables.containsKey(name)
 	 */
-	public Object getValue(String name){
-		return this.variables.get(name);
+	public Object getValue(String name) throws VariableNotAssigntException {
+		if (! this.variables.containsKey(name)){
+			throw new VariableNotAssigntException();
+		}else{
+			return this.variables.get(name);
+		}
 	} 
 	
 	/**
@@ -664,7 +709,7 @@ public class Task {
 			current = current.getLinearNext();
 		} while (current != null);
 	}
-
+	
 	/* Well-typedness */
 	
 	private boolean isWellTyped () {
