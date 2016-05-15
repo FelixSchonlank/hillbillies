@@ -1,6 +1,7 @@
 package hillbillies.model.expressions;
 
 import hillbillies.model.expressions.*;
+import hillbillies.model.NoAccessibleCandidatesException;
 import hillbillies.model.Unit;
 
 public class Friend extends Expression<Unit> {
@@ -18,6 +19,8 @@ public class Friend extends Expression<Unit> {
 						(Unit u)
 						-> u != this.getTask().getUnit()
 						)
+
+				.filter((f) -> this.getTask().getUnit().isReachable(f.getPosition().toCoordinate()))
 				.findAny()
 				.get();
 	}

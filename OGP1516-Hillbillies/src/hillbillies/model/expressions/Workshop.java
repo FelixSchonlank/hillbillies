@@ -24,6 +24,7 @@ public class Workshop extends Expression<Coordinate>{
 				.getWorld()
 				.listAllBoulders()
 				.stream()
+				.filter((w) -> this.getTask().getUnit().isReachable(w.getPosition().toCoordinate()))
 				.min(
 						(w1, w2)
 						-> (int) w1.getPosition().distance(w2.getPosition())

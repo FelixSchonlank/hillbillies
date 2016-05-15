@@ -3,6 +3,7 @@ package hillbillies.model.expressions;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.Coordinate;
+import hillbillies.model.NoAccessibleCandidatesException;
 import hillbillies.model.expressions.*;
 import hillbillies.model.Position;
 import hillbillies.model.WrongTypeException;
@@ -69,10 +70,9 @@ public class NextTo extends Expression<Coordinate>{
 	private Expression<Coordinate> position;
 
 	@Override
-	public Coordinate evaluate() throws IllegalArgumentException, WrongTypeException {
-		for(Coordinate element : this.getTask().getUnit().getWorld().getNeighbors(this.getPosition().evaluate())){
-			return element;
-		}return null;
+	public Coordinate evaluate() throws IllegalArgumentException, WrongTypeException{
+		return this.getTask().getUnit().getWorld().getNeighbors(this.getPosition().evaluate()).stream()
+		.filter((Coordinate c) -> this.getTask().getUnit().isReachable(c)).findAny().get();
 	}
 
 	@Override

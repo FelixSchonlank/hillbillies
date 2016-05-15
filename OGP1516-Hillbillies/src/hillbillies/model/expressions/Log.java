@@ -22,8 +22,9 @@ public class Log extends Expression<Coordinate>{
 				.getTask()
 				.getUnit()
 				.getWorld()
-				.listAllBoulders()
+				.listAllLogs()
 				.stream()
+				.filter((l) -> this.getTask().getUnit().isReachable(l.getPosition().toCoordinate()))
 				.min(
 						(l1, l2)
 						-> (int) l1.getPosition().distance(l2.getPosition())

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import hillbillies.model.expressions.*;
 import hillbillies.model.Faction;
+import hillbillies.model.NoAccessibleCandidatesException;
 import hillbillies.model.Unit;
 import hillbillies.model.Utils;
 
@@ -12,7 +13,7 @@ public class Any extends Expression<Unit> {
 		
 	@Override
 	public Unit evaluate() {
-		return
+		return 
 				this
 				.getTask()
 				.getUnit()
@@ -21,7 +22,12 @@ public class Any extends Expression<Unit> {
 				.stream()
 				.findAny()
 				.get()
-				.getRandomUnit();
+				.listAllUnits()
+				.stream()
+				.filter((u) -> this.getTask().getUnit().isReachable(u.getPosition().toCoordinate()))
+				.findAny()
+				.get();
+				
 	}
 	
 	@Override

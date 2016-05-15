@@ -2,6 +2,7 @@ package hillbillies.model.expressions;
 
 import hillbillies.model.expressions.*;
 import hillbillies.model.Faction;
+import hillbillies.model.NoAccessibleCandidatesException;
 import hillbillies.model.Unit;
 
 public class Enemy extends Expression<Unit> {
@@ -21,7 +22,11 @@ public class Enemy extends Expression<Unit> {
 						)
 				.findAny()
 				.get()
-				.getRandomUnit();
+				.listAllUnits()
+				.stream()
+				.filter((u) -> this.getTask().getUnit().isReachable(u.getPosition().toCoordinate()))
+				.findAny()
+				.get();
 	}
 	
 	@Override
