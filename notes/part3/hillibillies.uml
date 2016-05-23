@@ -58,7 +58,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Mon May 23 11:46:36 CEST 2016'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Mon May 23 11:49:08 CEST 2016'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -591,10 +591,10 @@
               visibility = 'public' isSpecification = 'false' isNavigable = 'true' ordering = 'unordered'
               aggregation = 'none' targetScope = 'instance' changeability = 'changeable'>
               <UML:AssociationEnd.multiplicity>
-                <UML:Multiplicity xmi.id = '10-92--20--77-4254241:154dc5d5d23:-8000:0000000000001172'>
+                <UML:Multiplicity xmi.id = '10-92--20--77--f5f0d5b:154dceaaa00:-8000:0000000000000B60'>
                   <UML:Multiplicity.range>
-                    <UML:MultiplicityRange xmi.id = '10-92--20--77-4254241:154dc5d5d23:-8000:0000000000001171'
-                      lower = '1' upper = '-1'/>
+                    <UML:MultiplicityRange xmi.id = '10-92--20--77--f5f0d5b:154dceaaa00:-8000:0000000000000B5F'
+                      lower = '1' upper = '1'/>
                   </UML:Multiplicity.range>
                 </UML:Multiplicity>
               </UML:AssociationEnd.multiplicity>
