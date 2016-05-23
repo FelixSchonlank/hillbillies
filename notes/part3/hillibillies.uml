@@ -58,7 +58,7 @@
 			CodeGeneration
 		</plugin>
 </profile>
-<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Mon May 23 11:49:08 CEST 2016'>
+<XMI xmi.version = '1.2' xmlns:UML = 'org.omg.xmi.namespace.UML' timestamp = 'Mon May 23 11:52:23 CEST 2016'>
   <XMI.header>    <XMI.documentation>
       <XMI.exporter>ArgoUML (using Netbeans XMI Writer version 1.0)</XMI.exporter>
       <XMI.exporterVersion>0.34(6) revised on $Date: 2010-01-11 22:20:14 +0100 (Mon, 11 Jan 2010) $ </XMI.exporterVersion>
@@ -1163,7 +1163,7 @@
           </UML:Generalization.parent>
         </UML:Generalization>
         <UML:Class xmi.id = '10-92--20--77-4254241:154dc5d5d23:-8000:00000000000011F5'
-          name = 'Convert &lt;T&gt;' visibility = 'public' isSpecification = 'false'
+          name = 'Convert &lt;W&gt;' visibility = 'public' isSpecification = 'false'
           isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
           <UML:GeneralizableElement.generalization>
             <UML:Generalization xmi.idref = '10-92--20--77-4254241:154dc5d5d23:-8000:00000000000011F6'/>
@@ -1339,7 +1339,7 @@
           </UML:Generalization.parent>
         </UML:Generalization>
         <UML:Class xmi.id = '10-92--20--77-4254241:154dc5d5d23:-8000:0000000000001212'
-          name = 'Literal &lt;&gt;' visibility = 'public' isSpecification = 'false'
+          name = 'Literal &lt;Coordinate&gt;' visibility = 'public' isSpecification = 'false'
           isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
           <UML:GeneralizableElement.generalization>
             <UML:Generalization xmi.idref = '10-92--20--77-4254241:154dc5d5d23:-8000:0000000000001213'/>
@@ -1403,7 +1403,7 @@
           </UML:Generalization.parent>
         </UML:Generalization>
         <UML:Class xmi.id = '10-92--20--77-4254241:154dc5d5d23:-8000:000000000000121A'
-          name = 'ReadVariable &lt;Boolean&gt;' visibility = 'public' isSpecification = 'false'
+          name = 'ReadVariable &lt;Object&gt;' visibility = 'public' isSpecification = 'false'
           isRoot = 'false' isLeaf = 'false' isAbstract = 'false' isActive = 'false'>
           <UML:GeneralizableElement.generalization>
             <UML:Generalization xmi.idref = '10-92--20--77-4254241:154dc5d5d23:-8000:000000000000121B'/>
@@ -6591,7 +6591,7 @@
     </path>
   </group>
   <group name="Fig56"
-       description="org.argouml.uml.diagram.static_structure.ui.FigClass[1560, 776, 91, 67]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[1560, 776, 94, 67]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
        href="10-92--20--77-4254241:154dc5d5d23:-8000:00000000000011F5"
        fill="1"
        fillcolor="white"
@@ -6604,7 +6604,7 @@
     <rectangle name="Fig56.0"
       x="1560"
       y="776"
-      width="91"
+      width="94"
       height="67"
       fill="1"
       fillcolor="white"
@@ -6614,7 +6614,7 @@
     <text name="Fig56.1"
       x="1561"
       y="777"
-      width="89"
+      width="92"
       height="23"
       fill="0"
       fillcolor="white"
@@ -6626,7 +6626,7 @@
       bold="false"
       textsize="13"
       justification="Center"
-    >Convert &lt;T&gt;</text>
+    >Convert &lt;W&gt;</text>
     <group name="Fig56.2"
          description="org.argouml.uml.diagram.ui.FigStereotypesGroup[1561, 776, 64, 0]"
          href="10-92--20--77-4254241:154dc5d5d23:-8000:00000000000011F5"
@@ -6653,7 +6653,7 @@
     <rectangle name="Fig56.3"
       x="1560"
       y="800"
-      width="91"
+      width="94"
       height="1"
       fill="1"
       fillcolor="black"
@@ -6661,7 +6661,7 @@
       strokecolor="black"
     />
     <group name="Fig56.4"
-         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[1561, 801, 89, 21]"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[1561, 801, 92, 21]"
          href="10-92--20--77-4254241:154dc5d5d23:-8000:00000000000011F5"
          fill="0"
          fillcolor="white"
@@ -6674,7 +6674,7 @@
       <rectangle name="Fig56.4.0"
         x="1561"
         y="801"
-        width="89"
+        width="92"
         height="21"
         fill="0"
         fillcolor="white"
@@ -6685,7 +6685,7 @@
     <rectangle name="Fig56.5"
       x="1560"
       y="821"
-      width="91"
+      width="94"
       height="1"
       fill="1"
       fillcolor="black"
@@ -6693,7 +6693,7 @@
       strokecolor="black"
     />
     <group name="Fig56.6"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1561, 822, 89, 21]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[1561, 822, 92, 21]"
          href="10-92--20--77-4254241:154dc5d5d23:-8000:00000000000011F5"
          fill="0"
          fillcolor="white"
@@ -6706,7 +6706,7 @@
       <rectangle name="Fig56.6.0"
         x="1561"
         y="822"
-        width="89"
+        width="92"
         height="21"
         fill="0"
         fillcolor="white"
@@ -8337,7 +8337,7 @@
     </path>
   </group>
   <group name="Fig78"
-       description="org.argouml.uml.diagram.static_structure.ui.FigClass[2120, 1032, 73, 67]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
+       description="org.argouml.uml.diagram.static_structure.ui.FigClass[2120, 1032, 142, 67]pathVisible=false;stereotypeView=0;operationsVisible=true;attributesVisible=true;"
        href="10-92--20--77-4254241:154dc5d5d23:-8000:0000000000001212"
        fill="1"
        fillcolor="white"
@@ -8350,7 +8350,7 @@
     <rectangle name="Fig78.0"
       x="2120"
       y="1032"
-      width="73"
+      width="142"
       height="67"
       fill="1"
       fillcolor="white"
@@ -8360,7 +8360,7 @@
     <text name="Fig78.1"
       x="2121"
       y="1033"
-      width="71"
+      width="140"
       height="23"
       fill="0"
       fillcolor="white"
@@ -8372,7 +8372,7 @@
       bold="false"
       textsize="13"
       justification="Center"
-    >Literal &lt;&gt;</text>
+    >Literal &lt;Coordinate&gt;</text>
     <group name="Fig78.2"
          description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2121, 1033, 64, 0]"
          href="10-92--20--77-4254241:154dc5d5d23:-8000:0000000000001212"
@@ -8399,7 +8399,7 @@
     <rectangle name="Fig78.3"
       x="2120"
       y="1056"
-      width="73"
+      width="142"
       height="1"
       fill="1"
       fillcolor="black"
@@ -8407,7 +8407,7 @@
       strokecolor="black"
     />
     <group name="Fig78.4"
-         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[2121, 1057, 71, 21]"
+         description="org.argouml.uml.diagram.ui.FigAttributesCompartment[2121, 1057, 140, 21]"
          href="10-92--20--77-4254241:154dc5d5d23:-8000:0000000000001212"
          fill="0"
          fillcolor="white"
@@ -8420,7 +8420,7 @@
       <rectangle name="Fig78.4.0"
         x="2121"
         y="1057"
-        width="71"
+        width="140"
         height="21"
         fill="0"
         fillcolor="white"
@@ -8431,7 +8431,7 @@
     <rectangle name="Fig78.5"
       x="2120"
       y="1077"
-      width="73"
+      width="142"
       height="1"
       fill="1"
       fillcolor="black"
@@ -8439,7 +8439,7 @@
       strokecolor="black"
     />
     <group name="Fig78.6"
-         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[2121, 1078, 71, 21]"
+         description="org.argouml.uml.diagram.ui.FigOperationsCompartment[2121, 1078, 140, 21]"
          href="10-92--20--77-4254241:154dc5d5d23:-8000:0000000000001212"
          fill="0"
          fillcolor="white"
@@ -8452,7 +8452,7 @@
       <rectangle name="Fig78.6.0"
         x="2121"
         y="1078"
-        width="71"
+        width="140"
         height="21"
         fill="0"
         fillcolor="white"
@@ -9004,7 +9004,7 @@
       bold="false"
       textsize="13"
       justification="Center"
-    >ReadVariable &lt;Boolean&gt;</text>
+    >ReadVariable &lt;Object&gt;</text>
     <group name="Fig86.2"
          description="org.argouml.uml.diagram.ui.FigStereotypesGroup[2465, 777, 89, 0]"
          href="10-92--20--77-4254241:154dc5d5d23:-8000:000000000000121A"
